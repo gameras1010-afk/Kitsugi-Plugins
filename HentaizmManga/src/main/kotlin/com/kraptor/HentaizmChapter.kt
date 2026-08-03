@@ -37,7 +37,7 @@ class HentaizmChapterFragment(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val layoutId = plugin.resources!!.getIdentifier("chapter", "layout", BuildConfig.LIBRARY_PACKAGE_NAME)
+        val layoutId = plugin.resources!!.getIdentifier("chapter", "layout", "com.kraptor")
         val layout = plugin.resources!!.getLayout(layoutId)
         return inflater.inflate(layout, container, false)
     }
@@ -81,7 +81,7 @@ class CustomAdapter(
 
         @SuppressLint("DiscouragedApi")
         private fun <T : View> View.findView(name: String): T {
-            val id = plugin.resources!!.getIdentifier(name, "id", BuildConfig.LIBRARY_PACKAGE_NAME)
+            val id = plugin.resources!!.getIdentifier(name, "id", "com.kraptor")
             if (id == 0) {
                 throw RuntimeException("View ID '$name' not found")
             }

@@ -25,3 +25,7 @@ cloudstream {
 android {
     namespace = "recloudstream"
 }
+
+dependencies {
+    implementation("com.github.TeamNewPipe:NewPipeExtractor:v0.24.4")
+}

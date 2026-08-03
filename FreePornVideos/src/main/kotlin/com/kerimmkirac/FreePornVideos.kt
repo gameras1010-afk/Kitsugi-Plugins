@@ -65,11 +65,15 @@ class FreePornVideos : MainAPI() {
 
             var posterUrl: String? = null
             for (img in select("img.thumb")) {
-                img.attr("data-src").takeIf { it.isNotBlank() }?.let {
-                    posterUrl = it; break
+                val dataSrc = img.attr("data-src")
+                if (dataSrc.isNotBlank()) {
+                    posterUrl = dataSrc
+                    break
                 }
-                img.attr("src").takeIf { it.isNotBlank() && !it.contains("data:image") }?.let {
-                    posterUrl = it; break
+                val src = img.attr("src")
+                if (src.isNotBlank() && !src.contains("data:image")) {
+                    posterUrl = src
+                    break
                 }
             }
             if (posterUrl == null) return null

@@ -2,10 +2,8 @@
 
 package com.byayzen
 
-import android.icu.text.SimpleDateFormat
-import android.os.Build
+import java.text.SimpleDateFormat
 import android.util.Log
-import androidx.annotation.RequiresApi
 import org.jsoup.nodes.Element
 import com.lagradost.cloudstream3.*
 import com.lagradost.cloudstream3.utils.*
@@ -72,7 +70,7 @@ class Nekokun : MainAPI() {
 
     override suspend fun quickSearch(query: String): List<SearchResponse>? = search(query)
 
-    @RequiresApi(Build.VERSION_CODES.N)
+
     override suspend fun load(url: String): LoadResponse? {
         val document = app.get(url).document
         Log.d("Ayzen", url)
