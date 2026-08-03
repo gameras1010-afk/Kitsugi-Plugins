@@ -156,8 +156,7 @@ class EU : MainAPI() {
         val mainpage = response.text
         val nonce = Regex("""data-nonce="([^"]+)"""").find(mainpage)?.groupValues?.get(1)
         val postid = Regex("""post_id":(\d+)""").find(mainpage)?.groupValues?.get(1)
-        val serverid = Regex("""server":"(\d+)"""").find(mainpage)?.groupValues?.get(1)
-
+        
         var episodeslug = data.trimEnd('/').substringAfterLast("/").replace(".html", "")
         if (episodeslug.contains("-sv")) {
             episodeslug = episodeslug.substringBefore("-sv")
@@ -165,42 +164,47 @@ class EU : MainAPI() {
 
         if (nonce == null || postid == null) return false
 
-        val playerresponse = app.get(
-            url = "$mainUrl/wp-content/themes/halimmovies/player.php",
-            params = mapOf(
-                "episode_slug" to episodeslug,
-                "server_id" to (serverid ?: "1"),
-                "subsv_id" to "",
-                "post_id" to postid,
-                "nonce" to nonce,
-                "custom_var" to ""
-            ),
-            headers = mapOf(
-                "Referer" to data,
-                "X-Requested-With" to "XMLHttpRequest",
-                "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36"
-            )
-        ).text
+        for (i in 1..5) {
+            val playerresponse = app.get(
+                url = "$mainUrl/wp-content/themes/halimmovies/player.php",
+                params = mapOf(
+                    "episode_slug" to episodeslug,
+                    "server_id" to i.toString(),
+                    "subsv_id" to "",
+                    "post_id" to postid,
+                    "nonce" to nonce,
+                    "custom_var" to ""
+                ),
+                headers = mapOf(
+                    "Referer" to data,
+                    "X-Requested-With" to "XMLHttpRequest",
+                    "User-Agent" to "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+                )
+            ).text
 
-        val m3u8url =
-            Regex("""(?i)"file"\s*:\s*"([^"]+)"""").find(playerresponse)?.groupValues?.get(1)
+            val videoUrl = Regex("""(?i)"(?:file|src)"\s*:\s*"([^"]+)"""").find(playerresponse)?.groupValues?.get(1)
                 ?.replace("\\/", "/")
 
-        return if (!m3u8url.isNullOrBlank()) {
-            callback.invoke(
-                newExtractorLink(
-                    source = this.name,
-                    name = this.name,
-                    url = m3u8url
-                ) {
-                    this.referer = "$mainUrl/"
-                    this.type = ExtractorLinkType.M3U8
-                    this.quality = Qualities.P720.value
+            if (!videoUrl.isNullOrBlank()) {
+                val quality = when {
+                    videoUrl.contains("1080p") -> Qualities.P1080.value
+                    videoUrl.contains("720p") -> Qualities.P720.value
+                    else -> Qualities.Unknown.value
                 }
-            )
-            true
-        } else {
-            false
+                
+                callback.invoke(
+                    newExtractorLink(
+                        source = this.name,
+                        name = "$name Server $i",
+                        url = videoUrl
+                    ) {
+                        this.referer = "$mainUrl/"
+                        this.type = ExtractorLinkType.M3U8
+                        this.quality = quality
+                    }
+                )
+            }
         }
+        return true
     }
 }
