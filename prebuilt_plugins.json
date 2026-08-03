@@ -78,7 +78,7 @@
         "tvTypes": [
             "AsianDrama"
         ],
-        "iconUrl": "https://www.google.com/s2/favicons?domain=https://dizikorea.vip&sz=%size%",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=dizikorea3.com&sz=%size%",
         "apiVersion": 1,
         "fileHash": "sha256-1958c66dd0c32ab436adc333504c1183322653afa048425509a7dfc4898ba0da"
     },
@@ -120,7 +120,7 @@
             "TvSeries",
             "Movie"
         ],
-        "iconUrl": "https://dizipal1563.com/assets/favicon/favicon-32x32.png?v=3",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=dizipal.bid&sz=%size%",
         "apiVersion": 1,
         "fileHash": "sha256-8af26d84991c1b65c848351b40c4761f1df621c3b26fc96862de8184dece5a5f"
     },
@@ -242,7 +242,7 @@
         "tvTypes": [
             "Movie"
         ],
-        "iconUrl": "https://www.google.com/s2/favicons?domain=www.fullhdfilmizlesene.de&sz=%size%",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=www.fullhdfilmizlesene.mx&sz=%size%",
         "apiVersion": 1,
         "fileHash": "sha256-28589f4edea0cb6987104e7d6b0be48a87a2af1cc583765f2c0034a1f4048ad5"
     },
@@ -307,7 +307,7 @@
         "tvTypes": [
             "Movie"
         ],
-        "iconUrl": "https://www.google.com/s2/favicons?domain=https://jetfilmizle.de&sz=%size%",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=jetfilmizle.now&sz=%size%",
         "apiVersion": 1,
         "fileHash": "sha256-b648e5346f05d428069d20489c8862107b21c3bb116d903cd5ee95d1ce162e2c"
     },
@@ -353,7 +353,7 @@
             "Live",
             "TvSeries"
         ],
-        "iconUrl": "https://rectv.org.tr/wp-content/uploads/2024/11/rectv-modified.webp",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=a.prectv70.lol&sz=%size%",
         "apiVersion": 1,
         "fileHash": "sha256-984b9b52f988f35b0e733bfc334420b106d307598fc6590a3e1a83ed18634d8f"
     },
@@ -394,7 +394,7 @@
         "tvTypes": [
             "Movie"
         ],
-        "iconUrl": "https://www.google.com/s2/favicons?domain=www.sinema.cx&sz=%size%",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=www.sinema.gg&sz=%size%",
         "apiVersion": 1,
         "fileHash": "sha256-a190ac05f8aea8e02626447814c076b6442ed2854794634d07878c2728be06d9"
     },
@@ -414,7 +414,7 @@
         "tvTypes": [
             "TvSeries"
         ],
-        "iconUrl": "https://www.google.com/s2/favicons?domain=asyalog.co&sz=%size%",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=asyalog.com&sz=%size%",
         "apiVersion": 1,
         "fileHash": "sha256-6d01026fa4978b7642d336924eeb5e1a788e8bd4047be1d3a4d5ae7426764600"
     },
@@ -903,5 +903,249 @@
         "internalName": "Turkish",
         "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Turkish.cs3",
         "name": "Turkish"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/DiziBox.cs3",
+        "status": 1,
+        "version": 23,
+        "name": "DiziBox",
+        "internalName": "DiziBox",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "DiziBox — Türkçe altyazılı/dublajlı yabancı dizi izle.",
+        "fileSize": 0,
+        "repositoryUrl": "https://github.com/gameras1010-afk/Kitsugi-Plugins",
+        "language": "tr",
+        "tvTypes": [
+            "TvSeries"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=www.dizibox.live&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": ""
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/FilmBip.cs3",
+        "status": 1,
+        "version": 11,
+        "name": "FilmBip",
+        "internalName": "FilmBip",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "FilmBip — Türkçe Dublaj ve Altyazılı Film izle.",
+        "fileSize": 0,
+        "repositoryUrl": "https://github.com/gameras1010-afk/Kitsugi-Plugins",
+        "language": "tr",
+        "tvTypes": [
+            "Movie"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=filmbip.com&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": ""
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/KoreanTurk.cs3",
+        "status": 1,
+        "version": 7,
+        "name": "KoreanTurk",
+        "internalName": "KoreanTurk",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "KoreanTurk — Kore dizilerini Türkçe altyazılı izle.",
+        "fileSize": 0,
+        "repositoryUrl": "https://github.com/gameras1010-afk/Kitsugi-Plugins",
+        "language": "tr",
+        "tvTypes": [
+            "TvSeries",
+            "AsianDrama"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=www.koreanturk.net&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": ""
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/NetflixMirror.cs3",
+        "status": 1,
+        "version": 32,
+        "name": "NetflixMirror",
+        "internalName": "NetflixMirror",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "NetflixMirror — Netflix içeriklerini ücretsiz izle.",
+        "fileSize": 0,
+        "repositoryUrl": "https://github.com/gameras1010-afk/Kitsugi-Plugins",
+        "language": "tr",
+        "tvTypes": [
+            "Movie",
+            "TvSeries",
+            "Anime"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=netfree2.cc&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": ""
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/SuperFilmGeldi.cs3",
+        "status": 1,
+        "version": 25,
+        "name": "SuperFilmGeldi",
+        "internalName": "SuperFilmGeldi",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "SuperFilmGeldi — Türkçe Dublaj ve Altyazılı Film izle.",
+        "fileSize": 0,
+        "repositoryUrl": "https://github.com/gameras1010-afk/Kitsugi-Plugins",
+        "language": "tr",
+        "tvTypes": [
+            "Movie"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=www.superfilmgeldi13.art&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": ""
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/TRanimaci.cs3",
+        "status": 1,
+        "version": 17,
+        "name": "TRanimaci",
+        "internalName": "TRanimaci",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "TRanimaci — Türkçe anime izleme sitesi.",
+        "fileSize": 0,
+        "repositoryUrl": "https://github.com/gameras1010-afk/Kitsugi-Plugins",
+        "language": "tr",
+        "tvTypes": [
+            "Anime"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=tranimaci.com&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": ""
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/UgurFilm.cs3",
+        "status": 1,
+        "version": 13,
+        "name": "UgurFilm",
+        "internalName": "UgurFilm",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "UgurFilm — Türkçe Dublaj ve Altyazılı Film izle.",
+        "fileSize": 0,
+        "repositoryUrl": "https://github.com/gameras1010-afk/Kitsugi-Plugins",
+        "language": "tr",
+        "tvTypes": [
+            "Movie"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=ugurfilm3.xyz&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": ""
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Dramaizle.cs3",
+        "status": 1,
+        "version": 10,
+        "name": "Dramaizle",
+        "internalName": "Dramaizle",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "Dramaflix — Kore, Japon ve Asya dizilerini Türkçe altyazılı izle.",
+        "fileSize": 0,
+        "repositoryUrl": "https://github.com/gameras1010-afk/Kitsugi-Plugins",
+        "language": "tr",
+        "tvTypes": [
+            "TvSeries",
+            "AsianDrama"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=dramaflix.cc&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": ""
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/AnimeYTX.cs3",
+        "status": 1,
+        "version": 6,
+        "name": "AnimeYTX",
+        "internalName": "AnimeYTX",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "AnimeYTX — Türkçe altyazılı anime izleme sitesi.",
+        "fileSize": 0,
+        "repositoryUrl": "https://github.com/gameras1010-afk/Kitsugi-Plugins",
+        "language": "tr",
+        "tvTypes": [
+            "Anime"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=animeyt.cc&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": ""
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/TurkAnime.cs3",
+        "status": 1,
+        "version": 14,
+        "name": "TurkAnime",
+        "internalName": "TurkAnime",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "TurkAnime — Türkçe anime izleme sitesi.",
+        "fileSize": 0,
+        "repositoryUrl": "https://github.com/gameras1010-afk/Kitsugi-Plugins",
+        "language": "tr",
+        "tvTypes": [
+            "Anime"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=www.turkanime.tv&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": ""
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Hqporner.cs3",
+        "status": 1,
+        "version": 4,
+        "name": "Hqporner",
+        "internalName": "Hqporner",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "HQPorner — Yüksek kaliteli yetişkin video sitesi.",
+        "fileSize": 0,
+        "repositoryUrl": "https://github.com/gameras1010-afk/Kitsugi-Plugins",
+        "language": "en",
+        "tvTypes": [
+            "NSFW"
+        ],
+        "iconUrl": "",
+        "apiVersion": 1,
+        "fileHash": ""
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/IfsaLog.cs3",
+        "status": 1,
+        "version": 3,
+        "name": "IfsaLog",
+        "internalName": "IfsaLog",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "IfsaLog — Türkçe yetişkin ifşa video sitesi.",
+        "fileSize": 0,
+        "repositoryUrl": "https://github.com/gameras1010-afk/Kitsugi-Plugins",
+        "language": "tr",
+        "tvTypes": [
+            "NSFW"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=ifsalog.com&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": ""
     }
 ]
