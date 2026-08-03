@@ -1,39 +1,47 @@
 @echo off
 echo =======================================================
-echo           Kitsugi Plugins GitHub Sync Tool
+echo        Kitsugi Plugins GitHub Sync Tool v2
 echo =======================================================
 echo.
-echo [1/3] Git status kontrol ediliyor...
+
+cd /d "%~dp0"
+
+echo [1/4] Checking modified plugins...
+git status --short
 echo.
-git status
+
+echo [2/4] Auto-bumping versions of changed plugins...
+python auto_bump.py
 echo.
-echo =======================================================
-set /p onay="Degisiklikleri GitHub'a push etmek istiyor musunuz? (E/H): "
-if /I "%onay%" neq "E" (
-    echo.
-    echo Islem iptal edildi.
-    goto bitir
+
+echo -------------------------------------------------------
+git status --short
+echo -------------------------------------------------------
+echo.
+
+set /p CONFIRM="Push changes to GitHub? (Y/N): "
+if /i not "%CONFIRM%"=="Y" (
+    echo Cancelled.
+    pause
+    exit /b 0
 )
 
+set /p MSG="Commit message (blank = default): "
+if "%MSG%"=="" set MSG=Plugin Update
+
 echo.
-echo [2/3] Dosyalar ekleniyor ve commit hazirlaniyor...
+echo [3/4] Adding and committing...
 git add .
-
+git commit -m "%MSG%"
 echo.
-set /p msg="Commit mesaji yazin (Bos birakirsaniz 'Eklenti Guncellemesi' yazilir): "
-if "%msg%"=="" (
-    set msg="Eklenti Guncellemesi"
-)
 
-git commit -m %msg%
-
-echo.
-echo [3/3] Degisiklikler GitHub'a gonderiliyor (push)...
+echo [4/4] Pushing to GitHub main branch...
 git push origin main
 
 echo.
 echo =======================================================
-echo [TAMAMLANDI] Eklentiler basariyla GitHub'a yuklendi!
+echo [DONE] Plugins successfully pushed to GitHub!
+echo       GitHub Actions will auto-build and deploy.
 echo =======================================================
-:bitir
+echo.
 pause
