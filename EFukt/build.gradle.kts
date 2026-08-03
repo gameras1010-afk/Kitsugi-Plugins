@@ -1,0 +1,15 @@
+// ! Bu araç @Kraptor123 tarafından | @Cs-GizliKeyif için yazılmıştır.
+version = 7
+
+cloudstream {
+    authors     = listOf("kraptor")
+    language    = "en"
+    description = "Adult humor for adults, Makers of Lulz. Shocking Humor, Porn bloopers, Porn Fails, Cam Whores, Amateur Porn and more."
+    status  = 1 // will be 3 if unspecified
+    tvTypes = listOf("NSFW")
+    iconUrl = "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://efukt.com/&size=16"
+}
+
+android {
+    namespace = "com.kraptor.efukt"
+}

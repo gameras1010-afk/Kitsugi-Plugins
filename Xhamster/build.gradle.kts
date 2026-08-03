@@ -1,25 +1,15 @@
-// use an integer for version numbers
-version = 1
+version = 11
 
 cloudstream {
-    // All of these properties are optional, you can safely remove any of them.
+    authors     = listOf("kraptor","coxju","SIX")
+    language    = "en"
+    description = "(VPN) 5 milyondan fazla Porno Videosunu ücretsiz izleyin."
+    status  = 1 // will be 3 if unspecified
+    tvTypes = listOf("NSFW")
+    iconUrl = "https://www.google.com/s2/favicons?domain=xhamster.com&sz=%size%"
+}
 
-    language = "vi"
-    authors = listOf("SIX")
 
-    /**
-     * Status int as one of the following:
-     * 0: Down
-     * 1: Ok
-     * 2: Slow
-     * 3: Beta-only
-     **/
-    status = 1 // Will be 3 if unspecified
-
-    tvTypes = listOf(
-        "NSFW"
-    )
-    iconUrl = "https://www.google.com/s2/favicons?domain=https://vi.xhspot.com&sz=256"
-
-    isCrossPlatform = false
+android {
+    namespace = "com.kraptor.xhamster"
 }

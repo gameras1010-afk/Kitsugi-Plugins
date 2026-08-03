@@ -1,9 +1,10 @@
-version = 2
+// ! Bu araç @Kraptor123 tarafından | @Cs-GizliKeyif için yazılmıştır.
+version = 7
 
 cloudstream {
-    authors     = listOf("Coxju, megix")
+    authors     = listOf("kraptor")
     language    = "en"
-    description = "FullPorner is the best free full length porn video site. Choose from millions of hardcore videos that stream quickly and in high quality and only full length"
+    description = "(VPN) FullPorner is the best free full length porn video site. Choose from millions of hardcore videos that stream quickly and in high quality and only full length"
 
     /**
      * Status int as the following:
@@ -11,8 +12,12 @@ cloudstream {
      * 1: Ok
      * 2: Slow
      * 3: Beta only
-    **/
+     **/
     status  = 1 // will be 3 if unspecified
     tvTypes = listOf("NSFW")
     iconUrl = "https://www.google.com/s2/favicons?domain=fullporner.com&sz=%size%"
+}
+
+android {
+    namespace = "com.kraptor.fullporner"
 }

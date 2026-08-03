@@ -1,7 +1,7 @@
-version = 6
+version = 9
 
 cloudstream {
-    authors     = listOf("keyiflerolsun","JustRelaxable")
+    authors     = listOf("keyiflerolsun","JustRelaxable", "nikyokki")
     language    = "tr"
     description = "Güncel ve eski dizileri en iyi görüntü kalitesiyle bulabileceğiniz yabancı dizi izleme siteniz."
 
@@ -15,4 +15,8 @@ cloudstream {
     status  = 1 // will be 3 if unspecified
     tvTypes = listOf("TvSeries")
     iconUrl = "https://www.google.com/s2/favicons?domain=sezonlukdizi6.com&sz=%size%"
+}
+
+android {
+    namespace = "com.nikyokki"
 }

@@ -1,18 +1,15 @@
+// ! Bu araç @Kraptor123 tarafından | @Cs-GizliKeyif için yazılmıştır.
 version = 4
 
 cloudstream {
-    authors     = listOf("Phishe")
+    authors     = listOf("kraptor")
     language    = "en"
-    description = "(VPN) Premium Porn with 4K support"
-
-    /**
-     * Status int as the following:
-     * 0: Down
-     * 1: Ok
-     * 2: Slow
-     * 3: Beta only
-    **/
-    status  = 1// will be 3 if unspecified
+    description = "Truly high definition porn videos and truly for free! We're sure you'll like our best collection containing thousands of 4K, 60FPS and 1080p free HD porn videos with the hottest girls ever!"
+    status  = 1 // will be 3 if unspecified
     tvTypes = listOf("NSFW")
-    iconUrl = "https://www.google.com/s2/favicons?domain=hqporner.com&sz=%size%"
+    iconUrl = "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://hqporner.com/&size=32"
+}
+
+android {
+    namespace = "com.kraptor.hqporner"
 }

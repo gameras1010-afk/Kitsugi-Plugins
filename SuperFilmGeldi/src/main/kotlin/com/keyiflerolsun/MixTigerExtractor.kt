@@ -56,10 +56,10 @@ open class MixTiger : ExtractorApi() {
                     name    = this.name,
                     url     = m3uLink ?: throw ErrorLoadingException("m3u link not found"),
                     type    = INFER_TYPE
-			) {
-                headers = mapOf("Referer" to if (m3uLink.contains("disk.yandex")) "" else extRef)
-                quality = Qualities.Unknown.value
-            }
+                ) {
+                    this.referer = if (m3uLink.contains("disk.yandex")) "" else extRef
+                    this.quality = Qualities.Unknown.value
+                }
             )
         }
     }

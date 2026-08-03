@@ -8,7 +8,8 @@ import android.content.Context
 class WebteIzlePlugin: Plugin() {
     override fun load(context: Context) {
         registerMainAPI(WebteIzle())
-		registerExtractorAPI(DzenRu())
-		
+        registerExtractorAPI(Dzen())
+        registerExtractorAPI(StreamRubyExtractor())
+        registerExtractorAPI(VidmolyNet())
     }
 }

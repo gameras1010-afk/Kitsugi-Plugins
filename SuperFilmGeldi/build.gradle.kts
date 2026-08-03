@@ -1,7 +1,7 @@
-version = 22
+version = 25
 
 cloudstream {
-    authors     = listOf("keyiflerolsun")
+    authors     = listOf("keyiflerolsun", "nikyokki")
     language    = "tr"
     description = "Hd film izliyerek arkadaşlarınızla ve sevdiklerinizle iyi bir vakit geçirmek istiyorsanız açın bir film eğlenmeye bakın. Bilim kurgu filmleri, aşk drama vahşet aşk romantik sıradışı korku filmlerini izle."
 
@@ -14,5 +14,9 @@ cloudstream {
     **/
     status  = 1 // will be 3 if unspecified
     tvTypes = listOf("Movie")
-    iconUrl = "https://www.google.com/s2/favicons?domain=www.superfilmgeldi.info&sz=%size%"
+    iconUrl = "https://www.google.com/s2/favicons?domain=www.superfilmgeldi.biz&sz=%size%"
+}
+
+android {
+    namespace = "com.nikyokki"
 }

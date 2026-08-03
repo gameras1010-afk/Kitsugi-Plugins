@@ -1,0 +1,907 @@
+[
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/BelgeselX.cs3",
+        "status": 1,
+        "version": 17,
+        "name": "BelgeselX",
+        "internalName": "BelgeselX",
+        "authors": [
+            "keyiflerolsun",
+            "JustRelaxable"
+        ],
+        "description": "En yeni belgeseller, türkçe altyazılı yada dublaj olarak 1080p kalitesinde HD belgesel izle.",
+        "fileSize": 31167,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "Documentary"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=belgeselx.com&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": "sha256-11afcc524f9a2616d4d3e2b170f255d8f78a6ad50ce3ed0c585dcaf74b8d49db"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/CizgiMax.cs3",
+        "status": 1,
+        "version": 16,
+        "name": "CizgiMax",
+        "internalName": "CizgiMax",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "ÇizgiMax ile Çizgi Film izlemek artık daha kolay, donmadan full hd ve reklamsız bir sitedir, içerisinde 700 den fazla çizgi film olan, Bu site bu işi profesyonelce yapıyor.",
+        "fileSize": 36001,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "Cartoon",
+            "Anime",
+            "Movie"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=cizgimax.online&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": "sha256-03f8f6c63b88f23b62a434397562777594398e592da90d17be3f011432086294"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Ddizi.cs3",
+        "status": 1,
+        "version": 22,
+        "name": "Ddizi",
+        "internalName": "Ddizi",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "DDizi.im için Cloudstream eklentisi",
+        "fileSize": 20110,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "TvSeries"
+        ],
+        "iconUrl": "https://www.ddizi.im/favicon.ico",
+        "apiVersion": 1,
+        "fileHash": "sha256-47e75d5eb583ed98fb54324a73028da5f35775e910f3e6a5e78cd00effa786a9"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/DiziKorea.cs3",
+        "status": 1,
+        "version": 41,
+        "name": "DiziKorea",
+        "internalName": "DiziKorea",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "En Güncel Kore Dizileri izleme Sitesi",
+        "fileSize": 23562,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "AsianDrama"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=https://dizikorea.vip&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": "sha256-1958c66dd0c32ab436adc333504c1183322653afa048425509a7dfc4898ba0da"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/DiziMom.cs3",
+        "status": 1,
+        "version": 54,
+        "name": "DiziMom",
+        "internalName": "DiziMom",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "Binlerce yerli yabancı dizi arşivi, tüm sezonlar, kesintisiz bölümler. Sadece dizi izle, Dizimom heryerde seninle!",
+        "fileSize": 34841,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "TvSeries"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=www.dizimom.plus&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": "sha256-cd05d57b2dbfca7ff9b57eb24081ff6f75837008c56d8e2bd5b6c0a98ec024e9"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/DiziPal.cs3",
+        "status": 1,
+        "version": 102,
+        "name": "DiziPal",
+        "internalName": "DiziPal",
+        "authors": [
+            "keyiflerolsun",
+            "muratcesmecioglu"
+        ],
+        "description": "en yeni dizileri güvenli ve hızlı şekilde sunar.",
+        "fileSize": 29471,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "TvSeries",
+            "Movie"
+        ],
+        "iconUrl": "https://dizipal1563.com/assets/favicon/favicon-32x32.png?v=3",
+        "apiVersion": 1,
+        "fileHash": "sha256-8af26d84991c1b65c848351b40c4761f1df621c3b26fc96862de8184dece5a5f"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/DiziYou.cs3",
+        "status": 1,
+        "version": 25,
+        "name": "DiziYou",
+        "internalName": "DiziYou",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "Diziyou en kaliteli Türkçe dublaj ve altyazılı yabancı dizi izleme sitesidir. Güncel ve efsanevi dizileri 1080p Full HD kalitede izlemek için hemen tıkla!",
+        "fileSize": 17204,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "TvSeries"
+        ],
+        "iconUrl": "https://cdn.diziyou.one/wp-content/uploads/2020/04/diziyou-favicon.png",
+        "apiVersion": 1,
+        "fileHash": "sha256-6261d0bb203f1870dec0f0e3eab2e6dba9404b36b2e83cef5e653f7bc112e72b"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Dizilla.cs3",
+        "status": 1,
+        "version": 92,
+        "name": "Dizilla",
+        "internalName": "Dizilla",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "Dizilla tüm yabancı dizileri ücretsiz olarak Türkçe Dublaj ve altyazılı seçenekleri ile 1080P kalite izleyebileceğiniz yeni nesil yabancı dizi izleme siteniz.",
+        "fileSize": 35982,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "TvSeries"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=dizilla.club&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": "sha256-4e537f703f27de6327c1f1d949aa38fc4f11ef9c2462432c317cf1d99a934474"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/FilmMakinesi.cs3",
+        "status": 1,
+        "version": 58,
+        "name": "FilmMakinesi",
+        "internalName": "FilmMakinesi",
+        "authors": [
+            "keyiflerolsun",
+            "usdogu"
+        ],
+        "description": "Film Makinesi, en yeni ve en güncel filmleri sitemizde full HD kalite farkı ile izleyebilirsiniz. HD film izle denildiğinde akla gelen en kaliteli film izleme sitesi.",
+        "fileSize": 20531,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "Movie"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=filmmakinesi.film&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": "sha256-9b58987f0eb1e19d70c2cd54f7c9c1e7ef18a005edf03113bc9e992d3f2e255b"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/FilmModu.cs3",
+        "status": 1,
+        "version": 19,
+        "name": "FilmModu",
+        "internalName": "FilmModu",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "Film modun geldiyse yüksek kalitede en yeni filmleri izle, 1080p izleyebileceğiniz reklamsiz film sitesi.",
+        "fileSize": 16496,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "Movie"
+        ],
+        "iconUrl": "https://www.filmmodu.one/icon/favicon.ico",
+        "apiVersion": 1,
+        "fileHash": "sha256-3150a6212f052ad843a8b9e67d65c82b35078f502bb9f5032b1af808d87b862e"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/FullHDFilm.cs3",
+        "status": 1,
+        "version": 36,
+        "name": "FullHDFilm",
+        "internalName": "FullHDFilm",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "Fullhdfilm ile en yeni vizyon filmler Full HD ve kesintisiz film sizlerle. Özgün film arşivimizle en üstün kaliteli film izle keyfini sunuyoruz.",
+        "fileSize": 28171,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "Movie",
+            "TvSeries"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=hdfilm.us&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": "sha256-83de6f5e436bc671aef7925683ffa870a8f8264513d032e23e64b2d0d59515a4"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/FullHDFilmizlesene.cs3",
+        "status": 1,
+        "version": 32,
+        "name": "FullHDFilmizlesene",
+        "internalName": "FullHDFilmizlesene",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "Sinema zevkini evinize kadar getirdik. Türkiye'nin lider Film sitesinde, en yeni filmleri Full HD izleyin.",
+        "fileSize": 40112,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "Movie"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=www.fullhdfilmizlesene.de&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": "sha256-28589f4edea0cb6987104e7d6b0be48a87a2af1cc583765f2c0034a1f4048ad5"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/HDFilmCehennemi.cs3",
+        "status": 1,
+        "version": 48,
+        "name": "HDFilmCehennemi",
+        "internalName": "HDFilmCehennemi",
+        "authors": [
+            "hexated",
+            "keyiflerolsun"
+        ],
+        "description": "Türkiye'nin en hızlı hd film izleme sitesi",
+        "fileSize": 31661,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "Movie",
+            "TvSeries"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=hdfilmcehennemi.com&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": "sha256-d3edf0a3cce476d7a5b850950c0fe467102cfacc890da86c5fc39eaecd470c86"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/InatBox.cs3",
+        "status": 1,
+        "version": 30,
+        "name": "InatBox",
+        "internalName": "InatBox",
+        "authors": [
+            "JustRelaxable",
+            "keyiflerolsun"
+        ],
+        "description": "İnatBox cloudstream eklentisidir. Sevdiğiniz yayın platformlarını ve canlı maçları burada bulabilirsiniz.",
+        "fileSize": 36900,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "Movie",
+            "TvSeries",
+            "Live"
+        ],
+        "iconUrl": "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEh3vCp6N1K4bECoYRQD-cisJF2_6V_Hk01ZhDmoPR2JuM8O5qr4MqrPO1munM9cRlleBBSK6odYhLtDBWv4E3vhPhynlmS5hVVtJZShHoGA5REQ8_3v8SIlccTEqzVQu2UJyNYQdJNrKIfWy66RQeT0D-CcmFCbHPz5023H6p2v5fv4NVloZ5Rqo_yGrIY/s320/iNat-Box-App.png",
+        "apiVersion": 1,
+        "fileHash": "sha256-006c7b68f7deb24c5356c753429c20607896f78009a8edbf27a46bd6ff0651fb"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/JetFilmizle.cs3",
+        "status": 1,
+        "version": 47,
+        "name": "JetFilmizle",
+        "internalName": "JetFilmizle",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "Binlerce Film İzleme Seçeneğiyle En İyi Film İzleme Sitesi",
+        "fileSize": 21108,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "Movie"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=https://jetfilmizle.de&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": "sha256-b648e5346f05d428069d20489c8862107b21c3bb116d903cd5ee95d1ce162e2c"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/KultFilmler.cs3",
+        "status": 1,
+        "version": 16,
+        "name": "KultFilmler",
+        "internalName": "KultFilmler",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "Kült Filmler özenle en iyi filmleri derler ve iyi bir altyazılı film izleme deneyimi sunmayı amaçlar",
+        "fileSize": 27243,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "Movie",
+            "TvSeries"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=kultfilmler.net&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": "sha256-47b263ff6bf1b4f65d17b3aee00112e687de473ce7fd2fd777b17c2ba0290104"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/RecTV.cs3",
+        "status": 1,
+        "version": 109,
+        "name": "RecTV",
+        "internalName": "RecTV",
+        "authors": [
+            "keyiflerolsun",
+            "yusiqo",
+            "inatchii",
+            "JustRelaxable"
+        ],
+        "description": "RecTv APK, Türkiye’deki en popüler Çevrimiçi Medya Akış platformlarından biridir. Filmlerin, Canlı Sporların, Web Dizilerinin ve çok daha fazlasının keyfini ücretsiz çıkarın.",
+        "fileSize": 28844,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "Movie",
+            "Live",
+            "TvSeries"
+        ],
+        "iconUrl": "https://rectv.org.tr/wp-content/uploads/2024/11/rectv-modified.webp",
+        "apiVersion": 1,
+        "fileHash": "sha256-984b9b52f988f35b0e733bfc334420b106d307598fc6590a3e1a83ed18634d8f"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/SetFilmIzle.cs3",
+        "status": 1,
+        "version": 30,
+        "name": "SetFilmIzle",
+        "internalName": "SetFilmIzle",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "Setfilmizle sitemizde, donma yaşamadan Türkçe dublaj ve altyazılı filmleri ile dizileri muhteşem 1080p full HD kalitesinde izleyebilirsiniz.",
+        "fileSize": 24635,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "Movie",
+            "TvSeries"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=www.setfilmizle.uk&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": "sha256-7d68082a8c875ede5c804dd243decbedb1d81e5d96abe702b1c61c8be6d02f09"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/SinemaCX.cs3",
+        "status": 1,
+        "version": 24,
+        "name": "SinemaCX",
+        "internalName": "SinemaCX",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "Güncel ve en iyi yabancı filmleri yüksek görüntü kalitesinde, Türkçe dublaj ve altyazı seçenekleriyle filmleri full izleyin.",
+        "fileSize": 16707,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "Movie"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=www.sinema.cx&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": "sha256-a190ac05f8aea8e02626447814c076b6442ed2854794634d07878c2728be06d9"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/TRasyalog.cs3",
+        "status": 1,
+        "version": 65,
+        "name": "TRasyalog",
+        "internalName": "TRasyalog",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "TRasyalog izleme sitesi.",
+        "fileSize": 15594,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "TvSeries"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=asyalog.co&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": "sha256-6d01026fa4978b7642d336924eeb5e1a788e8bd4047be1d3a4d5ae7426764600"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Watch2Movies.cs3",
+        "status": 1,
+        "version": 6,
+        "name": "Watch2Movies",
+        "internalName": "Watch2Movies",
+        "authors": [
+            "keyiflerolsun"
+        ],
+        "description": "Movies2Watch is a Free Movies streaming site with zero ads. We let you watch movies online without having to register or paying, with over 10000 movies and TV-Series.",
+        "fileSize": 24839,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "en",
+        "tvTypes": [
+            "Movie",
+            "TvSeries"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=movies2watch.watch&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": "sha256-047f54ee3f3b54b59456018fa136013035674f89a8994aa8f8f1c0c3b5ff954f"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/AltiYuzAltmisAltiFilmIzle.cs3",
+        "status": 1,
+        "version": 1,
+        "name": "AltiYuzAltmisAltiFilmIzle",
+        "internalName": "AltiYuzAltmisAltiFilmIzle",
+        "authors": [
+            "patr0n"
+        ],
+        "description": "666FilmIzle - Türkçe Dublaj ve Altyazılı Film izle.",
+        "fileSize": 12144,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "Movie"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?domain=666filmizle.site&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": "sha256-67e1c3be1e544fae485397f19b9a2e24aa115aeefe77dacf04e5c5582c3475a6"
+    },
+    {
+        "iconUrl": "https://asyaanimeleri.top/wp-content/uploads/2021/08/Asya-animeleri-12-e1629130525708.png",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/MakotoTokioki/Cloudstream-Turkce-Eklentiler",
+        "status": 1,
+        "language": "tr",
+        "authors": [
+            "Makoto Tokioki"
+        ],
+        "tvTypes": [
+            "Anime"
+        ],
+        "version": 2,
+        "internalName": "AsyaAnimeleri",
+        "description": "AsyaAnimeleri.top",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/AsyaAnimeleri.cs3",
+        "name": "AsyaAnimeleri"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/DiziPalOriginal.cs3",
+        "status": 1,
+        "version": 78,
+        "name": "DiziPalOriginal",
+        "internalName": "DiziPalOriginal",
+        "authors": [
+            "keyiflerolsun",
+            "muratcesmecioglu"
+        ],
+        "description": "en yeni dizileri güvenli ve hızlı şekilde sunar.",
+        "fileSize": 25430,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "TvSeries",
+            "Movie"
+        ],
+        "iconUrl": "https://chessplyimages.cfd/uploads/site/favicon-32x32.png",
+        "apiVersion": 1,
+        "fileHash": "sha256-b87aa94579a0f5e96aed2e7a8e4c2203df5bd91109b0b736dc27bcf40f5086c6"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Sinewix.cs3",
+        "status": 1,
+        "version": 2,
+        "name": "Sinewix",
+        "internalName": "Sinewix",
+        "authors": [
+            "patr0n",
+            "keyiflerolsun"
+        ],
+        "description": "Sinewix | Ücretsiz Film - Dizi - Anime İzleme Uygulaması",
+        "fileSize": 24261,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
+        "tvTypes": [
+            "Movie",
+            "TvSeries",
+            "Anime"
+        ],
+        "iconUrl": "https://play-lh.googleusercontent.com/brwGNmr7IjA_MKk_TTPs0va10hdKE_bD_a1lnKoiMuCayW98EHpRv55edA6aEoJlmwfX",
+        "apiVersion": 1,
+        "fileHash": "sha256-458d458c72cd31f7ed5e601eeff4de62e4b6d2ed9166c58c9c6c8117a64ab76b"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/FilmBOL.cs3",
+        "status": 1,
+        "version": 4,
+        "name": "FilmBOL",
+        "internalName": "FilmBOL",
+        "authors": [
+            "ByAyzen"
+        ],
+        "description": "Ücretli Hesabınız Yoksa Kullanamazsınız! Cookie Gerekli Cookie Ne Bilmiyorsanız Araştırınız.",
+        "fileSize": 26128,
+        "repositoryUrl": "https://github.com/ByAyzen/AyzenCS3",
+        "language": "tr",
+        "tvTypes": [
+            "Movie",
+            "TvSeries"
+        ],
+        "iconUrl": "https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://www.filmbol.org/&size=128",
+        "apiVersion": 1,
+        "fileHash": "sha256-10b47d7d5e9b7eff155f3fce5fbd93c3498f5e7e9711d84d4aab4a0f2ae96bf8"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Koredizi.cs3",
+        "status": 1,
+        "version": 3,
+        "name": "Koredizi",
+        "internalName": "Koredizi",
+        "authors": [
+            "ByAyzen"
+        ],
+        "description": "Koredizi ile yoğun bir günün ardından soluklanıp kısa dizilerle dünyanıza renk katabilirsiniz.",
+        "fileSize": 26392,
+        "repositoryUrl": "https://github.com/ByAyzen/AyzenCS3",
+        "language": "tr",
+        "tvTypes": [
+            "AsianDrama"
+        ],
+        "iconUrl": "https://t3.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://koredizi.com/&size=128",
+        "apiVersion": 1,
+        "fileHash": "sha256-4ed2fe7205a7a769e0863b06552fcd8d4a997c652346d8225e217fe6fa1dbccc"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/M3UPlayer.cs3",
+        "status": 1,
+        "version": 12,
+        "name": "M3UPlayer",
+        "internalName": "M3UPlayer",
+        "authors": [
+            "ByAyzen"
+        ],
+        "description": "M3UPlayer bir m3u oynatıcısıdır. İçerisinde hiç bir M3U dosyasını barındırmaz! Ayarlar butonuna tıklayarak kendiniz ekleyebilirsiniz.",
+        "fileSize": 91964,
+        "repositoryUrl": "https://github.com/ByAyzen/AyzenCS3",
+        "language": "tr",
+        "tvTypes": [
+            "Live"
+        ],
+        "iconUrl": "https://i.imgur.com/BsS4wRT.png",
+        "apiVersion": 1,
+        "fileHash": "sha256-b70a88b3ed309391a5dc48f49c22321b418535f670034595940a5941ea7d3ed9"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Syncler.cs3",
+        "status": 1,
+        "version": 1,
+        "name": "Syncler",
+        "internalName": "Syncler",
+        "authors": [
+            "ByAyzen"
+        ],
+        "description": "Deneysel Senkronizasyon eklentisi.",
+        "fileSize": 92362,
+        "repositoryUrl": "https://github.com/ByAyzen/AyzenCS3",
+        "language": "tr",
+        "tvTypes": [
+            "Movie"
+        ],
+        "iconUrl": "https://www.google.com/s2/favicons?sz=64&domain=yandex.com.tr",
+        "apiVersion": 1,
+        "fileHash": "sha256-e94e277f93e174d10dca5c1dd10edcc0042e68acb294e76a48ada6f22d97f723"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Torrential.cs3",
+        "status": 1,
+        "version": 6,
+        "name": "Torrential",
+        "internalName": "Torrential",
+        "authors": [
+            "ByAyzen"
+        ],
+        "description": "Torrential eklentisi sürekli geliştirilebilir bir torrent ve debrid oynatıcı eklentisidir. Mevcut kaynaklar arasından Torrentio ve Comet kullanılmaktadır.",
+        "fileSize": 166562,
+        "repositoryUrl": "https://github.com/ByAyzen/AyzenCS3",
+        "language": "tr",
+        "tvTypes": [
+            "Movie"
+        ],
+        "iconUrl": "https://i.imgur.com/cEOwdKR.png",
+        "apiVersion": 1,
+        "fileHash": "sha256-d9aa73ac93c9dd0698913868203d2631fa32e6f3a60c7ffcb045206a9ec32ad7"
+    },
+    {
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Vavoo.cs3",
+        "status": 1,
+        "version": 1,
+        "name": "Vavoo",
+        "internalName": "Vavoo",
+        "authors": [
+            "ByAyzen"
+        ],
+        "description": "Vavoo.",
+        "fileSize": 36643,
+        "repositoryUrl": "https://github.com/ByAyzen/AyzenCS3",
+        "language": "tr",
+        "tvTypes": [
+            "Movie"
+        ],
+        "iconUrl": "https://t2.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://vavoo.to/&size=128",
+        "apiVersion": 1,
+        "fileHash": "sha256-ef74ff67abbd39a8ab5055eefa765ff7fde7ff4308b75e4e9285c5f078edfa45"
+    },
+    {
+        "iconUrl": "https://play-lh.googleusercontent.com/brwGNmr7IjA_MKk_TTPs0va10hdKE_bD_a1lnKoiMuCayW98EHpRv55edA6aEoJlmwfX",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/MakotoTokioki/Cloudstream-Turkce-Eklentiler",
+        "status": 3,
+        "language": "tr",
+        "authors": [
+            "Makoto Tokioki"
+        ],
+        "tvTypes": [
+            "Movie",
+            "TvSeries",
+            "Anime"
+        ],
+        "version": 16,
+        "internalName": "SineWix",
+        "description": "Sinewix | Ücretsiz Film - Dizi - Anime İzleme Uygulaması.",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/SineWix.cs3",
+        "name": "SineWix"
+    },
+    {
+        "iconUrl": "https://png.pngtree.com/png-clipart/20220823/ourmid/pngtree-turkey-country-flag-pin-icon-png-image_6120061.png",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/MakotoTokioki/Cloudstream-Turkce-Eklentiler",
+        "fileSize": 13525,
+        "status": 1,
+        "language": "tr",
+        "authors": [
+            "Makoto Tokioki"
+        ],
+        "tvTypes": [
+            "Tv Series"
+        ],
+        "version": 14,
+        "internalName": "YerelDiziler",
+        "description": "Bu eklentide yerel dizileri güncel şekilde bulabilirsiniz",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/YerelDiziler.cs3",
+        "name": "YerelDiziler"
+    },
+    {
+        "iconUrl": "https://cizgivedizi.com/Logo.png",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/MakotoTokioki/Cloudstream-Turkce-Eklentiler",
+        "status": 1,
+        "language": "tr",
+        "authors": [
+            "Makoto Tokioki"
+        ],
+        "tvTypes": [
+            "Cartoon, TvSeries"
+        ],
+        "version": 3,
+        "internalName": "CizgiVeDizi",
+        "description": "Popüler çizgi film ve dizilerin Türkçe güncel kaynağı.",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/CizgiVeDizi.cs3",
+        "name": "CizgiVeDizi"
+    },
+    {
+        "iconUrl": "https://img.freepik.com/premium-vector/tv-television-logo-live-streaming-design_332533-53.jpg",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/MakotoTokioki/Cloudstream-Turkce-Eklentiler",
+        "status": 1,
+        "language": "tr",
+        "authors": [
+            "Makoto Tokioki"
+        ],
+        "tvTypes": [
+            "Live"
+        ],
+        "version": 4,
+        "internalName": "CanliTv",
+        "description": "Ulusal kanalları bu eklentide izleyebilirsiniz.",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/CanliTv.cs3",
+        "name": "CanliTv"
+    },
+    {
+        "iconUrl": "https://webdramaturkey.org/public/static/logo.webp?v=1.0.19",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/MakotoTokioki/Cloudstream-Turkce-Eklentiler",
+        "status": 1,
+        "language": "tr",
+        "authors": [
+            "Makoto Tokioki"
+        ],
+        "tvTypes": [
+            "AsianDrama",
+            "Movie",
+            "TvSeries",
+            "Anime"
+        ],
+        "version": 2,
+        "internalName": "WebDramaTurkey",
+        "description": "Asya içeriklerinin tek adresi.",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/WebDramaTurkey.cs3",
+        "name": "WebDramaTurkey"
+    },
+    {
+        "iconUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/New_qBittorrent_Logo.svg/2048px-New_qBittorrent_Logo.svg.png",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/MakotoTokioki/Cloudstream-Turkce-Eklentiler",
+        "status": 1,
+        "language": "tr",
+        "authors": [
+            "Makoto Tokioki"
+        ],
+        "tvTypes": [
+            "Movie",
+            "Torrent"
+        ],
+        "version": 2,
+        "internalName": "TorrentFilm",
+        "description": "Türkçe altyazılı torrentleri buradan 4K kalitesinde izleyebilirsiniz.",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/TorrentFilm.cs3",
+        "name": "TorrentFilm"
+    },
+    {
+        "iconUrl": "https://png.pngtree.com/png-clipart/20220823/ourmid/pngtree-turkey-country-flag-pin-icon-png-image_6120061.png",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/MakotoTokioki/Cloudstream-Turkce-Eklentiler",
+        "status": 1,
+        "language": "tr",
+        "authors": [
+            "Makoto Tokioki"
+        ],
+        "tvTypes": [
+            "Tv Series"
+        ],
+        "version": 1,
+        "internalName": "YerelProgramlar",
+        "description": "Yerel programları güncel şekilde bulabilirsiniz",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/YerelProgramlar.cs3",
+        "name": "YerelProgramlar"
+    },
+    {
+        "iconUrl": "https://is1-ssl.mzstatic.com/image/thumb/Purple211/v4/35/c3/b7/35c3b7b0-4a84-cceb-d3e2-349e19712b07/AppIcon-0-0-1x_U007epad-0-1-0-85-220.png/512x512bb.jpg",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/MakotoTokioki/Cloudstream-Turkce-Eklentiler",
+        "status": 1,
+        "language": "tr",
+        "authors": [
+            "Makoto Tokioki"
+        ],
+        "tvTypes": [
+            "Movie,TvSeries"
+        ],
+        "version": 1,
+        "internalName": "Puhu",
+        "description": "Puhu",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Puhu.cs3",
+        "name": "Puhu"
+    },
+    {
+        "iconUrl": "https://asyafilmizlesene.org/wp-content/uploads/2022/09/rsm.png",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/MakotoTokioki/Cloudstream-Turkce-Eklentiler",
+        "status": 1,
+        "language": "tr",
+        "authors": [
+            "Makoto Tokioki"
+        ],
+        "tvTypes": [
+            "Movie"
+        ],
+        "version": 2,
+        "internalName": "AsyaFilmIzlesene",
+        "description": "Hint, Kore Filmleri",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/AsyaFilmIzlesene.cs3",
+        "name": "AsyaFilmIzlesene"
+    },
+    {
+        "name": "Cricify",
+        "internalName": "Cricify",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Cricify.cs3"
+    },
+    {
+        "name": "Exxen",
+        "internalName": "Exxen",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Exxen.cs3"
+    },
+    {
+        "name": "Gain",
+        "internalName": "Gain",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Gain.cs3"
+    },
+    {
+        "name": "GolgeTV",
+        "internalName": "GolgeTV",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/GolgeTV.cs3"
+    },
+    {
+        "name": "Kanal7",
+        "internalName": "Kanal7",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Kanal7.cs3"
+    },
+    {
+        "name": "SSportPlus",
+        "internalName": "SSportPlus",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/SSportPlus.cs3"
+    },
+    {
+        "name": "Tabii",
+        "internalName": "Tabii",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Tabii.cs3"
+    },
+    {
+        "iconUrl": "https://www.google.com/s2/favicons?domain=anizm.net&sz=%size%",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/hexated/cloudstream-extensions-hexated",
+        "fileSize": 16554,
+        "status": 0,
+        "language": "tr",
+        "authors": [
+            "Hexated"
+        ],
+        "tvTypes": [
+            "AnimeMovie",
+            "Anime",
+            "OVA"
+        ],
+        "version": 1,
+        "internalName": "Anizm",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Anizm.cs3",
+        "name": "Anizm"
+    },
+    {
+        "iconUrl": "https://www.google.com/s2/favicons?domain=dizikorea.com&sz=%size%",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/hexated/cloudstream-extensions-hexated",
+        "fileSize": 18210,
+        "status": 1,
+        "language": "tr",
+        "authors": [
+            "Hexated"
+        ],
+        "tvTypes": [
+            "AsianDrama"
+        ],
+        "version": 1,
+        "internalName": "Dizikorea",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Dizikorea.cs3",
+        "name": "Dizikorea"
+    },
+    {
+        "iconUrl": "https://www.google.com/s2/favicons?domain=turkish123.com&sz=%size%",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/hexated/cloudstream-extensions-hexated",
+        "fileSize": 13120,
+        "status": 1,
+        "language": "tr",
+        "authors": [
+            "Hexated"
+        ],
+        "tvTypes": [
+            "TvSeries",
+            "Movie"
+        ],
+        "version": 1,
+        "internalName": "Turkish",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Turkish.cs3",
+        "name": "Turkish"
+    }
+]

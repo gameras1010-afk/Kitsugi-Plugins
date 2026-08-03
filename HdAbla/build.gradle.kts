@@ -1,4 +1,4 @@
-version = 2
+version = 4
 
 cloudstream {
     authors     = listOf("kerimmkirac")
@@ -15,4 +15,8 @@ cloudstream {
     status  = 1 // will be 3 if unspecified
     tvTypes = listOf("NSFW")
     iconUrl = "https://www.google.com/s2/favicons?domain=hdabla.net&sz=%size%"
+}
+
+android {
+    namespace = "com.kraptor.hdabla"
 }
