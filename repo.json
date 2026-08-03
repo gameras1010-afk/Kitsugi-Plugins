@@ -1,0 +1,8 @@
+{
+  "name": "Kitsugi Plugins Repository",
+  "description": "Kitsugi uygulaması için düzeltilmiş ve güncellenmiş Türkçe eklenti havuzu",
+  "manifestVersion": 1,
+  "pluginLists": [
+    "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/plugins.json"
+  ]
+}
