@@ -21,5 +21,5 @@ cloudstream {
     )
     iconUrl = "https://www.google.com/s2/favicons?domain=https://vi.xhspot.com&sz=256"
 
-    isCrossPlatform = true
+    isCrossPlatform = false
 }
