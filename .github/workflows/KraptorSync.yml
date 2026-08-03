@@ -1,0 +1,31 @@
+name: Kraptor Senkronizasyonu
+
+on:
+  schedule:
+    # Her gün sabah 06:00 UTC (Türkiye 09:00)
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  SenkronizeEt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Depoyu Klonla
+        uses: actions/checkout@v4.2.2
+
+      - name: Python Bağımlılıklarını Kur
+        run: pip install requests
+
+      - name: Kraptor Versiyonlarını Senkronize Et
+        run: python3 sync_versions.py
+
+      - name: Değişiklikleri Kaydet
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "GitHub Actions [Kraptor Sync]"
+          git add prebuilt_plugins.json
+          git diff --staged --quiet || git commit -m "auto: Kraptor versiyon senkronizasyonu"
+          git push || true

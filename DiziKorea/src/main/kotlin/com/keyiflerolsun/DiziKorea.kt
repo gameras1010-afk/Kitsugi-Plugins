@@ -1,4 +1,4 @@
-// ! Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
+﻿// ! Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
 package com.keyiflerolsun
 
@@ -14,7 +14,7 @@ import okhttp3.Response
 import org.jsoup.Jsoup
 
 class DiziKorea : MainAPI() {
-    override var mainUrl              = "https://dizikorea3.com"
+    override var mainUrl              = "https://dizikorea.pw"
     override var name                 = "DiziKorea"
     override val hasMainPage          = true
     override var lang                 = "tr"

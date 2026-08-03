@@ -1,4 +1,4 @@
-// ! Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
+﻿// ! Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
 package com.keyiflerolsun
 
@@ -15,7 +15,7 @@ import org.jsoup.Jsoup
 import java.net.URLEncoder
 
 class DiziPal : MainAPI() {
-    override var mainUrl              = "https://dizipal.bid"
+    override var mainUrl              = "https://dizipal1214.com"
     override var name                 = "DiziPal"
     override val hasMainPage          = true
     override var lang                 = "tr"

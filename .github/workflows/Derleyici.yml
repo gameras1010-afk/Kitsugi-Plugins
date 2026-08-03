@@ -53,6 +53,7 @@ jobs:
           chmod +x gradlew
           ./gradlew make makePluginsJson
           cp **/build/*.cs3 $GITHUB_WORKSPACE/builds
+          python3 merge_plugins.py
           cp build/plugins.json $GITHUB_WORKSPACE/builds
 
       - name: Derlemeleri Yükle

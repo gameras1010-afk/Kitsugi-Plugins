@@ -1,4 +1,4 @@
-// ! Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
+﻿// ! Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
 package com.keyiflerolsun
 
@@ -16,7 +16,7 @@ import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody.Companion.toRequestBody
 
 class JetFilmizle : MainAPI() {
-    override var mainUrl              = "https://jetfilmizle.now"
+    override var mainUrl              = "https://jetfilmizle.website"
     override var name                 = "JetFilmizle"
     override val hasMainPage          = true
     override var lang                 = "tr"

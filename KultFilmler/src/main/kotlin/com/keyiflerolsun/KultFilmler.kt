@@ -1,4 +1,4 @@
-// ! Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
+﻿// ! Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
 
 package com.keyiflerolsun
 
@@ -17,7 +17,7 @@ import org.jsoup.Jsoup
 import java.util.regex.Pattern
 
 class KultFilmler : MainAPI() {
-    override var mainUrl              = "https://kultfilmler.net"
+    override var mainUrl              = "https://kultfilmler.pro"
     override var name                 = "KultFilmler"
     override val hasMainPage          = true
     override var lang                 = "tr"
