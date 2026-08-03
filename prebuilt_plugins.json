@@ -695,22 +695,25 @@
         "fileHash": "sha256-55a7c1ed00e6306037dda5c0bcb1b05a4acab5ce746a00bd17b79133ab27dae7"
     },
     {
-        "iconUrl": "https://img.freepik.com/premium-vector/tv-television-logo-live-streaming-design_332533-53.jpg",
-        "apiVersion": 1,
-        "repositoryUrl": "https://github.com/MakotoTokioki/Cloudstream-Turkce-Eklentiler",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/CanliTV.cs3",
         "status": 1,
-        "language": "tr",
+        "version": 10,
+        "name": "CanliTV",
+        "internalName": "CanliTV",
         "authors": [
-            "Makoto Tokioki"
+            "Adippe",
+            "keyiflerolsun"
         ],
+        "description": "Canlı TV",
+        "fileSize": 20480,
+        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "language": "tr",
         "tvTypes": [
             "Live"
         ],
-        "version": 4,
-        "internalName": "CanliTv",
-        "description": "Ulusal kanalları bu eklentide izleyebilirsiniz.",
-        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/CanliTv.cs3",
-        "name": "CanliTv"
+        "iconUrl": "https://www.google.com/s2/favicons?domain=tr.canlitv.team&sz=%size%",
+        "apiVersion": 1,
+        "fileHash": "sha256-d4e8de61fd99275ecda7a2c1a53da5b1643cfa42e8f6bba0c32383b722de14db"
     },
     {
         "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/WebDramaTurkey.cs3",
@@ -1153,7 +1156,7 @@
         "fileHash": "sha256-7db42f65cc0a9b96a5e0c0ab2170a57e5839935ba5d4e28d9a8f09e4bd1dccb5"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/Animeler.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Animeler.cs3",
         "status": 1,
         "version": 41,
         "name": "Animeler",
@@ -1175,7 +1178,7 @@
         "fileHash": "sha256-221372bc17e3a7b96514ed9dbfe2d631027712970f7573ba29a43bd1c9ba2e4c"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/Animely.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Animely.cs3",
         "status": 1,
         "version": 4,
         "name": "Animely",
@@ -1198,7 +1201,7 @@
         "fileHash": "sha256-ff272f0caeb3ae79ded86e10826ff5e89f1b61f0227a45e14d825107b3be4cb9"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/AnimPow.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/AnimPow.cs3",
         "status": 1,
         "version": 7,
         "name": "AnimPow",
@@ -1218,7 +1221,7 @@
         "fileHash": "sha256-57ab29e68b7e44673ece4049b15a20c064074560da56bdc4d4afac781f035275"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/Anizium.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Anizium.cs3",
         "status": 1,
         "version": 25,
         "name": "Anizium",
@@ -1240,7 +1243,7 @@
         "fileHash": "sha256-8ae8ce4c9e53f6c95530d0ffb8070c8469f4c1d8ea93247f2ef28d6dc7e351fb"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/AsyaFanatiklerim.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/AsyaFanatiklerim.cs3",
         "status": 1,
         "version": 22,
         "name": "AsyaFanatiklerim",
@@ -1301,7 +1304,7 @@
         "fileHash": "sha256-75f4ef6430827a2ee5e28041afbd2fde295ede04c5f862cae219a7a4035a8dc7"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/DiziAsia.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/DiziAsia.cs3",
         "status": 1,
         "version": 20,
         "name": "DiziAsia",
@@ -1321,7 +1324,7 @@
         "fileHash": "sha256-3ef24a02d63c5d5aab53a20a4d2435221d45790c8c75005c6ab17ca2cca40a29"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/DiziAsya.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/DiziAsya.cs3",
         "status": 1,
         "version": 27,
         "name": "DiziAsya",
@@ -1341,7 +1344,7 @@
         "fileHash": "sha256-4368a98b141603d9db6f80cdf3f68f9a6b365b23a9c733d6fbed55f9ef43993a"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/DiziFilmORG.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/DiziFilmORG.cs3",
         "status": 1,
         "version": 22,
         "name": "DiziFilmORG",
@@ -1362,7 +1365,7 @@
         "fileHash": "sha256-0909b046ced602df5d59d4d469a87acb3481f68b34fb461f1828d1546a6fda6c"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/Dizigecesi.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Dizigecesi.cs3",
         "status": 1,
         "version": 4,
         "name": "Dizigecesi",
@@ -1383,7 +1386,7 @@
         "fileHash": "sha256-d4bf1c4d02c4c2d04aee0182865ad93ff932b1cebb162ee5c75769caed4ff822"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/DiziLife.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/DiziLife.cs3",
         "status": 1,
         "version": 58,
         "name": "DiziLife",
@@ -1406,7 +1409,7 @@
         "fileHash": "sha256-4028b03eb80e9b60183f45401b49d5c253162e11dd279747b98e4ba5dbff5ea3"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/DiziPalOrijinal.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/DiziPalOrijinal.cs3",
         "status": 1,
         "version": 44,
         "name": "DiziPalOrijinal",
@@ -1428,7 +1431,7 @@
         "fileHash": "sha256-39f7d88afedf0f91fa6285cd200f229a0563fecfb3dee6808b091af901987518"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/Dizipod.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Dizipod.cs3",
         "status": 1,
         "version": 12,
         "name": "Dizipod",
@@ -1452,7 +1455,7 @@
         "fileHash": "sha256-64c82bbd92dda72ea00e666e7488ae876d4f456ec5144347071e2616ae58d2c5"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/DiziYo.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/DiziYo.cs3",
         "status": 1,
         "version": 74,
         "name": "DiziYo",
@@ -1473,7 +1476,7 @@
         "fileHash": "sha256-2fd00b01979aec233433cf0030320dd03a4b9881dbe8cec4c8908b3ea67ec8f0"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/DramaDizilerim.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/DramaDizilerim.cs3",
         "status": 1,
         "version": 3,
         "name": "DramaDizilerim",
@@ -1493,7 +1496,7 @@
         "fileHash": "sha256-38936f72e0f14bfb61886b24747fc25584f31911b7990acda7e7e2ee179059cd"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/FilmEkseni.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/FilmEkseni.cs3",
         "status": 1,
         "version": 50,
         "name": "FilmEkseni",
@@ -1514,7 +1517,7 @@
         "fileHash": "sha256-b14d8915a8d72bd25590037be0f1a74946ec755995ed3896a452f3b547a1b3f2"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/FilmHane.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/FilmHane.cs3",
         "status": 1,
         "version": 43,
         "name": "FilmHane",
@@ -1534,7 +1537,7 @@
         "fileHash": "sha256-02df47ed1de0d7771432f726955de1cb4b6078f3e7d7437d632cebbe0c6af676"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/Filmzal.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Filmzal.cs3",
         "status": 1,
         "version": 16,
         "name": "Filmzal",
@@ -1554,7 +1557,7 @@
         "fileHash": "sha256-fad36234a9273e3660d41979e369c3898753e4e566b28ab6a1c61d1bcfdf0c5c"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/GinikoCanli.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/GinikoCanli.cs3",
         "status": 1,
         "version": 15,
         "name": "GinikoCanli",
@@ -1574,7 +1577,7 @@
         "fileHash": "sha256-74d715346d47a7c0706e464c81fbec9cde1a758c1e7afebea839da1d68820ae9"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/HDFilmDelisi.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/HDFilmDelisi.cs3",
         "status": 1,
         "version": 18,
         "name": "HDFilmDelisi",
@@ -1614,7 +1617,7 @@
         "fileHash": "sha256-72ce2862c4b8042753d3445f4063b7a9ee06d5b9e40768108579c4de34d8ccb3"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/KickTR.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/KickTR.cs3",
         "status": 1,
         "version": 17,
         "name": "KickTR",
@@ -1635,7 +1638,7 @@
         "fileHash": "sha256-28c407d966543b9729551a1dd7599f2ecf8d58b83c896cf64ae394749b80dd6f"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/KraptorPlus.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/KraptorPlus.cs3",
         "status": 1,
         "version": 84,
         "name": "KraptorPlus",
@@ -1663,7 +1666,7 @@
         "fileHash": "sha256-2e9b8fa4fe721128da485ee79391ab8f4c320807e74745296462fa75aa11a6e4"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/MirrorVerse.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/MirrorVerse.cs3",
         "status": 1,
         "version": 38,
         "name": "MirrorVerse",
@@ -1686,7 +1689,7 @@
         "fileHash": "sha256-575a767a7dda111c69b83ca35f996d220b422e6488734c3209c7b320e5fc982a"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/OnePaceTr.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/OnePaceTr.cs3",
         "status": 1,
         "version": 13,
         "name": "OnePaceTr",
@@ -1706,7 +1709,7 @@
         "fileHash": "sha256-b5261b29c0eb30c144252579fcafeb723cedd1032df89265d92fefee398ffe19"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/OpenAnime.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/OpenAnime.cs3",
         "status": 1,
         "version": 28,
         "name": "OpenAnime",
@@ -1748,7 +1751,7 @@
         "fileHash": "sha256-23ec3a3a6ab5751a1d1bccd9af8544e97db5c544b1fa752db87b0b04f8b8838a"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/SeiCode.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/SeiCode.cs3",
         "status": 1,
         "version": 25,
         "name": "SeiCode",
@@ -1812,7 +1815,7 @@
         "fileHash": "sha256-2b29896fd95003779fc9bf3216aa89bd7029eefad01c4ac4fc6006d7b1f98dd1"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/Sinezy.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Sinezy.cs3",
         "status": 1,
         "version": 40,
         "name": "Sinezy",
@@ -1832,7 +1835,7 @@
         "fileHash": "sha256-4c99a833692c5945f4985b5a4dfdd39bbad36e508e0a155cb30ed71077111c54"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/TrAnimeIzle.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/TrAnimeIzle.cs3",
         "status": 1,
         "version": 15,
         "name": "TrAnimeIzle",
@@ -1852,7 +1855,7 @@
         "fileHash": "sha256-60004911f1d3104d68363371eca10ea21db0bc77ff9cea7b18eb38e0fb1d38b0"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/Turkdizileri.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Turkdizileri.cs3",
         "status": 1,
         "version": 33,
         "name": "Turkdizileri",
@@ -1913,7 +1916,7 @@
         "fileHash": "sha256-00baa649d28dd4ececb8fbe1f7490ba01a68ef473ab478eff8b8620daa486333"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/WFilmizle.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/WFilmizle.cs3",
         "status": 1,
         "version": 23,
         "name": "WFilmizle",
@@ -1953,7 +1956,7 @@
         "fileHash": "sha256-e45d6136e1124ec6af22fdf28a5dbce413d6cab9a3395a9885987c3fdcf34596"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/YeniKaynak.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/YeniKaynak.cs3",
         "status": 1,
         "version": 11,
         "name": "YeniKaynak",
@@ -1975,7 +1978,7 @@
         "fileHash": "sha256-d4663850949c70fb2f14dabd8bfacb7848465439cc22251a4d6f891a350b76b6"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/YesilCamTv.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/YesilCamTv.cs3",
         "status": 1,
         "version": 9,
         "name": "YesilCamTv",
@@ -1995,7 +1998,7 @@
         "fileHash": "sha256-062e14cb3ad9238f9560a178e8f4b1093933afdc13dc66c79aa21dcb5d27e3f0"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/Youtube.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Youtube.cs3",
         "status": 1,
         "version": 39,
         "name": "Youtube",
@@ -2020,7 +2023,7 @@
         "fileHash": "sha256-31d16f3cac9ca336a7eb9cdb8016056076e2cf9a4add728006f8a19dca7348dc"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/YTS.cs3",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/YTS.cs3",
         "status": 1,
         "version": 42,
         "name": "YTS",
