@@ -62,24 +62,22 @@
         "fileHash": "sha256-47e75d5eb583ed98fb54324a73028da5f35775e910f3e6a5e78cd00effa786a9"
     },
     {
-        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/DiziKorea.cs3",
+        "iconUrl": "https://www.google.com/s2/favicons?domain=dizikorea.com&sz=%size%",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/hexated/cloudstream-extensions-hexated",
+        "fileSize": 18210,
         "status": 1,
-        "version": 41,
-        "name": "DiziKorea",
-        "internalName": "DiziKorea",
-        "authors": [
-            "keyiflerolsun"
-        ],
-        "description": "En Güncel Kore Dizileri izleme Sitesi",
-        "fileSize": 23562,
-        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
         "language": "tr",
+        "authors": [
+            "Hexated"
+        ],
         "tvTypes": [
             "AsianDrama"
         ],
-        "iconUrl": "https://www.google.com/s2/favicons?domain=dizikorea3.com&sz=%size%",
-        "apiVersion": 1,
-        "fileHash": "sha256-1958c66dd0c32ab436adc333504c1183322653afa048425509a7dfc4898ba0da"
+        "version": 1,
+        "internalName": "Dizikorea",
+        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Dizikorea.cs3",
+        "name": "Dizikorea"
     },
     {
         "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/DiziMom.cs3",
@@ -507,27 +505,29 @@
         "fileHash": "sha256-b87aa94579a0f5e96aed2e7a8e4c2203df5bd91109b0b736dc27bcf40f5086c6"
     },
     {
-        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Sinewix.cs3",
+        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/SineWix.cs3",
         "status": 1,
-        "version": 2,
-        "name": "Sinewix",
-        "internalName": "Sinewix",
+        "version": 33,
+        "name": "SineWix",
+        "internalName": "SineWix",
         "authors": [
-            "patr0n",
-            "keyiflerolsun"
+            "kraptor",
+            "ByAyzen"
         ],
-        "description": "Sinewix | Ücretsiz Film - Dizi - Anime İzleme Uygulaması",
-        "fileSize": 24261,
-        "repositoryUrl": "https://github.com/feroxx/Kekik-cloudstream",
+        "description": "SineWix - Ücretsiz Film, Dizi ve Anime İzleme Uygulaması 5000+ HD İçerik, Türkçe Altyazılı, Otaku Dostu Anime Arşivi, Premium Kalite Yabancı Yapımlar",
+        "fileSize": 77299,
+        "repositoryUrl": "https://github.com/Kraptor123/cs-kraptor",
         "language": "tr",
         "tvTypes": [
             "Movie",
             "TvSeries",
-            "Anime"
+            "Anime",
+            "AsianDrama",
+            "Cartoon"
         ],
-        "iconUrl": "https://play-lh.googleusercontent.com/brwGNmr7IjA_MKk_TTPs0va10hdKE_bD_a1lnKoiMuCayW98EHpRv55edA6aEoJlmwfX",
+        "iconUrl": "https://play-lh.googleusercontent.com/brwGNmr7IjA_MKk_TTPs0va10hdKE_bD_a1lnKoiMuCayW98EHpRv55edA6aEoJlmwfX=w240-h480",
         "apiVersion": 1,
-        "fileHash": "sha256-458d458c72cd31f7ed5e601eeff4de62e4b6d2ed9166c58c9c6c8117a64ab76b"
+        "fileHash": "sha256-8155d0c87480fd1c28da228acea89a6c79c13a546a8df49cf5063a54f7922772"
     },
     {
         "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/FilmBOL.cs3",
@@ -651,31 +651,6 @@
         "fileHash": "sha256-ef74ff67abbd39a8ab5055eefa765ff7fde7ff4308b75e4e9285c5f078edfa45"
     },
     {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/SineWix.cs3",
-        "status": 1,
-        "version": 33,
-        "name": "SineWix",
-        "internalName": "SineWix",
-        "authors": [
-            "kraptor",
-            "ByAyzen"
-        ],
-        "description": "SineWix - Ücretsiz Film, Dizi ve Anime İzleme Uygulaması 5000+ HD İçerik, Türkçe Altyazılı, Otaku Dostu Anime Arşivi, Premium Kalite Yabancı Yapımlar",
-        "fileSize": 77299,
-        "repositoryUrl": "https://github.com/Kraptor123/cs-kraptor",
-        "language": "tr",
-        "tvTypes": [
-            "Movie",
-            "TvSeries",
-            "Anime",
-            "AsianDrama",
-            "Cartoon"
-        ],
-        "iconUrl": "https://play-lh.googleusercontent.com/brwGNmr7IjA_MKk_TTPs0va10hdKE_bD_a1lnKoiMuCayW98EHpRv55edA6aEoJlmwfX=w240-h480",
-        "apiVersion": 1,
-        "fileHash": "sha256-8155d0c87480fd1c28da228acea89a6c79c13a546a8df49cf5063a54f7922772"
-    },
-    {
         "iconUrl": "https://png.pngtree.com/png-clipart/20220823/ourmid/pngtree-turkey-country-flag-pin-icon-png-image_6120061.png",
         "apiVersion": 1,
         "repositoryUrl": "https://github.com/MakotoTokioki/Cloudstream-Turkce-Eklentiler",
@@ -695,22 +670,25 @@
         "name": "YerelDiziler"
     },
     {
-        "iconUrl": "https://cizgivedizi.com/Logo.png",
-        "apiVersion": 1,
-        "repositoryUrl": "https://github.com/MakotoTokioki/Cloudstream-Turkce-Eklentiler",
+        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/CizgiveDizi.cs3",
         "status": 1,
-        "language": "tr",
+        "version": 50,
+        "name": "CizgiveDizi",
+        "internalName": "CizgiveDizi",
         "authors": [
-            "Makoto Tokioki"
+            "kraptor",
+            "ByAyzen"
         ],
+        "description": "Ücretsiz bir şekilde çizgi dizi, dizi, anime ve daha fazlasını eski-yeni demeden izleyebilirsiniz.",
+        "fileSize": 43325,
+        "repositoryUrl": "https://github.com/Kraptor123/cs-kraptor",
+        "language": "tr",
         "tvTypes": [
-            "Cartoon, TvSeries"
+            "Cartoon"
         ],
-        "version": 3,
-        "internalName": "CizgiVeDizi",
-        "description": "Popüler çizgi film ve dizilerin Türkçe güncel kaynağı.",
-        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/CizgiVeDizi.cs3",
-        "name": "CizgiVeDizi"
+        "iconUrl": "https://www.google.com/s2/favicons?sz=64&domain=cizgivedizi.com",
+        "apiVersion": 1,
+        "fileHash": "sha256-55a7c1ed00e6306037dda5c0bcb1b05a4acab5ce746a00bd17b79133ab27dae7"
     },
     {
         "iconUrl": "https://img.freepik.com/premium-vector/tv-television-logo-live-streaming-design_332533-53.jpg",
@@ -879,24 +857,6 @@
         "internalName": "Anizm",
         "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Anizm.cs3",
         "name": "Anizm"
-    },
-    {
-        "iconUrl": "https://www.google.com/s2/favicons?domain=dizikorea.com&sz=%size%",
-        "apiVersion": 1,
-        "repositoryUrl": "https://github.com/hexated/cloudstream-extensions-hexated",
-        "fileSize": 18210,
-        "status": 1,
-        "language": "tr",
-        "authors": [
-            "Hexated"
-        ],
-        "tvTypes": [
-            "AsianDrama"
-        ],
-        "version": 1,
-        "internalName": "Dizikorea",
-        "url": "https://raw.githubusercontent.com/gameras1010-afk/Kitsugi-Plugins/builds/Dizikorea.cs3",
-        "name": "Dizikorea"
     },
     {
         "iconUrl": "https://www.google.com/s2/favicons?domain=turkish123.com&sz=%size%",
@@ -1335,27 +1295,6 @@
         "iconUrl": "https://www.google.com/s2/favicons?sz=64&domain=asyawatch.com",
         "apiVersion": 1,
         "fileHash": "sha256-75f4ef6430827a2ee5e28041afbd2fde295ede04c5f862cae219a7a4035a8dc7"
-    },
-    {
-        "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/CizgiveDizi.cs3",
-        "status": 1,
-        "version": 50,
-        "name": "CizgiveDizi",
-        "internalName": "CizgiveDizi",
-        "authors": [
-            "kraptor",
-            "ByAyzen"
-        ],
-        "description": "Ücretsiz bir şekilde çizgi dizi, dizi, anime ve daha fazlasını eski-yeni demeden izleyebilirsiniz.",
-        "fileSize": 43325,
-        "repositoryUrl": "https://github.com/Kraptor123/cs-kraptor",
-        "language": "tr",
-        "tvTypes": [
-            "Cartoon"
-        ],
-        "iconUrl": "https://www.google.com/s2/favicons?sz=64&domain=cizgivedizi.com",
-        "apiVersion": 1,
-        "fileHash": "sha256-55a7c1ed00e6306037dda5c0bcb1b05a4acab5ce746a00bd17b79133ab27dae7"
     },
     {
         "url": "https://raw.githubusercontent.com/Kraptor123/cs-kraptor/builds/DiziAsia.cs3",
@@ -2097,5 +2036,42 @@
         "iconUrl": "https://t0.gstatic.com/faviconV2?client=SOCIAL&type=FAVICON&fallback_opts=TYPE,SIZE,URL&url=https://en.yts-official.mx&size=128",
         "apiVersion": 1,
         "fileHash": "sha256-3c2ca3d9f30ad017cfc56e044bf38980ddf98b4426be77e1c6ce1cb3487706b2"
+    },
+    {
+        "iconUrl": "https://www.google.com/s2/favicons?domain=filmpalast.to&sz=%size%",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/hexated/cloudstream-extensions-hexated",
+        "fileSize": 11054,
+        "status": 1,
+        "authors": [
+            "Bnyro"
+        ],
+        "tvTypes": [
+            "TvSeries",
+            "Movie"
+        ],
+        "version": 1,
+        "internalName": "FilmPalast",
+        "description": "German Filmpalast provider",
+        "url": "https://raw.githubusercontent.com/hexated/cloudstream-extensions-hexated/builds/FilmPalast.cs3",
+        "name": "FilmPalast"
+    },
+    {
+        "iconUrl": "https://turkey.mom-rsf.org/uploads/tx_lfrogmom/media/241-101_import.png",
+        "apiVersion": 1,
+        "repositoryUrl": "https://github.com/MakotoTokioki/Cloudstream-Turkce-Eklentiler",
+        "status": 1,
+        "language": "tr",
+        "authors": [
+            "Makoto Tokioki"
+        ],
+        "tvTypes": [
+            "TvSeries"
+        ],
+        "version": 1,
+        "internalName": "Kanal 7",
+        "description": "Hint, Pakistan ve Türk dizilerinin adresi",
+        "url": "https://raw.githubusercontent.com/Sertel392/Makotogecici/main/Kanal 7.cs3",
+        "name": "Kanal 7"
     }
 ]
