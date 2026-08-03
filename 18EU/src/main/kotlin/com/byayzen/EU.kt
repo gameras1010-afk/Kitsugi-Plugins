@@ -196,11 +196,12 @@ class EU : MainAPI() {
                     newExtractorLink(
                         source = this.name,
                         name = "$name Server $i",
-                        url = videoUrl,
-                        referer = "$mainUrl/",
-                        type = ExtractorLinkType.M3U8,
-                        quality = quality
-                    )
+                        url = videoUrl
+                    ) {
+                        this.referer = "$mainUrl/"
+                        this.type = ExtractorLinkType.M3U8
+                        this.quality = quality
+                    }
                 )
             }
         }
