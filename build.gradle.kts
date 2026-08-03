@@ -13,7 +13,7 @@ buildscript {
         classpath("com.android.tools.build:gradle:8.7.3")
         // Cloudstream gradle plugin which makes everything work and builds plugins
         classpath("com.github.recloudstream:gradle:master-SNAPSHOT")
-        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.0")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.1.0")
     }
 }
 
@@ -51,18 +51,19 @@ subprojects {
         }
 
         compileOptions {
-            sourceCompatibility = JavaVersion.VERSION_17
-            targetCompatibility = JavaVersion.VERSION_17
+            sourceCompatibility = JavaVersion.VERSION_1_8
+            targetCompatibility = JavaVersion.VERSION_1_8
         }
 
         tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile> {
             compilerOptions {
-                jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+                jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_1_8)
                 freeCompilerArgs.addAll(
                     listOf(
                         "-Xno-call-assertions",
                         "-Xno-param-assertions",
-                        "-Xno-receiver-assertions"
+                        "-Xno-receiver-assertions",
+                        "-Xallow-unstable-dependencies"
                     )
                 )
             }
@@ -82,8 +83,7 @@ subprojects {
         // https://github.com/recloudstream/cloudstream/blob/master/app/build.gradle
         implementation(kotlin("stdlib"))                                              // Kotlin'in temel kütüphanesi
         implementation("com.github.Blatzar:NiceHttp:0.4.13")                          // HTTP kütüphanesi
-        implementation("org.jsoup:jsoup:1.19.1")                                      // HTML ayrıştırıcı
-        implementation("org.jspecify:jspecify:1.0.0")                                 // Kotlin nullability annotations için
+        implementation("org.jsoup:jsoup:1.18.3")                                      // HTML ayrıştırıcı
         implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.1")   // Kotlin için Jackson JSON kütüphanesi
         implementation("com.fasterxml.jackson.core:jackson-databind:2.16.0")          // JSON-nesne dönüştürme kütüphanesi
         implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:1.10.1")      // Kotlin için asenkron işlemler
