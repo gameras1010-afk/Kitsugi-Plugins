@@ -11,7 +11,7 @@ import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 import java.net.URI
 
 class BadTv : MainAPI() {
-    override var mainUrl              = "https://www.badtv.net"
+    override var mainUrl              = "https://www.badtv.net/nine"
     override var name                 = "BadTv"
     override val hasMainPage          = true
     override var lang                 = "tr"
