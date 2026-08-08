@@ -1,0 +1,132 @@
+# DOĞRULANMIŞ DİREKT İNDİRME LİNKLERİ — MC 1.21.1 NeoForge
+# (Bu oturumda Modrinth API üzerinden tek tek doğrulandı; tarayıcıya yapıştırınca indirir)
+# NOT: Bunlar sadece doğrulananlar. TAM liste için: python3 indir_modlar.py çalıştır
+#      (script tüm modları indirip MC-1211-ModPaketi.zip yapar)
+
+# ===== ÇEKİRDEK / PERFORMANS =====
+Sinytra Connector 2.0.0-beta.16:
+https://cdn.modrinth.com/data/u58R1TMW/versions/9Bz9VtV5/connector-2.0.0-beta.16%2B1.21.1-full.jar
+Forgified Fabric API 0.116.15:
+https://cdn.modrinth.com/data/Aqlf1Shp/versions/L9bk5uA9/forgified-fabric-api-0.116.15%2B2.3.1%2B1.21.1.jar
+Connector Extras 1.12.1:
+https://cdn.modrinth.com/data/FYpiwiBR/versions/dgLCqZyo/ConnectorExtras-1.12.1%2B1.21.1.jar
+C2ME (CPU coklu cekirdek) 0.4.0-alpha.0.116:
+https://cdn.modrinth.com/data/COlSi5iR/versions/5Q757s3v/c2me-neoforge-mc1.21.1-0.4.0-alpha.0.116.jar
+C2ME OpenCL (GPU - DENEME):
+https://cdn.modrinth.com/data/qtPMklut/versions/k3BXPDat/c2me-neoforge-opts-accel-opencl-mc1.21.1-0.4.0-alpha.0.116.jar
+Lithium 0.15.4 (Canary yerine):
+https://cdn.modrinth.com/data/gvQqBUqZ/versions/DDUrRVCA/lithium-neoforge-0.15.4%2Bmc1.21.1.jar
+ModernFix 5.27.20:
+https://cdn.modrinth.com/data/nmDcB62a/versions/VsJnrw8k/modernfix-neoforge-5.27.20%2Bmc1.21.1.jar
+FerriteCore 7.0.3:
+https://cdn.modrinth.com/data/uXXizFIs/versions/x7kQWVju/ferritecore-7.0.3-neoforge.jar
+Alternate Current 1.9.0:
+https://cdn.modrinth.com/data/r0v8vy1s/versions/PCNyL6v4/alternate_current-mc1.21-1.9.0.jar
+Spark 1.10.124:
+https://cdn.modrinth.com/data/l6YH9Als/versions/v5qtqRQi/spark-1.10.124-neoforge.jar
+Chunky 1.4.23:
+https://cdn.modrinth.com/data/fALzjamp/versions/LuFhm4eU/Chunky-NeoForge-1.4.23.jar
+
+# ===== CLIENT RENDER (oyun bilgisayarina) =====
+Sodium 0.8.13-beta.1 (Xenon yerine):
+https://cdn.modrinth.com/data/AANobbMI/versions/5EEI3Guz/sodium-neoforge-0.8.13-beta.1%2Bmc1.21.1.jar
+Iris 1.8.14-beta.1 (Oculus yerine):
+https://cdn.modrinth.com/data/YL57xq9U/versions/KduFYu4t/iris-neoforge-1.8.14-beta.1%2Bmc1.21.1.jar
+JEI 19.43.0.393:
+https://cdn.modrinth.com/data/u6dRKJwZ/versions/Y16jFgP5/jei-1.21.1-neoforge-19.43.0.393.jar
+Essential 1.4.1.1 (Forge 1.21.1):
+https://cdn.modrinth.com/data/k2ZPuTBm/versions/cr5OqtFT/Essential_1-4-1-1_forge_1-21-1.jar
+
+# ===== DUNYA / ICERIK =====
+Terralith 2.6.2:
+https://cdn.modrinth.com/data/8oi3bsk5/versions/IY93YaEe/Terralith_1.21.1_v2.6.2_Neoforge.jar
+Biomes O' Plenty 21.1.0.14:
+https://cdn.modrinth.com/data/HXF82T3G/versions/BtZKRp69/BiomesOPlenty-neoforge-1.21.1-21.1.0.14.jar
+Oh The Biomes We've Gone 2.6.0:
+https://cdn.modrinth.com/data/NTi7d3Xc/versions/aPEcdSHb/Oh-The-Biomes-Weve-Gone-NeoForge-2.6.0.jar
+Oh The Trees You'll Grow 5.3.2:
+https://cdn.modrinth.com/data/g8NOG5OR/versions/ozzakIcu/Oh-The-Trees-Youll-Grow-neoforge-1.21.1-5.3.2.jar
+Serene Seasons 10.1.0.3:
+https://cdn.modrinth.com/data/e0bNACJD/versions/SPj5bJoM/SereneSeasons-neoforge-1.21.1-10.1.0.3.jar
+Quark 4.1-482:
+https://cdn.modrinth.com/data/qnQsVE2z/versions/yvp3Jbmk/Quark-4.1-482.jar
+Cyclic 1.14.1:
+https://cdn.modrinth.com/data/UcVTWyCI/versions/Q2iFX2rX/cyclic-1.21.1-1.14.1.jar
+Simple Storage Network 1.13.1:
+https://cdn.modrinth.com/data/cVIr8Vz1/versions/XSVSQtfE/storagenetwork-1.21.1-1.13.1.jar
+Iron Furnaces 4.3.2:
+https://cdn.modrinth.com/data/yPlaLxD1/versions/WZ25JeYB/ironfurnaces-neoforge-1.21.1-4.3.2.jar
+Iron Chests 16.0.7 (1.21 build, 1.21.1 ile uyumlu):
+https://cdn.modrinth.com/data/P3iIrPH3/versions/Res1o1zf/ironchest-1.21-neoforge-16.0.7.jar
+Aquaculture 2.7.21:
+https://cdn.modrinth.com/data/Vl1uNAuy/versions/5pbz0ETj/Aquaculture-1.21.1-2.7.21.jar
+Traveler's Backpack 10.1.38:
+https://cdn.modrinth.com/data/rlloIFEV/versions/vHWNjFpl/travelersbackpack-neoforge-1.21.1-10.1.38.jar
+Waystones 21.1.40:
+https://cdn.modrinth.com/data/LOpKHB2A/versions/u7m5EznS/waystones-neoforge-1.21.1-21.1.40.jar
+Lootr 1.11.38.123:
+https://cdn.modrinth.com/data/EltpO5cN/versions/rxFmYTxd/lootr-neoforge-1.21.1-1.11.38.123.jar
+Gravestone 1.0.38:
+https://cdn.modrinth.com/data/RYtXKJPr/versions/3a6KIbgL/gravestone-neoforge-1.21.1-1.0.38.jar
+Handcrafted 4.0.3:
+https://cdn.modrinth.com/data/pJmCFF0p/versions/JfqnpP2Z/handcrafted-neoforge-1.21.1-4.0.3.jar
+Useful Backpacks 3.0.2.129:
+https://cdn.modrinth.com/data/VLAWWg1B/versions/HMEIiZg2/useful_backpacks-neoforge-1.21.1-3.0.2.129.jar
+Guard Villagers 2.4.10:
+https://cdn.modrinth.com/data/H1sntfo8/versions/PR6QZtjY/guardvillagers-2.4.10-1.21.1.jar
+More Vanilla Shields 1.0.2:
+https://cdn.modrinth.com/data/qYO6TImU/versions/yQtngMVj/morevanillashields-1.0.2-1.21.1.jar
+Tree Harvester 9.1:
+https://cdn.modrinth.com/data/abooMhox/versions/OtzwmSlR/treeharvester-1.21.1-9.1.jar
+Naturalist 2.0.2:
+https://cdn.modrinth.com/data/F8BQNPWX/versions/5VOUtmLM/naturalist-2.0.2-neoforge-1.21.1.jar
+Mowzie's Mobs 1.8.2:
+https://cdn.modrinth.com/data/BFbX9xcm/versions/xgAXTl17/mowziesmobs-1.21.1-1.8.2.jar
+
+# ===== YAPI MODLARI =====
+YUNG's API 5.1.6:
+https://cdn.modrinth.com/data/Ua7DFN59/versions/ZB22DE9q/YungsApi-1.21.1-NeoForge-5.1.6.jar
+AdoraBuild Structures 2.11.0:
+https://cdn.modrinth.com/data/rYlnn25U/versions/l7GS6bZj/adorabuild-structures-2.11.0-neoforge-1.21.3.jar
+Better Village 3.3.1 (LibraryFerret 4.0.0 gerekli):
+https://cdn.modrinth.com/data/dGVX5JbJ/versions/1IEc4yoG/bettervillage-neoforge-1.21.1-3.3.1.jar
+Dungeons & Taverns 4.4.4:
+https://cdn.modrinth.com/data/tpehi7ww/versions/BYUUUeZA/dungeons-and-taverns-v4.4.4.jar
+Towns and Towers 1.13.9 (CristelLib gerekli):
+https://cdn.modrinth.com/data/DjLobEOy/versions/5PS5OhIh/t_and_t-neoforge-fabric-1.13.9%2B1.21.1.jar
+Explorify 1.6.5:
+https://cdn.modrinth.com/data/HSfsxuTo/versions/CuBdAr31/Explorify%20v1.6.5.mod.jar
+Raided 0.1.6:
+https://cdn.modrinth.com/data/9vaHfaHw/versions/CMy2dgKY/Raided-1.21.1-0.1.6.jar
+Villages & Pillages 1.0.3 (YUNG's API gerekli):
+https://cdn.modrinth.com/data/klXONLDA/versions/3BGfKjMb/villagesandpillages-neoforge-mc1.21.1-1.0.3.jar
+
+# ===== KUTUPHANELER =====
+Library Ferret 4.0.0:
+https://cdn.modrinth.com/data/DOB2l4oJ/versions/AKcIMUil/libraryferret-neoforge-1.21.1-4.0.0.jar
+Cristel Lib 3.1.7:
+https://cdn.modrinth.com/data/cl223EMc/versions/Sduz0AWP/cristellib-neoforge-1.21.1-3.1.7.jar
+FLIB 0.2.8:
+https://cdn.modrinth.com/data/FAUSd09K/versions/Ba1H0eUh/flib-1.21.1-0.2.8.jar
+CoroUtil 1.3.8:
+https://cdn.modrinth.com/data/rLLJ1OZM/versions/H2YXCYUY/coroutil-neoforge-1.21.0-1.3.8.jar
+
+# ===== CURSEFORGE (elle indirilecekler - sayfa linkleri) =====
+Twilight Forest 4.8.3345:
+https://www.curseforge.com/minecraft/mc-mods/the-twilight-forest/files?version=1.21.1
+Born in Chaos 1.7.6:
+https://www.curseforge.com/minecraft/mc-mods/born-in-chaos/files?version=1.21.1
+Epic Terrain 0.1.4:
+https://www.curseforge.com/minecraft/mc-mods/epic-terrain/files/all
+Alex's Mobs:
+https://www.curseforge.com/minecraft/mc-mods/alexs-mobs/files?version=1.21.1
+Dungeon Crawl 2.3.17:
+https://www.curseforge.com/minecraft/mc-mods/dungeon-crawl/files?version=1.21.1
+Farmer's Structures 1.0.6:
+https://www.curseforge.com/minecraft/mc-mods/farmers-structures/files?version=1.21.1
+Goblin Traders 1.11.2:
+https://www.curseforge.com/minecraft/mc-mods/goblin-traders/files?version=1.21.1
+Ore Excavation 1.16.43:
+https://www.curseforge.com/minecraft/mc-mods/ore-excavation/files?version=1.21.1
+Extra Golems Reborn 21.1.0.1:
+https://www.curseforge.com/minecraft/mc-mods/extra-golems-reborn/files

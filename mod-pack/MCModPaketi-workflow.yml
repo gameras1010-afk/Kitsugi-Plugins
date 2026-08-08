@@ -1,0 +1,63 @@
+# MC 1.21.1 NeoForge Mod Paketi Derleyici
+# ----------------------------------------
+# Bu workflow, mod-pack/mod_manifest.json içindeki tüm modları resmi
+# kaynaklardan (Modrinth API + CurseForge) indirir, SHA1 ile doğrular,
+# mods-server/ ve mods-client/ olarak ayırır ve hepsini tek bir
+# MC-1211-ModPaketi.zip olarak Artifact olarak yayınlar.
+#
+# NASIL KULLANILIR:
+#  1) Bu repoda Actions -> "MC Mod Paketi" -> Run workflow butonuna bas
+#     (veya aşağıya push at, otomatik çalışır)
+#  2) Biten çalışmanın "Artifacts" bölümünden MC-1211-ModPaketi.zip indir
+#  3) KURULUM-REHBERI.md'deki adımları uygula
+
+name: MC Mod Paketi (1.21.1 NeoForge)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - arena/019fd902-kitsugi-plugins
+    paths:
+      - 'mod-pack/**'
+      - '.github/workflows/MCModPaketi.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  mod-paketi-derle:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Depoyu kontrol et
+        uses: actions/checkout@v4
+
+      - name: Python kontrol
+        run: python3 --version
+
+      - name: Modları indir (Modrinth + CurseForge)
+        run: |
+          python3 mod-pack/indir_modlar.py
+        env:
+          PYTHONUNBUFFERED: "1"
+
+      - name: ZIP boyutunu göster
+        run: |
+          ls -lh mod-pack/MC-1211-ModPaketi.zip 2>/dev/null || echo "ZIP üretilemedi"
+          echo "--- klasörler ---"
+          ls -1 mod-pack/mods-server/ 2>/dev/null | wc -l
+          ls -1 mod-pack/mods-client/ 2>/dev/null | wc -l
+          du -sh mod-pack/mods-server mod-pack/mods-client 2>/dev/null
+
+      - name: Artifact yükle (ZIP + link listesi)
+        uses: actions/upload-artifact@v4
+        with:
+          name: MC-1211-ModPaketi
+          path: |
+            mod-pack/MC-1211-ModPaketi.zip
+            mod-pack/LINK_LISTESI.txt
+            mod-pack/KURULUM-REHBERI.md
+            mod-pack/mod_manifest.json
+          if-no-files-found: error
+          retention-days: 14

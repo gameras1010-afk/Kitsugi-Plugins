@@ -1,0 +1,25 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+issueTrackerURL = "https://github.com/gameras1010-afk/Kitsugi-Plugins"
+
+[[mods]]
+modId = "livepanel"
+version = "1.0.0"
+displayName = "LivePanel"
+authors = "Kitsugi"
+description = '''Canli sistem paneli: TPS, MSPT, CPU %, per-cekirdek, GPU %, VRAM, RAM, sicakliklar. MOTD + actionbar + sidebar skorboard.'''
+
+[[dependencies.livepanel]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.livepanel]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,1.22)"
+ordering = "NONE"
+side = "BOTH"
