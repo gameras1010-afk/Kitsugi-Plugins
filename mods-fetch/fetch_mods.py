@@ -432,45 +432,131 @@ def modrinth_latest(slug):
     return None, None
 
 
-def cf_find_file(slug_candidates):
-    """Via api.cfwidget.com: newest 1.21.1 NeoForge file of a CF project."""
+# Hardcoded CF project IDs (fallback when cfwidget/legacy fail) - keyed by CF slug
+CF_PIDS = {
+    "ftb-quests-forge": 289412, "ftb-library-forge": 404465, "ftb-teams-forge": 404468,
+    "the-twilight-forest": 227639, "iron-chests": 228756,
+    "more-armor-new-armors-tools-ores": 1431856, "goblin-traders": 363703,
+}
+
+
+def cf_parse_legacy_page(html):
+    """Parse a legacy.curseforge.com files/all page -> list of (fileId, display, gamever)."""
+    rows = []
+    for m in re.finditer(r'<tr[^>]*>(.*?)</tr>', html, re.S):
+        row = m.group(1)
+        fm = re.search(r'/files/(\d+)', row)
+        if not fm:
+            continue
+        texts = re.findall(r'<td[^>]*>(.*?)</td>', row, re.S)
+        cells = [re.sub(r'<[^>]+>', ' ', c).strip() for c in texts]
+        rows.append({"file_id": int(fm.group(1)), "cells": cells})
+    return rows
+
+
+def cf_find_file(slug_candidates, diag):
+    """Find newest 1.21.1 NeoForge file of a CF project.
+    Chain: legacy files page -> cfwidget -> hardcoded pid + www API."""
+    # --- attempt 1: legacy files page (no pid needed) ---
     for slug in slug_candidates:
         try:
-            data = get_json(f"https://api.cfwidget.com/minecraft/mc-mods/{slug}", tries=3)
-        except Exception:  # noqa: BLE001
+            html = http_get(f"https://legacy.curseforge.com/minecraft/mc-mods/{slug}/files/all?page=1&pageSize=50",
+                            headers=CF_HEADERS, timeout=90).decode("utf-8", "replace")
+        except Exception as e:  # noqa: BLE001
+            diag.append(f"legacy {slug}: {e}")
             continue
-        files = data.get("files") or []
-        for f in files:
-            vers = [str(v) for v in (f.get("versions") or [])]
-            ver = str(f.get("version") or "")
-            if "NeoForge" not in vers:
+        if "File Details" not in html and "/files/" not in html:
+            diag.append(f"legacy {slug}: not found")
+            continue
+        for row in cf_parse_legacy_page(html):
+            cells = row["cells"]
+            if len(cells) < 5:
                 continue
-            if ver != "1.21.1" and not ver.startswith("1.21.1") and "1.21.1" not in vers:
+            gamever = cells[4]
+            if "1.21.1" not in gamever:
                 continue
-            return {"file_id": f["id"], "file_name": f.get("name"),
-                    "slug": slug, "display": f.get("display"), "cf_id": data.get("id")}
+            # fetch legacy file page to check loader + real filename
+            try:
+                fhtml = http_get(f"https://legacy.curseforge.com/minecraft/mc-mods/{slug}/files/{row['file_id']}",
+                                 headers=CF_HEADERS, timeout=90).decode("utf-8", "replace")
+            except Exception:  # noqa: BLE001
+                continue
+            fname = re.search(r"Filename\s*[:]?\s*(?:</?[^>]+>\s*)*([^<>\s]+\.jar)", fhtml)
+            modloader = "NeoForge" in fhtml
+            if not fname:
+                continue
+            if modloader:
+                return {"file_id": row["file_id"], "file_name": fname.group(1).strip(),
+                        "slug": slug, "cf_id": CF_PIDS.get(slug)}
+        diag.append(f"legacy {slug}: no 1.21.1 file")
+    # --- attempt 2: cfwidget -> pid, then www API for file ---
+    for slug in slug_candidates:
+        try:
+            data = get_json(f"https://api.cfwidget.com/minecraft/mc-mods/{slug}", tries=2)
+            pid = data.get("id")
+        except Exception as e:  # noqa: BLE001
+            diag.append(f"cfwidget {slug}: {e}")
+            continue
+        if not pid:
+            diag.append(f"cfwidget {slug}: empty")
+            continue
+        try:
+            api = get_json(f"https://www.curseforge.com/api/v1/mods/{pid}/files"
+                           f"?gameVersion=1.21.1&modLoaderType=6&pageSize=3", tries=2)
+            files = [f for f in api.get("data") or [] if f.get("releaseType") == 1] or (api.get("data") or [])
+            if files:
+                f = files[0]
+                return {"file_id": f["id"], "file_name": f.get("fileName"),
+                        "slug": slug, "cf_id": pid}
+            diag.append(f"api {pid}: no files")
+        except Exception as e:  # noqa: BLE001
+            diag.append(f"api {pid}: {e}")
+    # --- attempt 3: hardcoded pid + www API ---
+    for slug in slug_candidates:
+        pid = CF_PIDS.get(slug)
+        if not pid:
+            continue
+        try:
+            api = get_json(f"https://www.curseforge.com/api/v1/mods/{pid}/files"
+                           f"?gameVersion=1.21.1&modLoaderType=6&pageSize=3", tries=2)
+            files = [f for f in api.get("data") or [] if f.get("releaseType") == 1] or (api.get("data") or [])
+            if files:
+                f = files[0]
+                return {"file_id": f["id"], "file_name": f.get("fileName"),
+                        "slug": slug, "cf_id": pid}
+        except Exception as e:  # noqa: BLE001
+            diag.append(f"hardcoded {slug} ({pid}): {e}")
     return None
 
 
 def cf_download(cfg, outdir):
-    info = cf_find_file(cfg["slugs"])
+    diag = []
+    info = cf_find_file(cfg["slugs"], diag)
     if info is None:
-        return None, "CF'de 1.21.1 NeoForge dosyasi bulunamadi (cfwidget)"
+        return None, "CF bulunamadi | " + " | ".join(diag[-6:])
     fid = info["file_id"]
-    media = ("https://media.forgecdn.net/files/"
-             f"{fid // 1000}/{fid % 1000}/" + urllib.parse.quote(info['file_name'], safe=''))
-    try:
-        data = http_get(media, headers=CF_HEADERS, timeout=300)
-        if len(data) < 1000:
-            return None, "media download too small"
-        dest = os.path.join(outdir, info["file_name"])
-        with open(dest, "wb") as f:
-            f.write(data)
-        return {"file_name": info["file_name"], "file_id": fid,
-                "project_id": info.get("cf_id"), "cf_slug": info.get("slug"),
-                "display": info.get("display")}, None
-    except Exception as e:  # noqa: BLE001
-        return None, f"media download failed: {e}"
+    fname = info["file_name"]
+    dest = os.path.join(outdir, fname)
+    urls = [
+        ("edge.forgecdn.net", f"https://edge.forgecdn.net/files/{fid // 1000}/{fid % 1000}/" + urllib.parse.quote(fname, safe='')),
+        ("media.forgecdn.net", f"https://media.forgecdn.net/files/{fid // 1000}/{fid % 1000}/" + urllib.parse.quote(fname, safe='')),
+        ("cursemaven", f"https://cursemaven.com/curse/maven/{info.get('slug','mod')}-{info.get('cf_id') or 0}/{fid}/{info.get('slug','mod')}-{info.get('cf_id') or 0}-{fid}.jar"),
+    ]
+    hdrs = dict(CF_HEADERS)
+    hdrs["Referer"] = "https://www.curseforge.com/"
+    for label, u in urls:
+        try:
+            data = http_get(u, headers=hdrs, timeout=300)
+            if len(data) < 1000:
+                continue
+            with open(dest, "wb") as f:
+                f.write(data)
+            return {"file_name": fname, "file_id": fid,
+                    "project_id": info.get("cf_id"), "cf_slug": info.get("slug"),
+                    "download_host": label}, None
+        except Exception as e:  # noqa: BLE001
+            diag.append(f"{label}: {e}")
+    return None, "indirme basarisiz | " + " | ".join(diag[-6:])
 
 
 def detect_modid(jar_path):
