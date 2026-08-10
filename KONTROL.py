@@ -55,9 +55,14 @@ def main():
     # 3) fix listesini indir (modrinth + curseforge)
     run([sys.executable, "mods-fetch/fetch_mods.py", "mods-fetch/modlist_fix.txt", "mods_out2"])
 
+    # 3b) sanity: fix listesinin tamami islendi mi?
+    man2 = json.load(open(os.path.join("mods_out2", "manifest.json")))
+    n_fix = len([l for l in open("mods-fetch/modlist_fix.txt") if l.strip().endswith(".jar")])
+    assert man2["total"] == n_fix, f"fix islemi eksik: {man2['total']} != {n_fix}"
+    print(f"fix manifest: total={man2['total']} ok={man2['ok']} failed={man2['failed']}", flush=True)
+
     # 4) birlestir: run1 manifest + run2 manifest
     man1 = json.load(open(os.path.join(MERGE, "manifest.json")))
-    man2 = json.load(open(os.path.join("mods_out2", "manifest.json")))
     res1 = man1["results"]
     res2 = man2["results"]
     replaced = {r["requested"] for r in res2}
@@ -113,6 +118,11 @@ def main():
     print("\n".join(lines), flush=True)
 
     # 5) final zip + dogrulama
+    jars = [n for n in os.listdir(MERGE) if n.lower().endswith(".jar")]
+    names = [n.lower() for n in os.listdir(MERGE)]
+    dups = sorted({n for n in names if names.count(n) > 1})
+    print(f"merge jars: {len(jars)} | dups: {dups}", flush=True)
+    assert not dups, f"kopya dosya adlari: {dups}"
     if os.path.exists(zip_path):
         os.remove(zip_path)
     run(f"cd {MERGE} && zip -q -r -1 {zip_path} . && cd {ROOT}")

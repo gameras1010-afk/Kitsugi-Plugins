@@ -30,8 +30,8 @@ STOP = {
 OVERRIDES = {
     "tandt": "towns-and-towers",
     "advancementplaques": "advancement-plaques",
-    "betterend": "betterend",
-    "betternether": "betternether",
+    "betterend": "betterend-neoforge",
+    "betternether": "betternether-neoforge",
     "bookshelf": "bookshelf-lib",
     "ferritecore": "ferrite-core",
     "repurposedstructures": "repurposed-structures-forge",
@@ -433,84 +433,65 @@ def modrinth_latest(slug):
 
 
 def cf_find_file(slug_candidates):
-    """Return dict(file_id, file_name, page_url, display) or None."""
-    page_url = None
-    html = None
+    """Via r.jina.ai: files page -> project id; API -> newest 1.21.1 NeoForge file."""
     for slug in slug_candidates:
-        url = (f"https://www.curseforge.com/minecraft/mc-mods/{slug}/files/all"
-               f"?page=1&pageSize=50&version=1.21.1&gameFlavor=NeoForge&showAlphaFiles=hide")
+        page_url = (f"https://www.curseforge.com/minecraft/mc-mods/{slug}/files/all"
+                    f"?page=1&pageSize=50&version=1.21.1&gameFlavor=NeoForge&showAlphaFiles=hide")
         try:
-            html = http_get(url).decode("utf-8", "replace")
+            text = http_get("https://r.jina.ai/" + page_url, timeout=120).decode("utf-8", "replace")
         except Exception:  # noqa: BLE001
             continue
-        if "Download file" in html and "project not found" not in html.lower() and "404" not in html[:2000]:
-            page_url = url
-            break
-    if not html or not page_url:
-        return None
-    m = re.search(r"/download/(\d+)", html)
-    if not m:
-        return None
-    file_id = int(m.group(1))
-    pid = None
-    m2 = re.search(r'"projectId"\s*:\s*(\d+)', html)
-    if m2:
-        pid = int(m2.group(1))
-    file_name = None
-    if pid:
+        if "Project ID" not in text:
+            continue
+        m = re.search(r"Project ID\s*\n?\s*(\d+)", text)
+        if not m:
+            continue
+        pid = int(m.group(1))
         try:
-            data = get_json(f"https://www.curseforge.com/api/v1/mods/{pid}/files/{file_id}")
-            if data and data.get("data"):
-                file_name = data["data"].get("fileName")
+            api_text = http_get(
+                f"https://r.jina.ai/https://www.curseforge.com/api/v1/mods/{pid}/files"
+                f"?gameVersion=1.21.1&modLoaderType=6&pageSize=3",
+                timeout=120).decode("utf-8", "replace")
         except Exception:  # noqa: BLE001
-            pass
-    if not file_name:
-        m3 = re.search(r'/(\d+)/\d+/[^"\']+\.jar', html)
-        if m3:
-            pass
-        file_name = f"file-{file_id}.jar"
-    return {"file_id": file_id, "file_name": file_name, "page_url": page_url, "project_id": pid}
+            continue
+        # strip jina prefix, find first JSON object
+        js = re.search(r"\{.*\}", api_text, re.S)
+        if not js:
+            continue
+        try:
+            data = json.loads(js.group(0))
+        except Exception:  # noqa: BLE001
+            continue
+        files = data.get("data") or []
+        files = [f for f in files if f.get("releaseType") == 1] or files
+        if not files:
+            continue
+        f = files[0]
+        return {"file_id": f["id"], "file_name": f.get("fileName") or f"file-{f['id']}.jar",
+                "page_url": page_url, "project_id": pid, "display": f.get("displayName", "")}
+    return None
 
 
 def cf_download(cfg, outdir):
     info = cf_find_file(cfg["slugs"])
     if not info:
-        return None, "CF page not found/parsed"
+        return None, "CF via jina failed"
     fid = info["file_id"]
-    dest = os.path.join(outdir, info["file_name"])
-    # 1) API download endpoint (follows redirect to media.forgecdn.net with real filename)
-    if info.get("project_id"):
-        try:
-            opener = urllib.request.build_opener()
-            req = urllib.request.Request(
-                f"https://www.curseforge.com/api/v1/mods/{info['project_id']}/files/{fid}/download",
-                headers=CF_HEADERS)
-            with opener.open(req, timeout=180) as r:
-                data = r.read()
-                final_url = r.geturl()
-            if len(data) >= 1000:
-                real = os.path.basename(urllib.parse.urlparse(final_url).path)
-                if real.endswith(".jar"):
-                    info["file_name"] = urllib.parse.unquote(real)
-                    dest = os.path.join(outdir, info["file_name"])
-                with open(dest, "wb") as f:
-                    f.write(data)
-                return {"file_name": info["file_name"], "file_id": fid,
-                        "project_id": info.get("project_id"), "page_url": info["page_url"]}, None
-        except Exception as e:  # noqa: BLE001
-            last = str(e)
-    # 2) direct media URL
+    # direct CDN download (media.forgecdn.net has no Cloudflare)
+    media = f"https://media.forgecdn.net/files/{fid // 1000}/{fid % 1000}/{info['file_name']}"
     try:
-        data = http_get(f"https://media.forgecdn.net/files/{fid // 1000}/{fid % 1000}/{info['file_name']}",
-                        headers=CF_HEADERS, timeout=180)
-        if len(data) >= 1000:
-            with open(dest, "wb") as f:
-                f.write(data)
-            return {"file_name": info["file_name"], "file_id": fid,
-                    "project_id": info.get("project_id"), "page_url": info["page_url"]}, None
+        data = http_get(media, headers=CF_HEADERS, timeout=300)
+        if len(data) < 1000:
+            return None, "media download too small"
+        dest = os.path.join(outdir, info["file_name"])
+        with open(dest, "wb") as f:
+            f.write(data)
+        return {"file_name": info["file_name"], "file_id": fid,
+                "project_id": info.get("project_id"), "page_url": info["page_url"],
+                "display": info.get("display")}, None
     except Exception as e:  # noqa: BLE001
-        last = str(e)
-    return None, last
+        # fallback: api download endpoint via jina? (rarely needed)
+        return None, f"media download failed: {e}"
 
 
 def detect_modid(jar_path):
@@ -612,12 +593,15 @@ def main():
                 continue
             mid, mf = detect_modid(dest2)
             rec["detected_modid"], rec["detected_meta"] = mid, mf
-            if mid is None:
+            # loader jars (kotlinforforge etc.) may lack mod metadata - accept by filename
+            no_meta_ok = any(k in name.lower() for k in ("kotlinforforge", "connector", "essential"))
+            if mid is None and not no_meta_ok:
                 rec["status"] = "NO_MOD_METADATA"
                 print(f"[{idx:03d}/{len(names)}] NO_MOD_METADATA: {name}", flush=True)
                 continue
             if stem in EXPECTED_MODID and mid != EXPECTED_MODID[stem]:
                 rec["modid_warning"] = f"expected {EXPECTED_MODID[stem]}, got {mid}"
+        results.append(rec)
         print(f"[{idx:03d}/{len(names)}] OK: {name} -> {rec.get('file_name')} ({rec.get('detected_modid')}) [{rec.get('source')}]", flush=True)
         time.sleep(0.2)
 
