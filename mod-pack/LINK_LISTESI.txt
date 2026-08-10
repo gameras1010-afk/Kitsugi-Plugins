@@ -1,0 +1,119 @@
+# MOD LİNK LİSTESİ — 1.21.1 NeoForge (sayfa linkleri; script çalışınca direkt dosya linkleriyle değişir)
+
+== Modrinth (sayfa: Versions -> 1.21.1 + NeoForge filtresi) ==
+- [server+client] Sinytra Connector: https://modrinth.com/mod/connector/versions?g=1.21.1&l=neoforge
+- [server+client] Forgified Fabric API: https://modrinth.com/mod/forgified-fabric-api/versions?g=1.21.1&l=neoforge
+- [server+client] Connector Extras: https://modrinth.com/mod/connector-extras/versions?g=1.21.1&l=neoforge
+- [server+client] C2ME (CPU coklu cekirdek): https://modrinth.com/mod/c2me-neoforge/versions?g=1.21.1&l=neoforge
+- [server+client] C2ME OpenCL (GPU - DENEME): https://modrinth.com/mod/c2me-ocl/versions?g=1.21.1&l=neoforge
+- [server+client] Lithium (Canary yerine): https://modrinth.com/mod/lithium/versions?g=1.21.1&l=neoforge
+- [server+client] ModernFix: https://modrinth.com/mod/modernfix/versions?g=1.21.1&l=neoforge
+- [server+client] FerriteCore: https://modrinth.com/mod/ferrite-core/versions?g=1.21.1&l=neoforge
+- [server+client] Alternate Current: https://modrinth.com/mod/alternate-current/versions?g=1.21.1&l=neoforge
+- [server+client] BadOptimizations: https://modrinth.com/mod/badoptimizations/versions?g=1.21.1&l=neoforge
+- [server+client] Noisium: https://modrinth.com/mod/noisium/versions?g=1.21.1&l=neoforge
+- [server+client] Neruina: https://modrinth.com/mod/neruina/versions?g=1.21.1&l=neoforge
+- [server+client] Spark: https://modrinth.com/mod/spark/versions?g=1.21.1&l=neoforge
+- [server+client] Chunky: https://modrinth.com/mod/chunky/versions?g=1.21.1&l=neoforge
+- [CLIENT] Sodium (Xenon yerine): https://modrinth.com/mod/sodium/versions?g=1.21.1&l=neoforge
+- [CLIENT] Iris (Oculus yerine): https://modrinth.com/mod/iris/versions?g=1.21.1&l=neoforge
+- [server+client] YUNG's API: https://modrinth.com/mod/yungs-api/versions?g=1.21.1&l=neoforge
+- [server+client] YUNG's Better Dungeons: https://modrinth.com/mod/yungs-better-dungeons/versions?g=1.21.1&l=neoforge
+- [server+client] YUNG's Better Mineshafts: https://modrinth.com/mod/yungs-better-mineshafts/versions?g=1.21.1&l=neoforge
+- [server+client] YUNG's Better Strongholds: https://modrinth.com/mod/yungs-better-strongholds/versions?g=1.21.1&l=neoforge
+- [server+client] YUNG's Better Ocean Monuments: https://modrinth.com/mod/yungs-better-ocean-monuments/versions?g=1.21.1&l=neoforge
+- [server+client] YUNG's Better Nether Fortresses: https://modrinth.com/mod/yungs-better-nether-fortresses/versions?g=1.21.1&l=neoforge
+- [server+client] YUNG's Better Jungle Temples: https://modrinth.com/mod/yungs-better-jungle-temples/versions?g=1.21.1&l=neoforge
+- [server+client] YUNG's Better Witch Huts: https://modrinth.com/mod/yungs-better-witch-huts/versions?g=1.21.1&l=neoforge
+- [server+client] YUNG's Better End Island: https://modrinth.com/mod/yungs-better-end-island/versions?g=1.21.1&l=neoforge
+- [server+client] YUNG's Bridges: https://modrinth.com/mod/yungs-bridges/versions?g=1.21.1&l=neoforge
+- [CLIENT] YUNG's Menu Tweaks: https://modrinth.com/mod/yungs-menu-tweaks/versions?g=1.21.1&l=neoforge
+- [server+client] Terralith: https://modrinth.com/mod/terralith/versions?g=1.21.1&l=neoforge
+- [server+client] Lithostitched (Terralith dep): https://modrinth.com/mod/lithostitched/versions?g=1.21.1&l=neoforge
+- [server+client] Biomes O' Plenty: https://modrinth.com/mod/biomes-o-plenty/versions?g=1.21.1&l=neoforge
+- [server+client] Oh The Biomes We've Gone: https://modrinth.com/mod/oh-the-biomes-weve-gone/versions?g=1.21.1&l=neoforge
+- [server+client] Oh The Trees You'll Grow: https://modrinth.com/mod/oh-the-trees-youll-grow/versions?g=1.21.1&l=neoforge
+- [server+client] Serene Seasons: https://modrinth.com/mod/serene-seasons/versions?g=1.21.1&l=neoforge
+- [server+client] Better Village: https://modrinth.com/mod/better-village/versions?g=1.21.1&l=neoforge
+- [server+client] Dungeons & Taverns: https://modrinth.com/mod/dungeons-and-taverns/versions?g=1.21.1&l=neoforge
+- [server+client] Towns and Towers: https://modrinth.com/mod/towns-and-towers/versions?g=1.21.1&l=neoforge
+- [server+client] Explorify: https://modrinth.com/mod/explorify/versions?g=1.21.1&l=neoforge
+- [server+client] Awesome Dungeon Ocean: https://modrinth.com/mod/awesome-dungeon-edition-ocean/versions?g=1.21.1&l=neoforge
+- [server+client] Raided: https://modrinth.com/mod/raided/versions?g=1.21.1&l=neoforge
+- [server+client] Villages & Pillages: https://modrinth.com/mod/villages-and-pillages/versions?g=1.21.1&l=neoforge
+- [server+client] AdoraBuild Structures: https://modrinth.com/mod/adorabuild-structures/versions?g=1.21.1&l=neoforge
+- [server+client] Mowzie's Mobs: https://modrinth.com/mod/mowzies-mobs/versions?g=1.21.1&l=neoforge
+- [server+client] Naturalist: https://modrinth.com/mod/naturalist/versions?g=1.21.1&l=neoforge
+- [server+client] Quark: https://modrinth.com/mod/quark/versions?g=1.21.1&l=neoforge
+- [server+client] Zeta (Quark dep): https://modrinth.com/mod/zeta/versions?g=1.21.1&l=neoforge
+- [server+client] Cyclic: https://modrinth.com/mod/cyclic/versions?g=1.21.1&l=neoforge
+- [server+client] Simple Storage Network: https://modrinth.com/mod/simple-storage-network/versions?g=1.21.1&l=neoforge
+- [server+client] Iron Furnaces: https://modrinth.com/mod/iron-furnaces/versions?g=1.21.1&l=neoforge
+- [server+client] Iron Chests (1.21 build): https://modrinth.com/mod/iron-chests/versions?g=1.21.1&l=neoforge
+- [server+client] Aquaculture 2: https://modrinth.com/mod/aquaculture/versions?g=1.21.1&l=neoforge
+- [server+client] Farmer's Delight: https://modrinth.com/mod/farmers-delight/versions?g=1.21.1&l=neoforge
+- [server+client] Traveler's Backpack: https://modrinth.com/mod/travelersbackpack/versions?g=1.21.1&l=neoforge
+- [server+client] Waystones: https://modrinth.com/mod/waystones/versions?g=1.21.1&l=neoforge
+- [server+client] Lootr: https://modrinth.com/mod/lootr/versions?g=1.21.1&l=neoforge
+- [server+client] Gravestone Mod: https://modrinth.com/mod/gravestone-mod/versions?g=1.21.1&l=neoforge
+- [server+client] Handcrafted: https://modrinth.com/mod/handcrafted/versions?g=1.21.1&l=neoforge
+- [server+client] Useful Backpacks: https://modrinth.com/mod/useful-backpacks/versions?g=1.21.1&l=neoforge
+- [server+client] Guard Villagers: https://modrinth.com/mod/guard-villagers/versions?g=1.21.1&l=neoforge
+- [server+client] More Vanilla Shields: https://modrinth.com/mod/more-vanilla-shields/versions?g=1.21.1&l=neoforge
+- [server+client] Tree Harvester: https://modrinth.com/mod/tree-harvester/versions?g=1.21.1&l=neoforge
+- [server+client] Architectury API: https://modrinth.com/mod/architectury-api/versions?g=1.21.1&l=neoforge
+- [server+client] Balm: https://modrinth.com/mod/balm/versions?g=1.21.1&l=neoforge
+- [server+client] Cloth Config: https://modrinth.com/mod/cloth-config/versions?g=1.21.1&l=neoforge
+- [server+client] GeckoLib: https://modrinth.com/mod/geckolib/versions?g=1.21.1&l=neoforge
+- [server+client] Citadel: https://modrinth.com/mod/citadel/versions?g=1.21.1&l=neoforge
+- [server+client] TerraBlender: https://modrinth.com/mod/terrablender/versions?g=1.21.1&l=neoforge
+- [server+client] Bookshelf: https://modrinth.com/mod/bookshelf/versions?g=1.21.1&l=neoforge
+- [server+client] Resourceful Lib: https://modrinth.com/mod/resourceful-lib/versions?g=1.21.1&l=neoforge
+- [server+client] Resourceful Config: https://modrinth.com/mod/resourceful-config/versions?g=1.21.1&l=neoforge
+- [server+client] CorgiLib: https://modrinth.com/mod/corgilib/versions?g=1.21.1&l=neoforge
+- [server+client] Puzzles Lib: https://modrinth.com/mod/puzzles-lib/versions?g=1.21.1&l=neoforge
+- [server+client] Collective: https://modrinth.com/mod/collective/versions?g=1.21.1&l=neoforge
+- [server+client] Library Ferret: https://modrinth.com/mod/library-ferret/versions?g=1.21.1&l=neoforge
+- [server+client] Cristel Lib: https://modrinth.com/mod/cristel-lib/versions?g=1.21.1&l=neoforge
+- [server+client] FLIB: https://modrinth.com/mod/flib/versions?g=1.21.1&l=neoforge
+- [server+client] CoroUtil: https://modrinth.com/mod/coroutil/versions?g=1.21.1&l=neoforge
+- [server+client] U-Team-Core: https://modrinth.com/mod/u-team-core/versions?g=1.21.1&l=neoforge
+- [CLIENT] JEI: https://modrinth.com/mod/jei/versions?g=1.21.1&l=neoforge
+- [CLIENT] Jade: https://modrinth.com/mod/jade/versions?g=1.21.1&l=neoforge
+- [CLIENT] AppleSkin: https://modrinth.com/mod/appleskin/versions?g=1.21.1&l=neoforge
+- [CLIENT] JourneyMap: https://modrinth.com/mod/journeymap/versions?g=1.21.1&l=neoforge
+- [CLIENT] Chat Heads: https://modrinth.com/mod/chat-heads/versions?g=1.21.1&l=neoforge
+- [CLIENT] Mouse Tweaks: https://modrinth.com/mod/mouse-tweaks/versions?g=1.21.1&l=neoforge
+- [CLIENT] Controlling: https://modrinth.com/mod/controlling/versions?g=1.21.1&l=neoforge
+- [CLIENT] Configured: https://modrinth.com/mod/configured/versions?g=1.21.1&l=neoforge
+- [CLIENT] Better Advancements: https://modrinth.com/mod/better-advancements/versions?g=1.21.1&l=neoforge
+- [CLIENT] Enchantment Descriptions: https://modrinth.com/mod/enchantment-descriptions/versions?g=1.21.1&l=neoforge
+- [CLIENT] Just Enough Resources: https://modrinth.com/mod/just-enough-resources/versions?g=1.21.1&l=neoforge
+- [CLIENT] Just Enough Professions: https://modrinth.com/mod/just-enough-professions/versions?g=1.21.1&l=neoforge
+- [CLIENT] Clumps: https://modrinth.com/mod/clumps/versions?g=1.21.1&l=neoforge
+- [CLIENT] Iceberg: https://modrinth.com/mod/iceberg/versions?g=1.21.1&l=neoforge
+- [CLIENT] Entity Culling: https://modrinth.com/mod/entityculling/versions?g=1.21.1&l=neoforge
+- [CLIENT] Entity Model Features: https://modrinth.com/mod/entity-model-features/versions?g=1.21.1&l=neoforge
+- [CLIENT] Entity Texture Features: https://modrinth.com/mod/entity-texture-features/versions?g=1.21.1&l=neoforge
+- [CLIENT] ImmediatelyFast: https://modrinth.com/mod/immediatelyfast/versions?g=1.21.1&l=neoforge
+- [CLIENT] Not Enough Animations: https://modrinth.com/mod/not-enough-animations/versions?g=1.21.1&l=neoforge
+- [CLIENT] 3D Skin Layers: https://modrinth.com/mod/skinlayers3d/versions?g=1.21.1&l=neoforge
+- [CLIENT] Sound Physics Remastered: https://modrinth.com/mod/sound-physics-remastered/versions?g=1.21.1&l=neoforge
+- [CLIENT] Polymorph: https://modrinth.com/mod/polymorph/versions?g=1.21.1&l=neoforge
+- [CLIENT] Ping Wheel: https://modrinth.com/mod/ping-wheel/versions?g=1.21.1&l=neoforge
+- [CLIENT] FancyMenu: https://modrinth.com/mod/fancymenu/versions?g=1.21.1&l=neoforge
+- [CLIENT] Konkrete: https://modrinth.com/mod/konkrete/versions?g=1.21.1&l=neoforge
+- [CLIENT] Melody: https://modrinth.com/mod/melody/versions?g=1.21.1&l=neoforge
+- [CLIENT] Essential: https://modrinth.com/mod/essential/versions?g=1.21.1&l=forge
+- [CLIENT] Distraction Free Recipes: https://modrinth.com/mod/distraction-free-recipes/versions?g=1.21.1&l=neoforge
+
+== CurseForge (dosya sayfası: 1.21.1 + NeoForge filtresi) ==
+- Twilight Forest 4.8.3345: https://www.curseforge.com/minecraft/mc-mods/the-twilight-forest/files?version=1.21.1
+- Born in Chaos 1.7.6: https://www.curseforge.com/minecraft/mc-mods/born-in-chaos/files?version=1.21.1
+- Epic Terrain 0.1.4: https://www.curseforge.com/minecraft/mc-mods/epic-terrain/files?version=1.21.1
+- Alex's Mobs: https://www.curseforge.com/minecraft/mc-mods/alexs-mobs/files?version=1.21.1
+- Dungeon Crawl: https://www.curseforge.com/minecraft/mc-mods/dungeon-crawl/files?version=1.21.1
+- Farmer's Structures: https://www.curseforge.com/minecraft/mc-mods/farmers-structures/files?version=1.21.1
+- Goblin Traders: https://www.curseforge.com/minecraft/mc-mods/goblin-traders/files?version=1.21.1
+- Ore Excavation: https://www.curseforge.com/minecraft/mc-mods/ore-excavation/files?version=1.21.1
+- Extra Golems Reborn: https://www.curseforge.com/minecraft/mc-mods/extra-golems-reborn/files?version=1.21.1

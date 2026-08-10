@@ -1,0 +1,976 @@
+{
+  "minecraft": "1.21.1",
+  "loader": "neoforge",
+  "_aciklama": "Kurulu 209 modun TAM listesi (146 ortak + 61 client + 2 server-only). Script en guncel surumleri indirip mods-server/ + mods-client/ ayirir ve zip'ler.",
+  "mods": [
+    {
+      "name": "aquaculture",
+      "slug": "aquaculture"
+    },
+    {
+      "name": "badoptimizations",
+      "slug": "badoptimizations"
+    },
+    {
+      "name": "bartering-station",
+      "slug": "bartering-station"
+    },
+    {
+      "name": "betterend (FABRIC via Connector)",
+      "slug": "betterend",
+      "loaders": [
+        "fabric"
+      ]
+    },
+    {
+      "name": "betternether (FABRIC via Connector)",
+      "slug": "betternether",
+      "loaders": [
+        "fabric"
+      ]
+    },
+    {
+      "name": "biomes-o-plenty",
+      "slug": "biomes-o-plenty"
+    },
+    {
+      "name": "chunky",
+      "slug": "chunky"
+    },
+    {
+      "name": "clumps",
+      "slug": "clumps"
+    },
+    {
+      "name": "connector-extras",
+      "slug": "connector-extras"
+    },
+    {
+      "name": "corgilib",
+      "slug": "corgilib"
+    },
+    {
+      "name": "creativecore",
+      "slug": "creativecore"
+    },
+    {
+      "name": "easy-anvils",
+      "slug": "easy-anvils"
+    },
+    {
+      "name": "easy-magic",
+      "slug": "easy-magic"
+    },
+    {
+      "name": "enchanting-infuser",
+      "slug": "enchanting-infuser"
+    },
+    {
+      "name": "explorify",
+      "slug": "explorify"
+    },
+    {
+      "name": "farmers-delight",
+      "slug": "farmers-delight"
+    },
+    {
+      "name": "jade",
+      "slug": "jade"
+    },
+    {
+      "name": "leaves-be-gone",
+      "slug": "leaves-be-gone"
+    },
+    {
+      "name": "natures-compass",
+      "slug": "natures-compass"
+    },
+    {
+      "name": "neruina",
+      "slug": "neruina"
+    },
+    {
+      "name": "oh-the-biomes-weve-gone",
+      "slug": "oh-the-biomes-weve-gone"
+    },
+    {
+      "name": "oh-the-trees-youll-grow",
+      "slug": "oh-the-trees-youll-grow"
+    },
+    {
+      "name": "ping-wheel",
+      "slug": "ping-wheel"
+    },
+    {
+      "name": "puzzles-lib",
+      "slug": "puzzles-lib"
+    },
+    {
+      "name": "quark",
+      "slug": "quark"
+    },
+    {
+      "name": "raided",
+      "slug": "raided"
+    },
+    {
+      "name": "serene-seasons",
+      "slug": "serene-seasons"
+    },
+    {
+      "name": "skeleton-ai-fix",
+      "slug": "skeleton-ai-fix"
+    },
+    {
+      "name": "terrablender",
+      "slug": "terrablender"
+    },
+    {
+      "name": "terralith",
+      "slug": "terralith"
+    },
+    {
+      "name": "trading-post",
+      "slug": "trading-post"
+    },
+    {
+      "name": "visual-workbench",
+      "slug": "visual-workbench"
+    },
+    {
+      "name": "yungs-api",
+      "slug": "yungs-api"
+    },
+    {
+      "name": "yungs-better-dungeons",
+      "slug": "yungs-better-dungeons"
+    },
+    {
+      "name": "yungs-better-end-island",
+      "slug": "yungs-better-end-island"
+    },
+    {
+      "name": "yungs-better-jungle-temples",
+      "slug": "yungs-better-jungle-temples"
+    },
+    {
+      "name": "yungs-better-mineshafts",
+      "slug": "yungs-better-mineshafts"
+    },
+    {
+      "name": "yungs-better-nether-fortresses",
+      "slug": "yungs-better-nether-fortresses"
+    },
+    {
+      "name": "yungs-better-ocean-monuments",
+      "slug": "yungs-better-ocean-monuments"
+    },
+    {
+      "name": "yungs-better-strongholds",
+      "slug": "yungs-better-strongholds"
+    },
+    {
+      "name": "yungs-better-witch-huts",
+      "slug": "yungs-better-witch-huts"
+    },
+    {
+      "name": "yungs-bridges",
+      "slug": "yungs-bridges"
+    },
+    {
+      "name": "zeta",
+      "slug": "zeta"
+    },
+    {
+      "name": "adorabuild-structures",
+      "slug": "adorabuild-structures"
+    },
+    {
+      "name": "advanced-netherite",
+      "slug": "advanced-netherite"
+    },
+    {
+      "name": "aether",
+      "slug": "aether"
+    },
+    {
+      "name": "alternate-current",
+      "slug": "alternate-current"
+    },
+    {
+      "name": "amendments",
+      "slug": "amendments"
+    },
+    {
+      "name": "architectury-api",
+      "slug": "architectury-api"
+    },
+    {
+      "name": "awesome-dungeon-edition-ocean",
+      "slug": "awesome-dungeon-edition-ocean"
+    },
+    {
+      "name": "balm",
+      "slug": "balm"
+    },
+    {
+      "name": "bclib (FABRIC via Connector)",
+      "slug": "bclib",
+      "loaders": [
+        "fabric"
+      ]
+    },
+    {
+      "name": "better-village",
+      "slug": "better-village"
+    },
+    {
+      "name": "blossom-blade",
+      "slug": "blossom-blade"
+    },
+    {
+      "name": "bookshelf",
+      "slug": "bookshelf"
+    },
+    {
+      "name": "carry-on",
+      "slug": "carry-on"
+    },
+    {
+      "name": "charm-of-undying",
+      "slug": "charm-of-undying"
+    },
+    {
+      "name": "chipped",
+      "slug": "chipped"
+    },
+    {
+      "name": "citadel",
+      "slug": "citadel"
+    },
+    {
+      "name": "cloth-config",
+      "slug": "cloth-config"
+    },
+    {
+      "name": "collective",
+      "slug": "collective"
+    },
+    {
+      "name": "comforts",
+      "slug": "comforts"
+    },
+    {
+      "name": "configurable",
+      "slug": "configurable"
+    },
+    {
+      "name": "configured",
+      "slug": "configured"
+    },
+    {
+      "name": "connector",
+      "slug": "connector"
+    },
+    {
+      "name": "coroutil",
+      "slug": "coroutil"
+    },
+    {
+      "name": "cristel-lib",
+      "slug": "cristel-lib"
+    },
+    {
+      "name": "cupboard",
+      "slug": "cupboard"
+    },
+    {
+      "name": "curios",
+      "slug": "curios"
+    },
+    {
+      "name": "cyclic",
+      "slug": "cyclic"
+    },
+    {
+      "name": "deeperdarker",
+      "slug": "deeperdarker"
+    },
+    {
+      "name": "dungeons-and-taverns",
+      "slug": "dungeons-and-taverns"
+    },
+    {
+      "name": "elevatormod",
+      "slug": "elevatormod"
+    },
+    {
+      "name": "every-compat",
+      "slug": "every-compat"
+    },
+    {
+      "name": "ferrite-core",
+      "slug": "ferrite-core"
+    },
+    {
+      "name": "flib",
+      "slug": "flib"
+    },
+    {
+      "name": "forgified-fabric-api",
+      "slug": "forgified-fabric-api"
+    },
+    {
+      "name": "framework",
+      "slug": "framework"
+    },
+    {
+      "name": "geckolib",
+      "slug": "geckolib"
+    },
+    {
+      "name": "gravestone-mod",
+      "slug": "gravestone-mod"
+    },
+    {
+      "name": "guard-villagers",
+      "slug": "guard-villagers"
+    },
+    {
+      "name": "handcrafted",
+      "slug": "handcrafted"
+    },
+    {
+      "name": "inventory-essentials",
+      "slug": "inventory-essentials"
+    },
+    {
+      "name": "iron-chests",
+      "slug": "iron-chests"
+    },
+    {
+      "name": "iron-furnaces",
+      "slug": "iron-furnaces"
+    },
+    {
+      "name": "level-hearts",
+      "slug": "level-hearts"
+    },
+    {
+      "name": "library-ferret",
+      "slug": "library-ferret"
+    },
+    {
+      "name": "lithium",
+      "slug": "lithium"
+    },
+    {
+      "name": "lithostitched",
+      "slug": "lithostitched"
+    },
+    {
+      "name": "lootr",
+      "slug": "lootr"
+    },
+    {
+      "name": "mcw-furniture",
+      "slug": "mcw-furniture"
+    },
+    {
+      "name": "mcw-lights",
+      "slug": "mcw-lights"
+    },
+    {
+      "name": "mcw-paintings",
+      "slug": "mcw-paintings"
+    },
+    {
+      "name": "mcw-roofs",
+      "slug": "mcw-roofs"
+    },
+    {
+      "name": "mcw-trapdoors",
+      "slug": "mcw-trapdoors"
+    },
+    {
+      "name": "modernfix",
+      "slug": "modernfix"
+    },
+    {
+      "name": "moonlight",
+      "slug": "moonlight"
+    },
+    {
+      "name": "more-vanilla-shields",
+      "slug": "more-vanilla-shields"
+    },
+    {
+      "name": "mowzies-mobs",
+      "slug": "mowzies-mobs"
+    },
+    {
+      "name": "naturalist",
+      "slug": "naturalist"
+    },
+    {
+      "name": "noisium",
+      "slug": "noisium"
+    },
+    {
+      "name": "owo-lib",
+      "slug": "owo-lib"
+    },
+    {
+      "name": "player-animation-lib",
+      "slug": "player-animation-lib"
+    },
+    {
+      "name": "polymorph",
+      "slug": "polymorph"
+    },
+    {
+      "name": "reap",
+      "slug": "reap"
+    },
+    {
+      "name": "repurposed-structures-forge",
+      "slug": "repurposed-structures-forge"
+    },
+    {
+      "name": "resourceful-config",
+      "slug": "resourceful-config"
+    },
+    {
+      "name": "resourceful-lib",
+      "slug": "resourceful-lib"
+    },
+    {
+      "name": "spark",
+      "slug": "spark"
+    },
+    {
+      "name": "simple-storage-network",
+      "slug": "simple-storage-network"
+    },
+    {
+      "name": "structure-layout-optimizer",
+      "slug": "structure-layout-optimizer"
+    },
+    {
+      "name": "structure-essentials",
+      "slug": "structure-essentials"
+    },
+    {
+      "name": "supermartijn642configlib",
+      "slug": "supermartijn642configlib"
+    },
+    {
+      "name": "supplementaries",
+      "slug": "supplementaries"
+    },
+    {
+      "name": "towns-and-towers",
+      "slug": "towns-and-towers"
+    },
+    {
+      "name": "travelersbackpack",
+      "slug": "travelersbackpack"
+    },
+    {
+      "name": "tree-harvester",
+      "slug": "tree-harvester"
+    },
+    {
+      "name": "u-team-core",
+      "slug": "u-team-core"
+    },
+    {
+      "name": "underlay",
+      "slug": "underlay"
+    },
+    {
+      "name": "useful-backpacks",
+      "slug": "useful-backpacks"
+    },
+    {
+      "name": "villages-and-pillages",
+      "slug": "villages-and-pillages"
+    },
+    {
+      "name": "void-totem",
+      "slug": "void-totem"
+    },
+    {
+      "name": "waystones",
+      "slug": "waystones"
+    },
+    {
+      "name": "worldweaver (FABRIC via Connector)",
+      "slug": "worldweaver",
+      "loaders": [
+        "fabric"
+      ]
+    },
+    {
+      "name": "wunderlib (FABRIC via Connector)",
+      "slug": "wunderlib",
+      "loaders": [
+        "fabric"
+      ]
+    },
+    {
+      "name": "zetafix",
+      "slug": "zetafix"
+    },
+    {
+      "name": "advancement-plaques",
+      "slug": "advancement-plaques",
+      "client": true
+    },
+    {
+      "name": "ambient-sounds",
+      "slug": "ambient-sounds",
+      "client": true
+    },
+    {
+      "name": "better-advancements",
+      "slug": "better-advancements",
+      "client": true
+    },
+    {
+      "name": "better-mods-button",
+      "slug": "better-mods-button",
+      "client": true
+    },
+    {
+      "name": "configured-defaults",
+      "slug": "configured-defaults",
+      "client": true
+    },
+    {
+      "name": "controlling",
+      "slug": "controlling",
+      "client": true
+    },
+    {
+      "name": "delete-worlds-to-trash",
+      "slug": "delete-worlds-to-trash",
+      "client": true
+    },
+    {
+      "name": "essential",
+      "slug": "essential",
+      "client": true
+    },
+    {
+      "name": "fps-reducer",
+      "slug": "fps-reducer",
+      "client": true
+    },
+    {
+      "name": "highlighter",
+      "slug": "highlighter",
+      "client": true
+    },
+    {
+      "name": "iceberg",
+      "slug": "iceberg",
+      "client": true
+    },
+    {
+      "name": "immediatelyfast",
+      "slug": "immediatelyfast",
+      "client": true
+    },
+    {
+      "name": "just-enough-professions",
+      "slug": "just-enough-professions",
+      "client": true
+    },
+    {
+      "name": "just-enough-resources",
+      "slug": "just-enough-resources",
+      "client": true
+    },
+    {
+      "name": "longer-chat-history",
+      "slug": "longer-chat-history",
+      "client": true
+    },
+    {
+      "name": "mindful-darkness",
+      "slug": "mindful-darkness",
+      "client": true
+    },
+    {
+      "name": "mouse-tweaks",
+      "slug": "mouse-tweaks",
+      "client": true
+    },
+    {
+      "name": "overflowing-bars",
+      "slug": "overflowing-bars",
+      "client": true
+    },
+    {
+      "name": "particle-effects",
+      "slug": "particle-effects",
+      "client": true
+    },
+    {
+      "name": "resource-pack-overrides",
+      "slug": "resource-pack-overrides",
+      "client": true
+    },
+    {
+      "name": "searchables",
+      "slug": "searchables",
+      "client": true
+    },
+    {
+      "name": "simple-discord-rich-presence",
+      "slug": "simple-discord-rich-presence",
+      "client": true
+    },
+    {
+      "name": "stylish-effects",
+      "slug": "stylish-effects",
+      "client": true
+    },
+    {
+      "name": "yungs-menu-tweaks",
+      "slug": "yungs-menu-tweaks",
+      "client": true
+    },
+    {
+      "name": "appleskin",
+      "slug": "appleskin",
+      "client": true
+    },
+    {
+      "name": "athena",
+      "slug": "athena",
+      "client": true
+    },
+    {
+      "name": "better-compatibility-checker",
+      "slug": "better-compatibility-checker",
+      "client": true
+    },
+    {
+      "name": "chat-heads",
+      "slug": "chat-heads",
+      "client": true
+    },
+    {
+      "name": "client-sort",
+      "slug": "client-sort",
+      "client": true
+    },
+    {
+      "name": "color-wheel",
+      "slug": "color-wheel",
+      "client": true
+    },
+    {
+      "name": "continuity",
+      "slug": "continuity",
+      "client": true
+    },
+    {
+      "name": "distraction-free-recipes",
+      "slug": "distraction-free-recipes",
+      "client": true
+    },
+    {
+      "name": "drippy-loading-screen",
+      "slug": "drippy-loading-screen",
+      "client": true
+    },
+    {
+      "name": "eating-animation",
+      "slug": "eating-animation",
+      "client": true
+    },
+    {
+      "name": "enchantment-descriptions",
+      "slug": "enchantment-descriptions",
+      "client": true
+    },
+    {
+      "name": "entity-model-features",
+      "slug": "entity-model-features",
+      "client": true
+    },
+    {
+      "name": "entity-texture-features",
+      "slug": "entity-texture-features",
+      "client": true
+    },
+    {
+      "name": "entityculling",
+      "slug": "entityculling",
+      "client": true
+    },
+    {
+      "name": "fancymenu",
+      "slug": "fancymenu",
+      "client": true
+    },
+    {
+      "name": "glow-up",
+      "slug": "glow-up",
+      "client": true
+    },
+    {
+      "name": "gml",
+      "slug": "gml",
+      "client": true
+    },
+    {
+      "name": "inventory-hud",
+      "slug": "inventory-hud",
+      "client": true
+    },
+    {
+      "name": "iris",
+      "slug": "iris",
+      "client": true
+    },
+    {
+      "name": "iris-shader-folder",
+      "slug": "iris-shader-folder",
+      "client": true
+    },
+    {
+      "name": "jei",
+      "slug": "jei",
+      "client": true
+    },
+    {
+      "name": "journeymap",
+      "slug": "journeymap",
+      "client": true
+    },
+    {
+      "name": "konkrete",
+      "slug": "konkrete",
+      "client": true
+    },
+    {
+      "name": "log-begone",
+      "slug": "log-begone",
+      "client": true
+    },
+    {
+      "name": "luna",
+      "slug": "luna",
+      "client": true
+    },
+    {
+      "name": "melody",
+      "slug": "melody",
+      "client": true
+    },
+    {
+      "name": "midnightlib",
+      "slug": "midnightlib",
+      "client": true
+    },
+    {
+      "name": "modpack-update-checker",
+      "slug": "modpack-update-checker",
+      "client": true
+    },
+    {
+      "name": "not-enough-animations",
+      "slug": "not-enough-animations",
+      "client": true
+    },
+    {
+      "name": "prickle",
+      "slug": "prickle",
+      "client": true
+    },
+    {
+      "name": "rebind-narrator",
+      "slug": "rebind-narrator",
+      "client": true
+    },
+    {
+      "name": "skinlayers3d",
+      "slug": "skinlayers3d",
+      "client": true
+    },
+    {
+      "name": "sodium",
+      "slug": "sodium",
+      "client": true
+    },
+    {
+      "name": "sound-physics-remastered",
+      "slug": "sound-physics-remastered",
+      "client": true
+    },
+    {
+      "name": "txnilib",
+      "slug": "txnilib",
+      "client": true
+    },
+    {
+      "name": "audio-improvements",
+      "slug": "audio-improvements",
+      "client": true
+    },
+    {
+      "name": "better-world-loading",
+      "slug": "better-world-loading",
+      "client": true
+    },
+    {
+      "name": "C2ME (CPU coklu cekirdek)",
+      "slug": "c2me-neoforge"
+    },
+    {
+      "name": "C2ME OpenCL (GPU - DENEYSEL)",
+      "slug": "c2me-ocl",
+      "experimental": true
+    },
+    {
+      "name": "Enchantments Encore (cok sayida yeni buyu)",
+      "slug": "enchantments-encore"
+    },
+    {
+      "name": "Fancy Enchantments (guclu/ozellestirilebilir buyuler)",
+      "slug": "fancy-enchantments"
+    },
+    {
+      "name": "Sodium Extra (client - shader FPS)",
+      "slug": "sodium-extra",
+      "client": true
+    },
+    {
+      "name": "MoreCulling (client - yuz culling)",
+      "slug": "moreculling",
+      "client": true
+    },
+    {
+      "name": "Reese's Sodium Options (client - Sodium ayar UI)",
+      "slug": "reeses-sodium-options",
+      "client": true
+    },
+    {
+      "name": "Nvidium (client - NVIDIA renderer, DENEYSEL)",
+      "slug": "nvidium",
+      "client": true,
+      "experimental": true,
+      "loaders": [
+        "fabric"
+      ]
+    },
+    {
+      "name": "Distant Horizons (client - LOD uzak goruntu)",
+      "slug": "distanthorizons",
+      "client": true
+    },
+    {
+      "name": "Bobby (client - sunucu siniri otesi onbellek)",
+      "slug": "bobby",
+      "loaders": [
+        "fabric"
+      ],
+      "client": true
+    },
+    {
+      "name": "ScalableLux (isin motoru - stutter azaltir)",
+      "slug": "scalablelux",
+      "experimental": true
+    }
+  ],
+  "curseforge_only": [
+    {
+      "name": "Dungeon Crawl",
+      "slug": "dungeon-crawl",
+      "cf_mod_id": 324973
+    },
+    {
+      "name": "Extra Golems Reborn",
+      "slug": "extra-golems-reborn",
+      "cf_mod_id": 1456863
+    },
+    {
+      "name": "Farmer's Structures",
+      "slug": "farmers-structures",
+      "cf_mod_id": 1088877
+    },
+    {
+      "name": "Alex's Mobs",
+      "slug": "alexs-mobs",
+      "cf_mod_id": 426558
+    },
+    {
+      "name": "Born in Chaos",
+      "slug": "born-in-chaos",
+      "cf_mod_id": 686437
+    },
+    {
+      "name": "Epic Terrain",
+      "slug": "epic-terrain"
+    },
+    {
+      "name": "Goblin Traders",
+      "slug": "goblin-traders",
+      "cf_mod_id": 363703
+    },
+    {
+      "name": "Ore Excavation",
+      "slug": "ore-excavation",
+      "cf_mod_id": 250898
+    },
+    {
+      "name": "Twilight Forest",
+      "slug": "the-twilight-forest",
+      "cf_mod_id": 227639
+    },
+    {
+      "name": "FTB Library",
+      "slug": "ftb-library"
+    },
+    {
+      "name": "FTB Quests",
+      "slug": "ftb-quests"
+    },
+    {
+      "name": "FTB Teams",
+      "slug": "ftb-teams"
+    },
+    {
+      "name": "ServerCore",
+      "slug": "servercore"
+    },
+    {
+      "name": "Loot Integrations",
+      "slug": "lootintegrations"
+    },
+    {
+      "name": "More Mobs",
+      "slug": "more-mobs"
+    },
+    {
+      "name": "GlitchCore",
+      "slug": "glitchcore"
+    },
+    {
+      "name": "ItemPhysic",
+      "slug": "itemphysic"
+    },
+    {
+      "name": "Domum Ornamentum",
+      "slug": "domum-ornamentum"
+    },
+    {
+      "name": "More and More Armor",
+      "slug": "more-and-more-armor"
+    }
+  ]
+}
