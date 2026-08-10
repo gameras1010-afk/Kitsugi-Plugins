@@ -229,7 +229,7 @@ OVERRIDES = {
     "logbegone": "CF:logbegone",
     "lootintegrations": "CF:loot-integrations",
     "lootintegrationsyungs": "CF:loot-integrations-yungs",
-    "simplerpc": "CF:simplerpc",
+    "simplerpc": "simple-discord-rpc",
     "zetafix": "CF:zetafix",
     "cupboard": "CF:cupboard",
     "gml": "CF:gml",
@@ -242,29 +242,28 @@ OVERRIDES = {
 
 # CF slugs where my primary guess may be wrong: stem -> list of candidate CF slugs
 CF_CANDIDATES = {
+    "structureessentials": ["structure-essentials-forge-fabric", "structure-essentials", "structureessentials"],
+    "lootintegrationsyungs": ["yung-structures-addon-for-loot-integrations", "loot-integrations-yungs", "lootintegrations-yungs"],
+    "acedium": ["acedium-sodiumized", "acedium"],
+    "awesomedungeonocean": ["awesome-dungeon-edition-ocean-neoforge", "awesome-dungeon-ocean", "awesome-dungeon"],
+    "journeymapwebmap": ["journeymap-web-map", "journeymap-webmap"],
+    "logbegone": ["log-begone", "logbegone", "log-be-gone"],
     "ironchest": ["iron-chests", "ironchest"],
     "ftblibrary": ["ftb-library-forge", "ftb-library"],
     "ftbteams": ["ftb-teams-forge", "ftb-teams"],
     "highlighter": ["item-highlighter"],
     "twilightforest": ["the-twilight-forest"],
     "alexsmobs": ["alexs-mobs"],
-    "journeymapwebmap": ["journeymap-webmap"],
     "farmersstructures": ["farmers-structures"],
     "domumornamentum": ["domum-ornamentum"],
     "goblintraders": ["goblin-traders"],
-    "awesomedungeonocean": ["awesome-dungeon-ocean", "awesome-dungeon"],
-    "structureessentials": ["structure-essentials", "structureessentials"],
     "oreexcavation": ["ore-excavation"],
-    "lavatrident": ["lavatrident"],
-    "logbegone": ["logbegone", "log-be-gone"],
+    "lavatrident": ["lavatrident", "lava-trident"],
     "lootintegrations": ["loot-integrations", "lootintegrations"],
-    "lootintegrationsyungs": ["loot-integrations-yungs", "lootintegrations-yungs"],
-    "simplerpc": ["simplerpc", "simple-rpc"],
     "morearmor": ["more-armor-new-armors-tools-ores", "more-armor"],
     "zetafix": ["zetafix"],
     "cupboard": ["cupboard"],
     "gml": ["gml", "groovymodloader"],
-    "acedium": ["acedium"],
     "framework": ["framework"],
     "extragolemsreborn": ["extra-golems-reborn", "extra-golems"],
     "ftbquests": ["ftb-quests-forge", "ftb-quests"],
@@ -437,7 +436,17 @@ CF_PIDS = {
     "ftb-quests-forge": 289412, "ftb-library-forge": 404465, "ftb-teams-forge": 404468,
     "the-twilight-forest": 227639, "iron-chests": 228756,
     "more-armor-new-armors-tools-ores": 1431856, "goblin-traders": 363703,
+    "structure-essentials-forge-fabric": 832882, "acedium-sodiumized": 1577618,
+    "awesome-dungeon-edition-ocean-neoforge": 533528,
+    "yung-structures-addon-for-loot-integrations": 1012211,
 }
+
+
+def has_exact_version(values, target="1.21.1"):
+    """Exact game-version match: '1.21.1' must appear as its own token."""
+    if isinstance(values, list):
+        return target in [str(v) for v in values]
+    return target in set(re.findall(r"\d+(?:\.\d+)+", str(values)))
 
 
 def cf_parse_legacy_page(html):
@@ -454,42 +463,62 @@ def cf_parse_legacy_page(html):
     return rows
 
 
+def cf_api_pick(pid, diag, tag="1.21.1", loader="neoforge"):
+    """Query www CF API for files; return first exact-match release file."""
+    lt = {"neoforge": 6, "forge": 1}.get(loader, 6)
+    for page in range(3):
+        try:
+            api = get_json(f"https://www.curseforge.com/api/v1/mods/{pid}/files"
+                           f"?gameVersion={tag}&modLoaderType={lt}&pageSize=50&index={page * 50}", tries=2)
+        except Exception as e:  # noqa: BLE001
+            diag.append(f"api {pid} p{page}: {e}")
+            return None
+        files = api.get("data") or []
+        if not files:
+            break
+        exact = [f for f in files if has_exact_version(f.get("gameVersions") or [], tag)]
+        if exact:
+            rel = [f for f in exact if f.get("releaseType") == 1]
+            return (rel or exact)[0]
+    return None
+
+
 def cf_find_file(slug_candidates, diag):
     """Find newest 1.21.1 NeoForge file of a CF project.
-    Chain: legacy files page -> cfwidget -> hardcoded pid + www API."""
+    Chain: legacy files page (paginated) -> cfwidget+API -> hardcoded pid + API."""
     # --- attempt 1: legacy files page (no pid needed) ---
     for slug in slug_candidates:
-        try:
-            html = http_get(f"https://legacy.curseforge.com/minecraft/mc-mods/{slug}/files/all?page=1&pageSize=50",
-                            headers=CF_HEADERS, timeout=90).decode("utf-8", "replace")
-        except Exception as e:  # noqa: BLE001
-            diag.append(f"legacy {slug}: {e}")
-            continue
-        if "File Details" not in html and "/files/" not in html:
-            diag.append(f"legacy {slug}: not found")
-            continue
-        for row in cf_parse_legacy_page(html):
-            cells = row["cells"]
-            if len(cells) < 5:
-                continue
-            gamever = cells[4]
-            if "1.21.1" not in gamever:
-                continue
-            # fetch legacy file page to check loader + real filename
+        found_page = False
+        for page in range(1, 6):
             try:
-                fhtml = http_get(f"https://legacy.curseforge.com/minecraft/mc-mods/{slug}/files/{row['file_id']}",
-                                 headers=CF_HEADERS, timeout=90).decode("utf-8", "replace")
-            except Exception:  # noqa: BLE001
-                continue
-            fname = re.search(r"Filename\s*[:]?\s*(?:</?[^>]+>\s*)*([^<>\s]+\.jar)", fhtml)
-            modloader = "NeoForge" in fhtml
-            if not fname:
-                continue
-            if modloader:
+                html = http_get(f"https://legacy.curseforge.com/minecraft/mc-mods/{slug}/files/all?page={page}&pageSize=50",
+                                headers=CF_HEADERS, timeout=90).decode("utf-8", "replace")
+            except Exception as e:  # noqa: BLE001
+                diag.append(f"legacy {slug} p{page}: {e}")
+                break
+            if "File Details" not in html and "/files/" not in html:
+                if page == 1:
+                    diag.append(f"legacy {slug}: not found")
+                break
+            found_page = True
+            for row in cf_parse_legacy_page(html):
+                cells = row["cells"]
+                if len(cells) < 5 or not has_exact_version(cells[4]):
+                    continue
+                try:
+                    fhtml = http_get(f"https://legacy.curseforge.com/minecraft/mc-mods/{slug}/files/{row['file_id']}",
+                                     headers=CF_HEADERS, timeout=90).decode("utf-8", "replace")
+                except Exception:  # noqa: BLE001
+                    continue
+                fname = re.search(r"Filename\s*[:]?\s*(?:</?[^>]+>\s*)*([^<>\s]+\.jar)", fhtml)
+                if not fname or "NeoForge" not in fhtml:
+                    continue
                 return {"file_id": row["file_id"], "file_name": fname.group(1).strip(),
-                        "slug": slug, "cf_id": CF_PIDS.get(slug)}
-        diag.append(f"legacy {slug}: no 1.21.1 file")
-    # --- attempt 2: cfwidget -> pid, then www API for file ---
+                        "slug": slug, "cf_id": CF_PIDS.get(slug), "source": "legacy"}
+        if not found_page:
+            continue
+        diag.append(f"legacy {slug}: no exact 1.21.1 NeoForge file")
+    # --- attempt 2: cfwidget -> pid, then www API ---
     for slug in slug_candidates:
         try:
             data = get_json(f"https://api.cfwidget.com/minecraft/mc-mods/{slug}", tries=2)
@@ -500,32 +529,29 @@ def cf_find_file(slug_candidates, diag):
         if not pid:
             diag.append(f"cfwidget {slug}: empty")
             continue
-        try:
-            api = get_json(f"https://www.curseforge.com/api/v1/mods/{pid}/files"
-                           f"?gameVersion=1.21.1&modLoaderType=6&pageSize=3", tries=2)
-            files = [f for f in api.get("data") or [] if f.get("releaseType") == 1] or (api.get("data") or [])
-            if files:
-                f = files[0]
-                return {"file_id": f["id"], "file_name": f.get("fileName"),
-                        "slug": slug, "cf_id": pid}
-            diag.append(f"api {pid}: no files")
-        except Exception as e:  # noqa: BLE001
-            diag.append(f"api {pid}: {e}")
+        f = cf_api_pick(pid, diag)
+        if f:
+            return {"file_id": f["id"], "file_name": f.get("fileName"),
+                    "slug": slug, "cf_id": pid, "source": "api"}
+        f = cf_api_pick(pid, diag, tag="1.21", loader="neoforge")
+        if f:
+            return {"file_id": f["id"], "file_name": f.get("fileName"),
+                    "slug": slug, "cf_id": pid, "source": "api", "note": "1.21 build (1.21.1 yok)"}
+        diag.append(f"api {pid}: no exact 1.21.1 file")
     # --- attempt 3: hardcoded pid + www API ---
     for slug in slug_candidates:
         pid = CF_PIDS.get(slug)
         if not pid:
             continue
-        try:
-            api = get_json(f"https://www.curseforge.com/api/v1/mods/{pid}/files"
-                           f"?gameVersion=1.21.1&modLoaderType=6&pageSize=3", tries=2)
-            files = [f for f in api.get("data") or [] if f.get("releaseType") == 1] or (api.get("data") or [])
-            if files:
-                f = files[0]
-                return {"file_id": f["id"], "file_name": f.get("fileName"),
-                        "slug": slug, "cf_id": pid}
-        except Exception as e:  # noqa: BLE001
-            diag.append(f"hardcoded {slug} ({pid}): {e}")
+        f = cf_api_pick(pid, diag)
+        if f:
+            return {"file_id": f["id"], "file_name": f.get("fileName"),
+                    "slug": slug, "cf_id": pid, "source": "api"}
+        f = cf_api_pick(pid, diag, tag="1.21", loader="neoforge")
+        if f:
+            return {"file_id": f["id"], "file_name": f.get("fileName"),
+                    "slug": slug, "cf_id": pid, "source": "api", "note": "1.21 build (1.21.1 yok)"}
+        diag.append(f"hardcoded {slug} ({pid}): no exact 1.21.1 file")
     return None
 
 
@@ -553,7 +579,7 @@ def cf_download(cfg, outdir):
                 f.write(data)
             return {"file_name": fname, "file_id": fid,
                     "project_id": info.get("cf_id"), "cf_slug": info.get("slug"),
-                    "download_host": label}, None
+                    "download_host": label, "note": info.get("note", "")}, None
         except Exception as e:  # noqa: BLE001
             diag.append(f"{label}: {e}")
     return None, "indirme basarisiz | " + " | ".join(diag[-6:])
@@ -638,9 +664,10 @@ def main():
                 rec.update({
                     "status": "OK", "source": "curseforge", "slug": info.get("project_id"),
                     "cf_slugs": target, "cf_page": info.get("page_url"),
-                    "title": name, "version_number": "",
+                    "title": info.get("display") or name, "version_number": "",
                     "version_type": "release", "loaders_used": ["neoforge"],
                     "file_name": info["file_name"], "file_id": info["file_id"],
+                    "cf_note": info.get("note", ""),
                 })
         except Exception as e:  # noqa: BLE001
             rec["status"] = "ERROR"
