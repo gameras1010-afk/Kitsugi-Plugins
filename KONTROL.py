@@ -66,9 +66,11 @@ def main():
     res1 = man1["results"]
     res2 = man2["results"]
     replaced = {r["requested"] for r in res2}
-    # eski (yanlis/secilememis) dosyalari sil
+    # eski (yanlis/secilememis) dosyalari sil - AMA baska kaydin paylastigi dosyalara dokunma
+    keep_files = {r.get("file_name") for r in res1
+                  if r["requested"] not in replaced and r.get("file_name")}
     for r in res1:
-        if r["requested"] in replaced and r.get("file_name"):
+        if r["requested"] in replaced and r.get("file_name") and r["file_name"] not in keep_files:
             p = os.path.join(MERGE, r["file_name"])
             if os.path.exists(p):
                 os.remove(p)
@@ -121,8 +123,13 @@ def main():
     jars = [n for n in os.listdir(MERGE) if n.lower().endswith(".jar")]
     names = [n.lower() for n in os.listdir(MERGE)]
     dups = sorted({n for n in names if names.count(n) > 1})
-    print(f"merge jars: {len(jars)} | dups: {dups}", flush=True)
+    # tum OK kayitlarin dosyalari mevcut mu?
+    ok_files = [r.get("file_name") for r in final_results if r["status"] == "OK" and r.get("file_name")]
+    missing_files = [f for f in ok_files if not os.path.exists(os.path.join(MERGE, f))]
+    print(f"merge jars: {len(jars)} | dups: {dups} | eksik: {missing_files}", flush=True)
     assert not dups, f"kopya dosya adlari: {dups}"
+    assert not missing_files, f"eksik dosyalar: {missing_files}"
+    assert len(jars) == len(ok_files), f"jar sayisi uyusmazligi: {len(jars)} != {len(ok_files)}"
     if os.path.exists(zip_path):
         os.remove(zip_path)
     run(f"cd {MERGE} && zip -q -r -1 {zip_path} . && cd {ROOT}")
