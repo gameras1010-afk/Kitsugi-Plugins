@@ -59,7 +59,7 @@ def main():
     man2 = json.load(open(os.path.join("mods_out2", "manifest.json")))
     n_fix = len([l for l in open("mods-fetch/modlist_fix.txt") if l.strip().endswith(".jar")])
     assert man2["total"] == n_fix, f"fix islemi eksik: {man2['total']} != {n_fix}"
-    print(f"fix manifest: total={man2['total']} ok={man2['ok']} failed={man2['failed']}", flush=True)
+    print(f"fix manifest: total={man2['total']} ok={man2['ok']} failed={man2['total'] - man2['ok']}", flush=True)
 
     # 4) birlestir: run1 manifest + run2 manifest
     man1 = json.load(open(os.path.join(MERGE, "manifest.json")))

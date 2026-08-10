@@ -433,51 +433,30 @@ def modrinth_latest(slug):
 
 
 def cf_find_file(slug_candidates):
-    """Via r.jina.ai: files page -> project id; API -> newest 1.21.1 NeoForge file."""
+    """Via api.cfwidget.com: newest 1.21.1 NeoForge file of a CF project."""
     for slug in slug_candidates:
-        page_url = (f"https://www.curseforge.com/minecraft/mc-mods/{slug}/files/all"
-                    f"?page=1&pageSize=50&version=1.21.1&gameFlavor=NeoForge&showAlphaFiles=hide")
         try:
-            text = http_get("https://r.jina.ai/" + page_url, timeout=120).decode("utf-8", "replace")
+            data = get_json(f"https://api.cfwidget.com/minecraft/mc-mods/{slug}", tries=3)
         except Exception:  # noqa: BLE001
             continue
-        if "Project ID" not in text:
-            continue
-        m = re.search(r"Project ID\s*\n?\s*(\d+)", text)
-        if not m:
-            continue
-        pid = int(m.group(1))
-        try:
-            api_text = http_get(
-                f"https://r.jina.ai/https://www.curseforge.com/api/v1/mods/{pid}/files"
-                f"?gameVersion=1.21.1&modLoaderType=6&pageSize=3",
-                timeout=120).decode("utf-8", "replace")
-        except Exception:  # noqa: BLE001
-            continue
-        # strip jina prefix, find first JSON object
-        js = re.search(r"\{.*\}", api_text, re.S)
-        if not js:
-            continue
-        try:
-            data = json.loads(js.group(0))
-        except Exception:  # noqa: BLE001
-            continue
-        files = data.get("data") or []
-        files = [f for f in files if f.get("releaseType") == 1] or files
-        if not files:
-            continue
-        f = files[0]
-        return {"file_id": f["id"], "file_name": f.get("fileName") or f"file-{f['id']}.jar",
-                "page_url": page_url, "project_id": pid, "display": f.get("displayName", "")}
+        files = data.get("files") or []
+        for f in files:
+            vers = [str(v) for v in (f.get("versions") or [])]
+            ver = str(f.get("version") or "")
+            if "NeoForge" not in vers:
+                continue
+            if ver != "1.21.1" and not ver.startswith("1.21.1") and "1.21.1" not in vers:
+                continue
+            return {"file_id": f["id"], "file_name": f.get("name"),
+                    "slug": slug, "display": f.get("display"), "cf_id": data.get("id")}
     return None
 
 
 def cf_download(cfg, outdir):
     info = cf_find_file(cfg["slugs"])
-    if not info:
-        return None, "CF via jina failed"
+    if info is None:
+        return None, "CF'de 1.21.1 NeoForge dosyasi bulunamadi (cfwidget)"
     fid = info["file_id"]
-    # direct CDN download (media.forgecdn.net has no Cloudflare)
     media = f"https://media.forgecdn.net/files/{fid // 1000}/{fid % 1000}/{info['file_name']}"
     try:
         data = http_get(media, headers=CF_HEADERS, timeout=300)
@@ -487,10 +466,9 @@ def cf_download(cfg, outdir):
         with open(dest, "wb") as f:
             f.write(data)
         return {"file_name": info["file_name"], "file_id": fid,
-                "project_id": info.get("project_id"), "page_url": info["page_url"],
+                "project_id": info.get("cf_id"), "cf_slug": info.get("slug"),
                 "display": info.get("display")}, None
     except Exception as e:  # noqa: BLE001
-        # fallback: api download endpoint via jina? (rarely needed)
         return None, f"media download failed: {e}"
 
 
