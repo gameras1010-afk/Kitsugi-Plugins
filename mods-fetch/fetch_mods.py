@@ -457,7 +457,8 @@ def cf_download(cfg, outdir):
     if info is None:
         return None, "CF'de 1.21.1 NeoForge dosyasi bulunamadi (cfwidget)"
     fid = info["file_id"]
-    media = f"https://media.forgecdn.net/files/{fid // 1000}/{fid % 1000}/{info['file_name']}"
+    media = ("https://media.forgecdn.net/files/"
+             f"{fid // 1000}/{fid % 1000}/" + urllib.parse.quote(info['file_name'], safe=''))
     try:
         data = http_get(media, headers=CF_HEADERS, timeout=300)
         if len(data) < 1000:
