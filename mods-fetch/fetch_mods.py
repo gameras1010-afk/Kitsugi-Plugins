@@ -72,6 +72,7 @@ OVERRIDES = {
     "apotichenchanting": "apothic-enchanting",
     "athena": "athena-ctm",
     "configured": "CF:configured",
+    "configureddefaults": "configured-defaults",
     "moreandmorearmor": "morearmor",
     "mcwfurniture": "macaws-furniture",
     "mcwpaintings": "macaws-paintings",
