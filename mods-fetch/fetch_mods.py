@@ -1,11 +1,8 @@
 #!/usr/bin/env python3
 """
-Kitsugi modpack updater: fetch the LATEST 1.21.1 NeoForge version of each mod
-listed in modlist_raw.txt from Modrinth, verify integrity, and produce:
-  - mods_out/<downloaded jars>
-  - mods_out/manifest.json   (requested -> resolved mapping + hashes)
-  - mods_out/summary.txt     (human readable result summary)
-  - mods_out/GUNCELLEME_REHBERI.txt (Turkish old->new mapping guide)
+Kitsugi modpack updater v2: fetch the LATEST 1.21.1 NeoForge version of each mod.
+Sources: Modrinth API (primary), CurseForge (fallback for CF-only mods).
+Produces: <outdir>/jars + manifest.json + summary.txt + GUNCELLEME_REHBERI.txt
 Usage: fetch_mods.py <modlist> <outdir>
 """
 import concurrent.futures
@@ -21,19 +18,61 @@ import urllib.request
 import zipfile
 
 API = "https://api.modrinth.com/v2"
-UA = {"User-Agent": "KitsugiModpackUpdater/1.0 (github.com/gameras1010-afk/Kitsugi-Plugins; modpack update tool)"}
+UA = {"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0 Safari/537.36 KitsugiModpackUpdater/1.0"}
 
 STOP = {
     "neoforge", "neo", "forge", "neoforged", "fabric", "quilt", "mc", "v", "jar", "all", "full",
     "universal", "updated", "update", "snapshot", "main", "b", "alpha", "beta", "re",
-    "plus", "the", "and", "mod", "mods", "mc1", "patch", "j", "f", "s", "n", "t", "x",
+    "plus", "the", "and", "mod", "mods", "mc1", "patch", "j", "f", "s", "n", "x",
 }
 
-# Manual slug overrides: key = filename stem (letters/digits only, lowercased)
+# key = filename stem (letters/digits, lowercased) -> Modrinth slug
 OVERRIDES = {
     "tandt": "towns-and-towers",
+    "advancementplaques": "advancement-plaques",
+    "betterend": "betterend",
+    "betternether": "betternether",
+    "bookshelf": "bookshelf-lib",
+    "ferritecore": "ferrite-core",
+    "repurposedstructures": "repurposed-structures-forge",
+    "elevatorid": "elevatormod",
+    "gravestone": "gravestone-mod",
+    "deeperdarker": "deeperdarker",
+    "skinlayers3d": "3dskinlayers",
+    "skinrestorer": "skinrestorer",
+    "dungeoncrawl": "dungeoncrawl",
+    "inventoryhud": "inventoryhudplus",
+    "justenoughprofessions": "just-enough-professions-jep",
+    "justenoughresources": "just-enough-resources-jer",
+    "leavesbegone": "leaves-be-gone",
+    "skeletonairfix": "skeleton-ai-fix",
+    "skeletonaifix": "skeleton-ai-fix",
+    "mcwlights": "macaws-lights-and-lamps",
+    "playeranimationlib": "player-animation-library",
+    "travelersbackpack": "travelersbackpack",
+    "entitytexturefeatures": "entitytexturefeatures",
+    "fpsreducer": "fps-reducer",
+    "drippyloadingscreen": "drippy-loading-screen",
+    "drippyloadingscreenmc": "drippy-loading-screen",
+    "fancyenchantments": "fancy-enchantments",
+    "konkrete": "konkrete",
+    "elitekonkrete": "konkrete",
+    "elitekonkretemc": "konkrete",
+    "libraryferret": "library-ferret",
+    "luna": "luna",
+    "lunaminecraft": "luna",
+    "morevanillashields": "more-vanilla-shields",
+    "particleeffects": "particle-effects",
+    "kotlinforforge": "kotlin-for-forge",
+    "kotlinforall": "kotlin-for-forge",
+    "kotlinfor": "kotlin-for-forge",
+    "inventoryessentials": "inventory-essentials",
+    "bettercompatabilitychecker": "better-compatibility-checker",
+    "betterworldloading": "better-world-loading",
+    "apotichenchanting": "apothic-enchanting",
+    "athena": "athena-ctm",
+    "moreandmorearmor": "morearmor",
     "mcwfurniture": "macaws-furniture",
-    "mcwlights": "macaws-lights",
     "mcwpaintings": "macaws-paintings",
     "mcwroofs": "macaws-roofs",
     "mcwtrapdoors": "macaws-trapdoors",
@@ -48,18 +87,15 @@ OVERRIDES = {
     "yungsbetterwitchhuts": "yungs-better-witch-huts",
     "yungsbridges": "yungs-bridges",
     "yungsmenutweaks": "yungs-menu-tweaks",
-    "repurposedstructures": "repurposed-structures",
     "c2me": "c2me-fabric",
     "connector": "sinytra-connector",
     "connectorextras": "connector-extras",
     "forgifiedfabricapi": "forgified-fabric-api",
-    "twilightforest": "the-twilight-forest",
-    "alexsmobs": "alexs-mobs",
+    "twilightforest": "CF:the-twilight-forest",
+    "alexsmobs": "CF:alexs-mobs",
     "mowziesmobs": "mowzies-mobs",
-    "travellersbackpack": "travelers-backpack",
-    "ironchest": "iron-chests",
+    "ironchest": "CF:iron-chests",
     "storagenetwork": "simple-storage-network",
-    "elevatorid": "elevator-id",
     "naturescompass": "natures-compass",
     "architectury": "architectury-api",
     "supermartijn642configlib": "supermartijn642s-config-lib",
@@ -68,38 +104,37 @@ OVERRIDES = {
     "uteamcore": "u-team-core",
     "distanthorizons": "distanthorizons",
     "inventoryprofilesnext": "inventory-profiles-next",
-    "inventoryhud": "inventory-hud-forge",
     "mousetweaks": "mouse-tweaks",
-    "justenoughresources": "just-enough-resources",
-    "justenoughprofessions": "just-enough-professions",
-    "journeymapwebmap": "journeymap-webmap",
+    "journeymapwebmap": "CF:journeymap-webmap",
     "betteradvancements": "better-advancements",
     "enchdesc": "enchantment-descriptions",
     "charmofundying": "charm-of-undying",
     "carryon": "carry-on",
     "ironfurnaces": "iron-furnaces",
     "farmersdelight": "farmers-delight",
-    "farmersstructures": "farmers-structures",
-    "domumornamentum": "domum-ornamentum",
+    "farmersstructures": "CF:farmers-structures",
+    "domumornamentum": "CF:domum-ornamentum",
     "everycomp": "every-compat",
     "bettervillage": "better-village",
     "villagesandpillages": "villages-and-pillages",
     "guardvillagers": "guard-villagers",
-    "goblintraders": "goblin-traders",
-    "betterend": "better-end",
-    "betternether": "better-nether",
+    "goblintraders": "CF:goblin-traders",
     "biomesoplenty": "biomes-o-plenty",
     "ohthebiomeswevegone": "oh-the-biomes-weve-gone",
     "ohthetreesyoullgrow": "oh-the-trees-youll-grow",
     "sereneseasons": "serene-seasons",
     "apothicattributes": "apothic-attributes",
-    "apotichenchanting": "apothic-enchanting",
     "apothicspawners": "apothic-spawners",
-    "dungeoncrawl": "dungeon-crawl",
+    "apothicenchanting": "apothic-enchanting",
     "dungeonsandtaverns": "dungeons-and-taverns",
+    "awesomedungeonocean": "CF:awesome-dungeon-ocean",
+    "structureessentials": "CF:structure-essentials",
+    "structurelayoutoptimizer": "structure-layout-optimizer",
+    "ftbquests": "CF:ftb-quests-forge",
+    "ftblibrary": "CF:ftb-library-forge",
+    "ftbteams": "CF:ftb-teams-forge",
     "treeharvester": "tree-harvester",
-    "leavesbegone": "leaves-begone",
-    "oreexcavation": "ore-excavation",
+    "oreexcavation": "CF:ore-excavation",
     "easyanvils": "easy-anvils",
     "easymagic": "easy-magic",
     "enchantinginfuser": "enchanting-infuser",
@@ -110,7 +145,6 @@ OVERRIDES = {
     "resourcepackoverrides": "resource-pack-overrides",
     "configureddefaults": "configured-defaults",
     "deleteworldstotrash": "delete-worlds-to-trash",
-    "skeletonairfix": "skeleton-ai-fix",
     "tradingpost": "trading-post",
     "overflowingbars": "overflowing-bars",
     "puzzleslib": "puzzles-lib",
@@ -122,7 +156,6 @@ OVERRIDES = {
     "lambdynamiclights": "lambdynamiclights",
     "alternatecurrent": "alternate-current",
     "badoptimizations": "badoptimizations",
-    "ferritecore": "ferritecore",
     "modernfix": "modernfix",
     "noisium": "noisium",
     "lithium": "lithium",
@@ -132,33 +165,25 @@ OVERRIDES = {
     "immediatelyfast": "immediatelyfast",
     "notenoughanimations": "not-enough-animations",
     "entitymodelfeatures": "entity-model-features",
-    "entitytexturefeatures": "entity-texture-features",
-    "skinlayers3d": "skin-layers-3d",
-    "playeranimationlib": "player-animation-lib",
     "playeranimatorapi": "playeranimator",
     "geckolib": "geckolib",
     "citadel": "citadel",
     "balm": "balm",
-    "bookshelf": "bookshelf",
     "clothconfig": "cloth-config",
     "corgilib": "corgilib",
     "craterlib": "craterlib",
     "creativecore": "creativecore",
     "curios": "curios",
     "cristellib": "cristel-lib",
-    "athena": "athena",
     "glitchcore": "glitchcore",
-    "kotlinforforge": "kotlin-for-forge",
     "owolib": "owo-lib",
     "midnightlib": "midnightlib",
     "searchables": "searchables",
     "neruina": "neruina",
-    "skinrestorer": "skin-restorer",
-    "highlighter": "highlighter",
+    "highlighter": "CF:item-highlighter",
     "handcrafted": "handcrafted",
     "chipped": "chipped",
     "waystones": "waystones",
-    "gravestone": "gravestone",
     "levelhearts": "level-hearts",
     "polymorph": "polymorph",
     "comforts": "comforts",
@@ -171,7 +196,6 @@ OVERRIDES = {
     "eatinganimation": "eating-animation",
     "itemphysic": "itemphysic",
     "ambientsounds": "ambientsounds",
-    "fpsreducer2": "fps-reducer",
     "soundphysicsremastered": "sound-physics-remastered",
     "pingwheel": "ping-wheel",
     "chatheads": "chat-heads",
@@ -181,7 +205,6 @@ OVERRIDES = {
     "sodiumextra": "sodium-extra",
     "sodium": "sodium",
     "aether": "aether",
-    "deeperdarker": "deeper-darker",
     "naturalist": "naturalist",
     "terralith": "terralith",
     "terrablender": "terrablender",
@@ -200,21 +223,87 @@ OVERRIDES = {
     "moonlight": "moonlight",
     "cyclic": "cyclic",
     "usefulbackpacks": "useful-backpacks",
-    "travelersbackpack": "travelers-backpack",
-    "carryon": "carry-on",
     "explorify": "explorify",
-    "elevatorid": "elevator-id",
-    "skeletonairfix": "skeleton-ai-fix",
+    "morearmor": "CF:more-armor-new-armors-tools-ores",
+    "lavatrident": "CF:lavatrident",
+    "logbegone": "CF:logbegone",
+    "lootintegrations": "CF:loot-integrations",
+    "lootintegrationsyungs": "CF:loot-integrations-yungs",
+    "simplerpc": "CF:simplerpc",
+    "zetafix": "CF:zetafix",
+    "cupboard": "CF:cupboard",
+    "gml": "CF:gml",
+    "acedium": "CF:acedium",
+    "framework": "CF:framework",
+    "extragolemsreborn": "CF:extra-golems-reborn",
+    "twilightforestuniversal": "CF:the-twilight-forest",
+    "domumornamentumsnapshotmain": "CF:domum-ornamentum",
 }
 
+# CF slugs where my primary guess may be wrong: stem -> list of candidate CF slugs
+CF_CANDIDATES = {
+    "ironchest": ["iron-chests", "ironchest"],
+    "ftblibrary": ["ftb-library-forge", "ftb-library"],
+    "ftbteams": ["ftb-teams-forge", "ftb-teams"],
+    "highlighter": ["item-highlighter"],
+    "twilightforest": ["the-twilight-forest"],
+    "alexsmobs": ["alexs-mobs"],
+    "journeymapwebmap": ["journeymap-webmap"],
+    "farmersstructures": ["farmers-structures"],
+    "domumornamentum": ["domum-ornamentum"],
+    "goblintraders": ["goblin-traders"],
+    "awesomedungeonocean": ["awesome-dungeon-ocean", "awesome-dungeon"],
+    "structureessentials": ["structure-essentials", "structureessentials"],
+    "oreexcavation": ["ore-excavation"],
+    "lavatrident": ["lavatrident"],
+    "logbegone": ["logbegone", "log-be-gone"],
+    "lootintegrations": ["loot-integrations", "lootintegrations"],
+    "lootintegrationsyungs": ["loot-integrations-yungs", "lootintegrations-yungs"],
+    "simplerpc": ["simplerpc", "simple-rpc"],
+    "morearmor": ["more-armor-new-armors-tools-ores", "more-armor"],
+    "zetafix": ["zetafix"],
+    "cupboard": ["cupboard"],
+    "gml": ["gml", "groovymodloader"],
+    "acedium": ["acedium"],
+    "framework": ["framework"],
+    "extragolemsreborn": ["extra-golems-reborn", "extra-golems"],
+    "ftbquests": ["ftb-quests-forge", "ftb-quests"],
+}
 
-def get_json(url, tries=5):
+# stem -> expected modid (warning only; mismatch recorded but file kept)
+EXPECTED_MODID = {
+    "betterend": "betterend", "betternether": "betternether", "bookshelf": "bookshelf",
+    "ferritecore": "ferritecore", "repurposedstructures": "repurposed_structures",
+    "elevatorid": "elevatorid", "gravestone": "gravestone", "deeperdarker": "deeperdarker",
+    "skinlayers3d": "skinlayers3d", "skinrestorer": "skinrestorer",
+    "dungeoncrawl": "dungeoncrawl", "justenoughprofessions": "jep",
+    "justenoughresources": "jeresources", "leavesbegone": "leavesbegone",
+    "skeletonairfix": "skeletonfix", "mcwlights": "mcwlights",
+    "playeranimationlib": "player_animation_lib", "travelersbackpack": "travelersbackpack",
+    "entitytexturefeatures": "entitytexturefeatures", "fpsreducer": "fpsreducer",
+    "drippyloadingscreen": "drippyloadingscreen", "fancyenchantments": "fancyenchantments",
+    "elitekonkrete": "konkrete", "libraryferret": "libraryferret", "luna": "luna",
+    "morevanillashields": "morevanillashields", "particleeffects": "particleeffects",
+    "kotlinforforge": "kotlinforforge", "inventoryessentials": "inventoryessentials",
+    "bettercompatabilitychecker": "bettercompatibilitychecker",
+    "betterworldloading": "betterworldloading", "athena": "athena",
+    "moreandmorearmor": "morearmor", "advancementplaques": "advancementplaques",
+    "apotichenchanting": "apothic_enchanting",
+}
+
+CF_HEADERS = {"User-Agent": UA["User-Agent"], "Accept-Language": "en-US,en;q=0.9"}
+
+
+def http_get(url, headers=None, tries=5, timeout=60):
     last = None
+    hdrs = dict(UA)
+    if headers:
+        hdrs.update(headers)
     for i in range(tries):
         try:
-            req = urllib.request.Request(url, headers=UA)
-            with urllib.request.urlopen(req, timeout=60) as r:
-                return json.loads(r.read().decode("utf-8"))
+            req = urllib.request.Request(url, headers=hdrs)
+            with urllib.request.urlopen(req, timeout=timeout) as r:
+                return r.read()
         except urllib.error.HTTPError as e:
             if e.code in (429, 500, 502, 503, 504):
                 last = e
@@ -227,12 +316,16 @@ def get_json(url, tries=5):
     raise last
 
 
+def get_json(url, tries=5):
+    return json.loads(http_get(url, tries=tries).decode("utf-8", "replace"))
+
+
 def clean_token(t):
-    t = re.sub(r"^mc\d[\d.]*", "", t)          # mc1.21.1neoforge -> neoforge
-    t = re.sub(r"^(?:v)?\d+(?:\.\d+)*", "", t)  # 1.21.1neoforge -> neoforge
-    t = re.sub(r"(?:neoforged|neoforge|forge|fabric|quilt)(?:\d+)?(?:update|updated)?$", "", t)  # neoforge1211update
-    t = re.sub(r"(?:nf|nfo|neo)\d+$", "", t)    # betterworldloadingnf21 -> betterworldloading
-    t = re.sub(r"\d+$", "", t)                  # skinlayers3d -> skinlayers
+    t = re.sub(r"^mc\d[\d.]*", "", t)
+    t = re.sub(r"^(?:v)?\d+(?:\.\d+)*", "", t)
+    t = re.sub(r"(?:neoforged|neoforge|forge|fabric|quilt)(?:\d+)?(?:update|updated)?$", "", t)
+    t = re.sub(r"(?:nf|nfo|neo)\d+$", "", t)
+    t = re.sub(r"\d+$", "", t)
     return t
 
 
@@ -240,6 +333,7 @@ def stem_and_query(name):
     s = name.lower().replace(".jar", "")
     s = s.replace("[", " ").replace("]", " ")
     toks = re.split(r"[-_.+() ]+", s)
+    stem_keep = {"and", "the", "for", "mod", "mods"}
     all_tokens, query_tokens = [], []
     for t in toks:
         t = t.strip()
@@ -255,8 +349,11 @@ def stem_and_query(name):
         t = t.strip("-_")
         if len(t) < 2 and not (len(t) == 1 and t.isalpha()):
             continue
-        all_tokens.append(t)
-        if len(t) >= 2 and t not in STOP:
+        if len(t) >= 2 and (t not in STOP or t in stem_keep):
+            all_tokens.append(t)
+        elif len(t) == 1 and t.isalpha():
+            all_tokens.append(t)
+        if len(t) >= 2 and (t in stem_keep or t not in STOP):
             query_tokens.append(t)
     return "".join(all_tokens), " ".join(query_tokens)
 
@@ -276,39 +373,46 @@ def hit_score(query_tokens, hit):
     recall = len(inter) / max(1, len(q))
     precision = len(inter) / max(1, len(title_tokens))
     score = 0.6 * recall + 0.4 * precision
-    # slug bonus
     qjoin = "".join(query_tokens)
     if qjoin and qjoin in (hit.get("slug") or "").replace("-", ""):
         score = max(score, 0.9)
     return score
 
 
-def resolve_project(name):
-    """Return (slug, title, source) where source in {'override','search'}."""
-    stem, query = stem_and_query(name)
-    if stem in OVERRIDES:
-        return OVERRIDES[stem], query, "override"
+def search_modrinth(query):
     params = urllib.parse.urlencode({
-        "query": query,
-        "limit": 10,
+        "query": query, "limit": 8,
         "facets": json.dumps([["versions:1.21.1"], ["categories:neoforge"]]),
     })
-    hits = get_json(f"{API}/search?{params}").get("hits", [])
-    if not hits:
-        return None, query, "search"
-    qt = query.split()
-    best, best_s = None, 0.0
-    for h in hits:
-        s = hit_score(qt, h)
-        if s > best_s:
-            best, best_s = h, s
-    if best is None or best_s < 0.55:
-        return None, query, "search"
-    return best["slug"], query, "search"
+    return get_json(f"{API}/search?{params}").get("hits", [])
 
 
-def latest_version(slug):
-    """Return (version_dict, loader_list_used) for 1.21.1, or (None,None)."""
+def resolve_project(name):
+    """Return ('modrinth', slug) or ('curseforge', slug_list) or None."""
+    stem, query = stem_and_query(name)
+    if stem in OVERRIDES:
+        v = OVERRIDES[stem]
+        if v.startswith("CF:"):
+            slugs = CF_CANDIDATES.get(stem, [v[3:]])
+            return ("curseforge", slugs)
+        return ("modrinth", v)
+    try:
+        hits = search_modrinth(query)
+    except Exception:  # noqa: BLE001
+        hits = []
+    if hits:
+        qt = query.split()
+        best, best_s = None, 0.0
+        for h in hits:
+            s = hit_score(qt, h)
+            if s > best_s:
+                best, best_s = h, s
+        if best and best_s >= 0.6:
+            return ("modrinth", best["slug"])
+    return None
+
+
+def modrinth_latest(slug):
     for loaders in (["neoforge"], ["forge"], None):
         url = f"{API}/project/{slug}/version?game_versions=" + urllib.parse.quote(json.dumps(["1.21.1"]))
         if loaders is not None:
@@ -328,26 +432,85 @@ def latest_version(slug):
     return None, None
 
 
-def download_file(url, dest, sha1_expected, tries=4):
-    for i in range(tries):
+def cf_find_file(slug_candidates):
+    """Return dict(file_id, file_name, page_url, display) or None."""
+    page_url = None
+    html = None
+    for slug in slug_candidates:
+        url = (f"https://www.curseforge.com/minecraft/mc-mods/{slug}/files/all"
+               f"?page=1&pageSize=50&version=1.21.1&gameFlavor=NeoForge&showAlphaFiles=hide")
         try:
-            req = urllib.request.Request(url, headers=UA)
-            with urllib.request.urlopen(req, timeout=120) as r, open(dest, "wb") as f:
-                h = hashlib.sha1()
-                while True:
-                    chunk = r.read(1 << 20)
-                    if not chunk:
-                        break
-                    h.update(chunk)
-                    f.write(chunk)
-            if sha1_expected and h.hexdigest() != sha1_expected:
-                raise ValueError(f"sha1 mismatch: {h.hexdigest()} != {sha1_expected}")
-            return True
+            html = http_get(url).decode("utf-8", "replace")
+        except Exception:  # noqa: BLE001
+            continue
+        if "Download file" in html and "project not found" not in html.lower() and "404" not in html[:2000]:
+            page_url = url
+            break
+    if not html or not page_url:
+        return None
+    m = re.search(r"/download/(\d+)", html)
+    if not m:
+        return None
+    file_id = int(m.group(1))
+    pid = None
+    m2 = re.search(r'"projectId"\s*:\s*(\d+)', html)
+    if m2:
+        pid = int(m2.group(1))
+    file_name = None
+    if pid:
+        try:
+            data = get_json(f"https://www.curseforge.com/api/v1/mods/{pid}/files/{file_id}")
+            if data and data.get("data"):
+                file_name = data["data"].get("fileName")
+        except Exception:  # noqa: BLE001
+            pass
+    if not file_name:
+        m3 = re.search(r'/(\d+)/\d+/[^"\']+\.jar', html)
+        if m3:
+            pass
+        file_name = f"file-{file_id}.jar"
+    return {"file_id": file_id, "file_name": file_name, "page_url": page_url, "project_id": pid}
+
+
+def cf_download(cfg, outdir):
+    info = cf_find_file(cfg["slugs"])
+    if not info:
+        return None, "CF page not found/parsed"
+    fid = info["file_id"]
+    dest = os.path.join(outdir, info["file_name"])
+    # 1) API download endpoint (follows redirect to media.forgecdn.net with real filename)
+    if info.get("project_id"):
+        try:
+            opener = urllib.request.build_opener()
+            req = urllib.request.Request(
+                f"https://www.curseforge.com/api/v1/mods/{info['project_id']}/files/{fid}/download",
+                headers=CF_HEADERS)
+            with opener.open(req, timeout=180) as r:
+                data = r.read()
+                final_url = r.geturl()
+            if len(data) >= 1000:
+                real = os.path.basename(urllib.parse.urlparse(final_url).path)
+                if real.endswith(".jar"):
+                    info["file_name"] = urllib.parse.unquote(real)
+                    dest = os.path.join(outdir, info["file_name"])
+                with open(dest, "wb") as f:
+                    f.write(data)
+                return {"file_name": info["file_name"], "file_id": fid,
+                        "project_id": info.get("project_id"), "page_url": info["page_url"]}, None
         except Exception as e:  # noqa: BLE001
-            if i == tries - 1:
-                raise
-            time.sleep(2 * (i + 1))
-    return False
+            last = str(e)
+    # 2) direct media URL
+    try:
+        data = http_get(f"https://media.forgecdn.net/files/{fid // 1000}/{fid % 1000}/{info['file_name']}",
+                        headers=CF_HEADERS, timeout=180)
+        if len(data) >= 1000:
+            with open(dest, "wb") as f:
+                f.write(data)
+            return {"file_name": info["file_name"], "file_id": fid,
+                    "project_id": info.get("project_id"), "page_url": info["page_url"]}, None
+    except Exception as e:  # noqa: BLE001
+        last = str(e)
+    return None, last
 
 
 def detect_modid(jar_path):
@@ -376,121 +539,116 @@ def main():
     os.makedirs(outdir, exist_ok=True)
     names = [ln.strip() for ln in open(modlist_path, encoding="utf-8") if ln.strip().endswith(".jar")]
     results = []
-    failures = []
 
     for idx, name in enumerate(names, 1):
-        slug, query, src = resolve_project(name)
-        rec = {"requested": name, "stem_query": query, "resolve_source": src, "slug": slug}
-        if slug is None:
-            rec["status"] = "NOT_FOUND_ON_MODRINTH"
-            failures.append(rec)
+        stem, _ = stem_and_query(name)
+        rec = {"requested": name, "stem": stem}
+        resolved = resolve_project(name)
+        if resolved is None:
+            rec["status"] = "NOT_FOUND"
             results.append(rec)
-            print(f"[{idx:03d}/{len(names)}] NOT FOUND: {name} (query='{query}')", flush=True)
+            print(f"[{idx:03d}/{len(names)}] NOT_FOUND: {name}", flush=True)
             continue
-        ver, loaders = latest_version(slug)
-        if ver is None:
-            rec["status"] = "NO_1_21_1_VERSION"
-            failures.append(rec)
-            results.append(rec)
-            print(f"[{idx:03d}/{len(names)}] NO 1.21.1 VER: {name} -> {slug}", flush=True)
-            continue
-        f0 = ver["files"][0]
-        rec.update({
-            "status": "OK",
-            "modrinth_url": f"https://modrinth.com/project/{slug}",
-            "title": ver.get("name") or slug,
-            "version_id": ver["id"],
-            "version_number": ver.get("version_number", ""),
-            "version_type": ver.get("version_type", ""),
-            "loaders_used": loaders or ver.get("loaders", []),
-            "file_name": f0["filename"],
-            "file_url": f0["url"],
-            "file_size": f0.get("size"),
-            "sha1": (f0.get("hashes") or {}).get("sha1", ""),
-            "sha512": (f0.get("hashes") or {}).get("sha512", ""),
-        })
-        results.append(rec)
-        print(f"[{idx:03d}/{len(names)}] OK: {name}\n      -> {rec['title']} v{rec['version_number']} [{ver.get('version_type')}] loader={loaders} file={f0['filename']}", flush=True)
-        time.sleep(0.25)
-
-    # ---- download phase (parallel) ----
-    ok_recs = [r for r in results if r["status"] == "OK"]
-
-    def work(rec):
-        dest = os.path.join(outdir, rec["file_name"])
+        source, target = resolved
         try:
-            ok = download_file(rec["file_url"], dest, rec.get("sha1"))
-            if not ok:
-                return rec, False, "download failed"
-            if not zipfile.is_zipfile(dest):
-                return rec, False, "not a valid zip/jar"
-            mid, mf = detect_modid(dest)
-            rec["detected_modid"], rec["detected_meta"] = mid, mf
-            return rec, True, ""
+            if source == "modrinth":
+                ver, loaders = modrinth_latest(target)
+                if ver is None:
+                    rec["status"] = "NO_1_21_1_VERSION"
+                    rec["slug"] = target
+                    results.append(rec)
+                    print(f"[{idx:03d}/{len(names)}] NO 1.21.1: {name} -> {target}", flush=True)
+                    continue
+                f0 = ver["files"][0]
+                dest = os.path.join(outdir, f0["filename"])
+                data = http_get(f0["url"], timeout=300)
+                if (f0.get("hashes") or {}).get("sha1"):
+                    h = hashlib.sha1(data).hexdigest()
+                    if h != f0["hashes"]["sha1"]:
+                        rec["status"] = "SHA1_MISMATCH"
+                        results.append(rec)
+                        print(f"[{idx:03d}/{len(names)}] SHA1 MISMATCH: {name}", flush=True)
+                        continue
+                with open(dest, "wb") as f:
+                    f.write(data)
+                rec.update({
+                    "status": "OK", "source": "modrinth", "slug": target,
+                    "modrinth_url": f"https://modrinth.com/project/{target}",
+                    "title": ver.get("name") or target,
+                    "version_number": ver.get("version_number", ""),
+                    "version_type": ver.get("version_type", ""),
+                    "loaders_used": loaders or ver.get("loaders", []),
+                    "file_name": f0["filename"], "file_size": f0.get("size"),
+                })
+            else:  # curseforge
+                info, err = cf_download({"slugs": target}, outdir)
+                if info is None:
+                    rec["status"] = "CF_FAILED"
+                    rec["error"] = err
+                    rec["cf_slugs"] = target
+                    results.append(rec)
+                    print(f"[{idx:03d}/{len(names)}] CF FAILED: {name} ({err})", flush=True)
+                    continue
+                rec.update({
+                    "status": "OK", "source": "curseforge", "slug": info.get("project_id"),
+                    "cf_slugs": target, "cf_page": info.get("page_url"),
+                    "title": name, "version_number": "",
+                    "version_type": "release", "loaders_used": ["neoforge"],
+                    "file_name": info["file_name"], "file_id": info["file_id"],
+                })
         except Exception as e:  # noqa: BLE001
-            return rec, False, str(e)
+            rec["status"] = "ERROR"
+            rec["error"] = str(e)
+            results.append(rec)
+            print(f"[{idx:03d}/{len(names)}] ERROR: {name} ({e})", flush=True)
+            continue
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=8) as ex:
-        futs = {ex.submit(work, r): r for r in ok_recs}
-        done = 0
-        for fut in concurrent.futures.as_completed(futs):
-            rec, ok, err = fut.result()
-            done += 1
-            if not ok:
-                rec["status"] = "DOWNLOAD_FAILED"
-                rec["error"] = err
-                failures.append(rec)
-                print(f"[dl {done}/{len(ok_recs)}] FAILED: {rec['file_name']} ({err})", flush=True)
-            else:
-                print(f"[dl {done}/{len(ok_recs)}] OK: {rec['file_name']} ({rec['detected_modid']})", flush=True)
+        # verify jar
+        dest2 = os.path.join(outdir, rec.get("file_name", ""))
+        if rec["status"] == "OK":
+            if not os.path.exists(dest2) or not zipfile.is_zipfile(dest2):
+                rec["status"] = "NOT_A_JAR"
+                print(f"[{idx:03d}/{len(names)}] NOT_A_JAR: {name}", flush=True)
+                continue
+            mid, mf = detect_modid(dest2)
+            rec["detected_modid"], rec["detected_meta"] = mid, mf
+            if mid is None:
+                rec["status"] = "NO_MOD_METADATA"
+                print(f"[{idx:03d}/{len(names)}] NO_MOD_METADATA: {name}", flush=True)
+                continue
+            if stem in EXPECTED_MODID and mid != EXPECTED_MODID[stem]:
+                rec["modid_warning"] = f"expected {EXPECTED_MODID[stem]}, got {mid}"
+        print(f"[{idx:03d}/{len(names)}] OK: {name} -> {rec.get('file_name')} ({rec.get('detected_modid')}) [{rec.get('source')}]", flush=True)
+        time.sleep(0.2)
 
-    # ---- outputs ----
+    # outputs
+    ok_count = len([r for r in results if r["status"] == "OK"])
     manifest_path = os.path.join(outdir, "manifest.json")
     with open(manifest_path, "w", encoding="utf-8") as f:
         json.dump({"generated": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()),
                    "game_version": "1.21.1", "loader": "neoforge",
-                   "total": len(names), "ok": len([r for r in results if r["status"] == "OK"]),
-                   "failed": len(failures), "results": results}, f, indent=2, ensure_ascii=False)
+                   "total": len(names), "ok": ok_count,
+                   "results": results}, f, indent=2, ensure_ascii=False)
 
-    ok_count = len([r for r in results if r["status"] == "OK"])
-    lines = [
-        "KITSUGI MODPACK - MOD GUNCELLEME SONUCU",
-        f"Tarih: {time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())}",
-        f"Toplam mod: {len(names)} | Basarili: {ok_count} | Sorunlu: {len(failures)}",
-        "",
-        "=== BASARILI (en guncel 1.21.1 NeoForge) ===",
-    ]
+    lines = ["KITSUGI - FIX LISTESI SONUCLARI",
+             f"Tarih: {time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())}",
+             f"Toplam: {len(names)} | OK: {ok_count} | Sorunlu: {len(results) - ok_count}", ""]
     for r in results:
         if r["status"] == "OK":
-            lines.append(f"[OK] {r['requested']}")
-            lines.append(f"     -> {r['title']} v{r['version_number']} ({r['version_type']}) loader={r['loaders_used']}")
-            lines.append(f"     -> dosya: {r['file_name']} (modid: {r.get('detected_modid')})")
-    lines.append("")
-    lines.append("=== SORUNLU / INCELEME GEREKEN ===")
-    for r in failures:
-        lines.append(f"[{r['status']}] {r['requested']} (slug={r.get('slug')} query='{r.get('stem_query')}' err={r.get('error', '')})")
+            extra = f" [modid uyari: {r.get('modid_warning')}]" if r.get("modid_warning") else ""
+            lines.append(f"[OK] {r['requested']} -> {r['file_name']} ({r.get('detected_modid')}) src={r.get('source')}{extra}")
+        else:
+            lines.append(f"[{r['status']}] {r['requested']} {r.get('error', '')} {r.get('slug', '')} {r.get('cf_slugs', '')}")
     with open(os.path.join(outdir, "summary.txt"), "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
 
-    guide = [
-        "KITSUGI MODPACK - GUNCELLEME REHBERI (1.21.1 NeoForge)",
-        "=" * 60,
-        "Eski dosya adi -> Yeni (guncel) dosya adi",
-        "",
-    ]
+    print("\n=========== FIX RESULTS ===========")
+    print(f"Total: {len(names)}  OK: {ok_count}  Failed: {len(results) - ok_count}")
     for r in results:
-        if r["status"] == "OK":
-            guide.append(f"{r['requested']}\n    -> {r['file_name']}   [{r['title']} v{r['version_number']}]")
-        else:
-            guide.append(f"{r['requested']}\n    -> [SORUN: {r['status']}] {r.get('error', '')}")
-    with open(os.path.join(outdir, "GUNCELLEME_REHBERI.txt"), "w", encoding="utf-8") as f:
-        f.write("\n".join(guide))
-
-    print("\n================ RESULT ================")
-    print(f"Total: {len(names)}  OK: {ok_count}  Failed: {len(failures)}")
-    for r in failures:
-        print(f"  FAIL: [{r['status']}] {r['requested']} -> {r.get('slug')} {r.get('error', '')}")
-    print("manifest: ", manifest_path)
+        if r["status"] != "OK":
+            print(f"  FAIL: [{r['status']}] {r['requested']} {r.get('error', '')}")
+        elif r.get("modid_warning"):
+            print(f"  WARN: {r['requested']} {r['modid_warning']}")
 
 
 if __name__ == "__main__":
