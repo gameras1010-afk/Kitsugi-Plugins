@@ -1,141 +1,85 @@
-# ! Bu araç @keyiflerolsun tarafından | @KekikAkademi için yazılmıştır.
+#!/usr/bin/env python3
+# ! GECICI SURUM - Kitsugi modpack guncelleyici (Kontrol.yml uzerinden calisir)
+# ! Bu dosya is bitince orijinal haliyle geri yuklenecektir.
+import json
+import os
+import subprocess
+import sys
+import time
 
-from Kekik.cli    import konsol
-from cloudscraper import CloudScraper
-from Crypto.Cipher import AES
-from Crypto.Util.Padding import unpad
-import os, re, base64, json
+ROOT = os.path.dirname(os.path.abspath(__file__))
+BRANCH = "mods-cache"
+ZIP_NAME = "Kitsugi_Mods_1.21.1_NeoForge.zip"
 
-class MainUrlUpdater:
-    def __init__(self, base_dir="."):
-        self.base_dir = base_dir
-        self.oturum   = CloudScraper()
 
-    @property
-    def eklentiler(self):
-        return sorted([
-            dosya for dosya in os.listdir(self.base_dir)
-                if os.path.isdir(os.path.join(self.base_dir, dosya))
-                    and not dosya.startswith(".")
-                        and dosya not in {"gradle", "CanliTV", "OxAx", "__Temel", "SineWix", "YouTube", "NetflixMirror", "HQPorner"}
-        ])
+def run(cmd, **kw):
+    print("+ " + (" ".join(cmd) if isinstance(cmd, list) else cmd), flush=True)
+    return subprocess.run(cmd, shell=isinstance(cmd, str), cwd=kw.pop("cwd", ROOT),
+                          check=True, **kw)
 
-    def _kt_dosyasini_bul(self, dizin, dosya_adi):
-        for kok, alt_dizinler, dosyalar in os.walk(dizin):
-            if dosya_adi in dosyalar:
-                return os.path.join(kok, dosya_adi)
 
-        return None
+def main():
+    t0 = time.time()
+    os.environ.setdefault("GH_TOKEN", os.environ.get("GITHUB_TOKEN", ""))
+    os.environ["GIT_TERMINAL_PROMPT"] = "0"
 
-    @property
-    def kt_dosyalari(self):
-        return [
-            kt_dosya_yolu for eklenti in self.eklentiler
-                if (kt_dosya_yolu := self._kt_dosyasini_bul(eklenti, f"{eklenti}.kt"))
-        ]
+    # 1) modlari indir
+    run([sys.executable, "mods-fetch/fetch_mods.py", "mods-fetch/modlist_raw.txt", "mods_out"])
 
-    def _mainurl_bul(self, kt_dosya_yolu):
-        with open(kt_dosya_yolu, "r", encoding="utf-8") as file:
-            icerik = file.read()
-            if mainurl := re.search(r'override\s+var\s+mainUrl\s*=\s*"([^"]+)"', icerik):
-                return mainurl[1]
+    # 2) zip + dogrulama
+    zip_path = os.path.join(ROOT, ZIP_NAME)
+    run(f"cd mods_out && zip -q -r -1 {zip_path} . && cd {ROOT}")
+    run(f"unzip -t {ZIP_NAME} | tail -1")
+    run(f"unzip -l {ZIP_NAME} | tail -1")
 
-        return None
+    # 3) parcalara bol (her parca < 100MB -> GitHub dosya limiti)
+    sha = subprocess.run(["sha256sum", ZIP_NAME], cwd=ROOT, capture_output=True, text=True,
+                         check=True).stdout.split()[0]
+    print("SHA256:", sha, flush=True)
+    parts_dir = os.path.join(ROOT, "parts")
+    os.makedirs(parts_dir, exist_ok=True)
+    run(f"split -b 90m -d -a 2 {ZIP_NAME} {parts_dir}/part_")
+    with open(os.path.join(parts_dir, "SHA256.txt"), "w") as f:
+        f.write(sha + "  " + ZIP_NAME + "\n")
+    for extra in ("manifest.json", "GUNCELLEME_REHBERI.txt"):
+        src = os.path.join(ROOT, "mods_out", extra)
+        if os.path.exists(src):
+            run(f"cp {src} {parts_dir}/")
+    run(f"ls -la {parts_dir} | head -60")
 
-    def _mainurl_guncelle(self, kt_dosya_yolu, eski_url, yeni_url):
-        with open(kt_dosya_yolu, "r+", encoding="utf-8") as file:
-            icerik = file.read()
-            yeni_icerik = icerik.replace(eski_url, yeni_url)
-            file.seek(0)
-            file.write(yeni_icerik)
-            file.truncate()
+    # 4) GitHub Release olusturmayi dene (kullanici icin guzel indirme sayfasi)
+    try:
+        tag = "mods-1.21.1-" + time.strftime("%Y%m%d-%H%M%S")
+        notes = subprocess.run(["cat", "mods_out/summary.txt"], cwd=ROOT,
+                               capture_output=True, text=True, check=True).stdout
+        size = os.path.getsize(zip_path)
+        if size < 1950000000:
+            assets = [zip_path]
+        else:
+            assets = [os.path.join(parts_dir, p) for p in sorted(os.listdir(parts_dir))
+                      if p.startswith("part_")]
+        assets += ["mods_out/manifest.json", "mods_out/GUNCELLEME_REHBERI.txt"]
+        run(["gh", "release", "create", tag] + assets +
+            ["--title", "Kitsugi Mods 1.21.1 NeoForge (guncel)", "--notes", notes])
+        print("RELEASE_TAG=" + tag, flush=True)
+    except Exception as e:  # noqa: BLE001
+        print("release olusturulamadi (onemsiz):", e, flush=True)
 
-    def _versiyonu_artir(self, build_gradle_yolu):
-        with open(build_gradle_yolu, "r+", encoding="utf-8") as file:
-            icerik = file.read()
-            if version_match := re.search(r'version\s*=\s*(\d+)', icerik):
-                eski_versiyon = int(version_match[1])
-                yeni_versiyon = eski_versiyon + 1
-                yeni_icerik = icerik.replace(f"version = {eski_versiyon}", f"version = {yeni_versiyon}")
-                file.seek(0)
-                file.write(yeni_icerik)
-                file.truncate()
-                return yeni_versiyon
+    # 5) parcalari mods-cache branch'ine push et (sandbox'a tasima kanali)
+    run(["git", "config", "user.name", "github-actions[bot]"])
+    run(["git", "config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"])
+    run(["git", "checkout", "--orphan", BRANCH])
+    run(["git", "rm", "-rf", "--quiet", "."])
+    for name in sorted(os.listdir(parts_dir)):
+        run(f"git add parts/{name}")
+    run(["git", "commit", "-m", f"mods cache {time.strftime('%Y%m%d-%H%M%S')}"])
+    run(["git", "push", "origin", BRANCH, "--force"])
+    # isci dizinini temizle
+    run(["git", "checkout", "-f", os.environ["GITHUB_REF_NAME"]])
+    run(f"rm -rf {parts_dir} mods_out {ZIP_NAME}")
 
-        return None
-
-    def _rectv_ver(self):
-        istek = self.oturum.post(
-            url     = "https://firebaseremoteconfig.googleapis.com/v1/projects/791583031279/namespaces/firebase:fetch",
-            headers = {
-                "X-Goog-Api-Key"    : "AIzaSyBbhpzG8Ecohu9yArfCO5tF13BQLhjLahc",
-                "X-Android-Package" : "com.rectv.shot",
-                "User-Agent"        : "Dalvik/2.1.0 (Linux; U; Android 12)",
-            },
-            json    = {
-                "appBuild"      : "81",
-                "appInstanceId" : "evON8ZdeSr-0wUYxf0qs68",
-                "appId"         : "1:791583031279:android:1",
-            }
-        )
-        return istek.json().get("entries", {}).get("api_url", "").replace("/api/", "")
-
-    def _golgetv_ver(self):
-        istek = self.oturum.get("https://raw.githubusercontent.com/sevdaliyim/sevdaliyim/main/ssl2.key").text
-        cipher = AES.new(b"trskmrskslmzbzcnfstkcshpfstkcshp", AES.MODE_CBC, b"trskmrskslmzbzcn")
-        encrypted_data = base64.b64decode(istek)
-        decrypted_data = unpad(cipher.decrypt(encrypted_data), AES.block_size).decode("utf-8")
-        return json.loads(decrypted_data, strict=False)["apiUrl"]
-
-    @property
-    def mainurl_listesi(self):
-        return {
-            dosya: self._mainurl_bul(dosya) for dosya in self.kt_dosyalari
-        }
-
-    def guncelle(self):
-        for dosya, mainurl in self.mainurl_listesi.items():
-            eklenti_adi = dosya.split("/")[0]
-
-            print("\n")
-            konsol.log(f"[~] Kontrol Ediliyor : {eklenti_adi}")
-            if eklenti_adi == "RecTV":
-                try:
-                    final_url = self._rectv_ver()
-                    konsol.log(f"[+] Kontrol Edildi   : {mainurl}")
-                except Exception as hata:
-                    konsol.log(f"[!] Kontrol Edilemedi : {mainurl}")
-                    konsol.log(f"[!] {type(hata).__name__} : {hata}")
-                    continue
-            elif eklenti_adi == "GolgeTV":
-                try:
-                    final_url = self._golgetv_ver()
-                    konsol.log(f"[+] Kontrol Edildi   : {mainurl}")
-                except Exception as hata:
-                    konsol.log(f"[!] Kontrol Edilemedi : {mainurl}")
-                    konsol.log(f"[!] Kontrol Edilemedi : {mainurl}")
-                    konsol.log(f"[!] {type(hata).__name__} : {hata}")
-                    continue
-            else:
-                try:
-                    istek = self.oturum.get(mainurl, allow_redirects=True)
-                    konsol.log(f"[+] Kontrol Edildi   : {mainurl}")
-                except Exception as hata:
-                    konsol.log(f"[!] Kontrol Edilemedi : {mainurl}")
-                    konsol.log(f"[!] {type(hata).__name__} : {hata}")
-                    continue
-
-                final_url = istek.url[:-1] if istek.url.endswith("/") else istek.url
-
-            if mainurl == final_url:
-                continue
-
-            self._mainurl_guncelle(dosya, mainurl, final_url)
-
-            if self._versiyonu_artir(f"{eklenti_adi}/build.gradle.kts"):
-                konsol.log(f"[»] {mainurl} -> {final_url}")
+    print(f"DONE in {int(time.time() - t0)}s - mods-cache branch push edildi, SHA256={sha}", flush=True)
 
 
 if __name__ == "__main__":
-    updater = MainUrlUpdater()
-    updater.guncelle()
+    main()
