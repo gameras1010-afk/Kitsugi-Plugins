@@ -61,3 +61,4 @@ athena-neoforge-1.21.1-4.0.6.jar
 betterworldloadingnf21-1.0.jar
 FarmersStructures-1.0.6-1.21.1_neoforge.jar
 MoreAndMoreArmorNEOFORGE1211UPDATE.jar
+configured-neoforge-1.21.1-2.6.3.jar
