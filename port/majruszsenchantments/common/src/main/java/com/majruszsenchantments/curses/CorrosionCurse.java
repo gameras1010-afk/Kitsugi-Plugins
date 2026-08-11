@@ -61,7 +61,7 @@ public class CorrosionCurse extends Handler {
 		for( EquipmentSlot slot : this.enchantment.get().getSlotItems( data.entity ).keySet() ) {
 			ItemStack itemStack = data.entity.getItemBySlot( slot );
 			if( EnchantmentHelper.has( this.enchantment, itemStack ) ) {
-				itemStack.hurtAndBreak( 1, data.entity, owner->owner.broadcastBreakEvent( slot ) );
+				itemStack.hurtAndBreak( 1, data.entity, LivingEntity.getSlotForHand( InteractionHand.MAIN_HAND ) );
 			}
 		}
 	}

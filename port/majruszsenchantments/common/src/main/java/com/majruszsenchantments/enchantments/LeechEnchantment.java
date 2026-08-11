@@ -96,7 +96,7 @@ public class LeechEnchantment extends Handler {
 	private boolean leechEffect( OnEntityDamaged data ) {
 		for( MobEffectInstance effectInstance : data.target.getActiveEffects() ) {
 			Holder< MobEffect > effect = effectInstance.getEffect();
-			if( effect.isBeneficial() ) {
+			if( effect.value().isBeneficial() ) {
 				int duration = effectInstance.isInfiniteDuration() ? MAX_DURATION : Math.min( MAX_DURATION, effectInstance.getDuration() );
 				data.attacker.addEffect( new MobEffectInstance( effect, duration, effectInstance.getAmplifier() ) );
 				data.target.removeEffect( effect );
