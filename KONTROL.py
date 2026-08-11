@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
-# ! GECICI SURUM v2 - Kitsugi modpack guncelleyici (Kontrol.yml uzerinden calisir)
-# ! Bu dosya is bitince orijinal haliyle geri yuklenecektir.
+# ! GECICI SURUM - Majrusz port derleyici (Kontrol.yml uzerinden calisir)
+# ! Is bitince orijinal KONTROL.py geri yuklenecek.
+import glob
 import json
 import os
 import shutil
@@ -9,176 +10,193 @@ import sys
 import time
 
 ROOT = os.path.dirname(os.path.abspath(__file__))
-REPO = "https://github.com/gameras1010-afk/Kitsugi-Plugins"
+PORT = os.path.join(ROOT, "port")
 BRANCH = "mods-cache"
-ZIP_NAME = "Kitsugi_Mods_1.21.1_NeoForge.zip"
-CACHE = "/tmp/mods_cache"
-MERGE = "/tmp/merge_dir"
+ZIP_NAME = "Majrusz_Port_1.21.1_NeoForge.zip"
+LIB_DIR = os.path.join(PORT, "majrusz-library")
+MOD_DIR = os.path.join(PORT, "majruszsenchantments")
 
 
-def run(cmd, **kw):
+def run(cmd, cwd=None, env=None, timeout=1800):
     print("+ " + (" ".join(cmd) if isinstance(cmd, list) else cmd), flush=True)
-    return subprocess.run(cmd, shell=isinstance(cmd, str), cwd=kw.pop("cwd", ROOT),
-                          check=True, **kw)
+    return subprocess.run(cmd, shell=isinstance(cmd, str), cwd=cwd, env=env,
+                          check=True, timeout=timeout)
+
+
+def find_java21():
+    import glob as g
+    cands = []
+    for base in ("/usr/lib/jvm", "/opt/hostedtoolcache", "/usr/local/lib/jvm"):
+        for p in g.glob(base + "/*"):
+            if os.path.exists(os.path.join(p, "bin", "java")):
+                cands.append(p)
+    for c in sorted(cands):
+        low = os.path.basename(c).lower()
+        if "21" in low:
+            return c
+    # fallback: any java >= 17
+    for c in sorted(cands):
+        try:
+            out = subprocess.run([os.path.join(c, "bin", "java"), "-version"],
+                                 capture_output=True, text=True).stderr
+            if "version \"21" in out or "version \"2" in out:
+                return c
+        except Exception:
+            continue
+    return None
+
+
+def build_gradle(proj, env, extra_args=""):
+    run(f"./gradlew :neoforge:build --no-daemon {extra_args}".strip(),
+        cwd=proj, env=env, timeout=2700)
+
+
+def smoke_server(mod_dir, env):
+    """Start NeoForge dev server briefly; report OK/CRASH/UNCLEAR."""
+    rundir = os.path.join(mod_dir, "run")
+    os.makedirs(rundir, exist_ok=True)
+    with open(os.path.join(rundir, "eula.txt"), "w") as f:
+        f.write("eula=true\n")
+    log_path = os.path.join(rundir, "smoke.log")
+    logf = open(log_path, "w")
+    proc = subprocess.Popen(["./gradlew", ":neoforge:runServer", "--no-daemon"],
+                            cwd=mod_dir, env=env, stdout=logf, stderr=subprocess.STDOUT)
+    try:
+        proc.wait(timeout=540)
+        logf.close()
+        log = open(log_path, encoding="utf-8", errors="replace").read()
+        return "CRASH", log[-4000:]
+    except subprocess.TimeoutExpired:
+        proc.kill()
+        logf.close()
+        log = open(log_path, encoding="utf-8", errors="replace").read()
+        if "Done (" in log or "For help" in log:
+            return "OK", log[-4000:]
+        return "UNCLEAR", log[-4000:]
 
 
 def main():
     t0 = time.time()
     os.environ.setdefault("GH_TOKEN", os.environ.get("GITHUB_TOKEN", ""))
-    os.environ["GIT_TERMINAL_PROMPT"] = "0"
+    env = dict(os.environ)
+    jh = find_java21()
+    if jh:
+        env["JAVA_HOME"] = jh
+        env["PATH"] = os.path.join(jh, "bin") + os.pathsep + env.get("PATH", "")
+        print("JAVA_HOME:", jh, flush=True)
+    else:
+        print("!!! JAVA 21 BULUNAMADI - default java kullanilacak", flush=True)
 
-    # 1) run1 zip'ini mods-cache branch'inden getir
-    if os.path.isdir(CACHE):
-        shutil.rmtree(CACHE)
-    run(["git", "clone", "--depth", "1", "--branch", BRANCH, "--single-branch", REPO, CACHE])
-    parts = sorted(p for p in os.listdir(os.path.join(CACHE, "parts")) if p.startswith("part_"))
-    print("parts:", len(parts), flush=True)
+    summary = []
+    try:
+        # 1) Library derle
+        build_gradle(LIB_DIR, env)
+        lib_jars = glob.glob(os.path.join(LIB_DIR, "neoforge/build/libs/majrusz-library-neoforge-*.jar"))
+        lib_common = glob.glob(os.path.join(LIB_DIR, "common/build/libs/majrusz-library-common-*.jar"))
+        lib_jars = [j for j in lib_jars if not j.endswith("-sources.jar") and not j.endswith("-javadoc.jar")]
+        lib_common = [j for j in lib_common if not j.endswith("-sources.jar")]
+        print("library jars:", lib_jars, lib_common, flush=True)
+        assert lib_jars and lib_common, "library jar bulunamadi"
+        libs_dir = os.path.join(MOD_DIR, "libs")
+        os.makedirs(libs_dir, exist_ok=True)
+        for j in lib_jars + lib_common:
+            shutil.copy(j, os.path.join(libs_dir, os.path.basename(j)))
+            print("kopyalandi:", os.path.basename(j), flush=True)
+        summary.append("Library: OK")
+
+        # 2) Enchantments mod derle
+        build_gradle(MOD_DIR, env)
+        mod_jars = [j for j in glob.glob(os.path.join(MOD_DIR, "neoforge/build/libs/majruszs-enchantments-neoforge-*.jar"))
+                    if not j.endswith("-sources.jar") and not j.endswith("-javadoc.jar")]
+        print("mod jars:", mod_jars, flush=True)
+        assert mod_jars, "mod jar bulunamadi"
+        summary.append("Mod: OK")
+
+        # 3) Smoke test (dev server)
+        smoke, tail = smoke_server(MOD_DIR, env)
+        summary.append(f"Smoke: {smoke}")
+        print("SMOKE:", smoke, flush=True)
+        print("SMOKE_TAIL:", tail[-2000:], flush=True)
+    except Exception as e:  # noqa: BLE001
+        summary.append(f"HATA: {e}")
+        print("EXC:", e, flush=True)
+        smoke, tail = "BUILD_FAIL", ""
+        try:
+            logf = os.path.join(MOD_DIR, "run", "smoke.log")
+            if os.path.exists(logf):
+                tail = open(logf, encoding="utf-8", errors="replace").read()[-4000:]
+        except Exception:  # noqa: BLE001
+            pass
+        # yine de varsa jar'lari topla
+        mod_jars = [j for j in glob.glob(os.path.join(MOD_DIR, "neoforge/build/libs/majruszs-enchantments-neoforge-*.jar"))
+                    if not j.endswith("-sources.jar")]
+        lib_jars = [j for j in glob.glob(os.path.join(LIB_DIR, "neoforge/build/libs/majrusz-library-neoforge-*.jar"))
+                    if not j.endswith("-sources.jar")]
+
+    # 4) Zip + release + cache
+    out_dir = os.path.join(ROOT, "port_out")
+    os.makedirs(out_dir, exist_ok=True)
+    files = []
+    for j in glob.glob(os.path.join(out_dir, "*")):
+        os.remove(j)
+    for j in (mod_jars if 'mod_jars' in dir() else []) + (lib_jars if 'lib_jars' in dir() else []):
+        if os.path.exists(j):
+            dst = os.path.join(out_dir, os.path.basename(j))
+            shutil.copy(j, dst)
+            files.append(dst)
+    readme = os.path.join(out_dir, "README.txt")
+    with open(readme, "w", encoding="utf-8") as f:
+        f.write("MAJRUSZ PORT 1.21.1 NeoForge\n")
+        f.write("=" * 40 + "\n")
+        f.write("\n".join(summary) + "\n")
+        f.write("\nKurulum: iki jar'i da mods klasorune koy.\n")
+        f.write("Kaynak: Majrusz (MIT) + MT-MC 1.21.1 library portu + patch'ler.\n")
+    files.append(readme)
+    print("OUT:", files, flush=True)
+
     zip_path = os.path.join(ROOT, ZIP_NAME)
-    with open(zip_path, "wb") as out:
-        for p in parts:
-            with open(os.path.join(CACHE, "parts", p), "rb") as pf:
-                shutil.copyfileobj(pf, out, 1 << 20)
-    got = subprocess.run(["sha256sum", zip_path], capture_output=True, text=True,
-                         check=True).stdout.split()[0]
-    exp = open(os.path.join(CACHE, "parts", "SHA256.txt")).read().split()[0]
-    print("sha256 exp:", exp, flush=True)
-    print("sha256 got:", got, flush=True)
-    assert got == exp, "run1 zip SHA256 MISMATCH"
-
-    # 2) run1 zip'ini ac
-    if os.path.isdir(MERGE):
-        shutil.rmtree(MERGE)
-    os.makedirs(MERGE)
-    run(f"unzip -q {zip_path} -d {MERGE}")
-    run(f"ls {MERGE} | wc -l")
-
-    # 3) fix listesini indir (modrinth + curseforge)
-    run([sys.executable, "mods-fetch/fetch_mods.py", "mods-fetch/modlist_fix.txt", "mods_out2"])
-
-    # 3b) sanity: fix listesinin tamami islendi mi?
-    man2 = json.load(open(os.path.join("mods_out2", "manifest.json")))
-    n_fix = len([l for l in open("mods-fetch/modlist_fix.txt") if l.strip().endswith(".jar")])
-    assert man2["total"] == n_fix, f"fix islemi eksik: {man2['total']} != {n_fix}"
-    print(f"fix manifest: total={man2['total']} ok={man2['ok']} failed={man2['total'] - man2['ok']}", flush=True)
-
-    # 4) birlestir: run1 manifest + run2 manifest
-    man1 = json.load(open(os.path.join(MERGE, "manifest.json")))
-    res1 = man1["results"]
-    res2 = man2["results"]
-    replaced = {r["requested"] for r in res2}
-    # eski (yanlis/secilememis) dosyalari sil - AMA baska kaydin paylastigi dosyalara dokunma
-    keep_files = {r.get("file_name") for r in res1
-                  if r["requested"] not in replaced and r.get("file_name")}
-    for r in res1:
-        if r["requested"] in replaced and r.get("file_name") and r["file_name"] not in keep_files:
-            p = os.path.join(MERGE, r["file_name"])
-            if os.path.exists(p):
-                os.remove(p)
-                print("silindi (eski):", r["file_name"], flush=True)
-    # run2 jar'larini kopyala
-    for r in res2:
-        if r["status"] == "OK" and r.get("file_name"):
-            src = os.path.join("mods_out2", r["file_name"])
-            if os.path.exists(src):
-                shutil.copy(src, os.path.join(MERGE, r["file_name"]))
-    # manifest birlestir
-    final_results = [r for r in res1 if r["requested"] not in replaced] + res2
-    final_manifest = {
-        "generated": time.strftime("%Y-%m-%d %H:%M:%S UTC", time.gmtime()),
-        "game_version": "1.21.1", "loader": "neoforge",
-        "total": len(final_results),
-        "ok": len([r for r in final_results if r["status"] == "OK"]),
-        "failed": len([r for r in final_results if r["status"] != "OK"]),
-        "results": final_results,
-    }
-    with open(os.path.join(MERGE, "manifest.json"), "w", encoding="utf-8") as f:
-        json.dump(final_manifest, f, indent=2, ensure_ascii=False)
-
-    # rehber + ozet yaz
-    guide = ["KITSUGI MODPACK - GUNCELLEME REHBERI (1.21.1 NeoForge)", "=" * 60,
-             "Eski dosya adi -> Yeni (guncel) dosya adi", ""]
-    for r in final_results:
-        if r["status"] == "OK":
-            note = f" [{r.get('source','')}]" if r.get("source") == "curseforge" else ""
-            warn = f" [DIKKAT: {r.get('modid_warning')}]" if r.get("modid_warning") else ""
-            guide.append(f"{r['requested']}\n    -> {r['file_name']}{note}{warn}")
-        else:
-            guide.append(f"{r['requested']}\n    -> [SORUN: {r['status']}] {r.get('error', '')}")
-    with open(os.path.join(MERGE, "GUNCELLEME_REHBERI.txt"), "w", encoding="utf-8") as f:
-        f.write("\n".join(guide))
-
-    ok = [r for r in final_results if r["status"] == "OK"]
-    bad = [r for r in final_results if r["status"] != "OK"]
-    lines = ["KITSUGI MODPACK - GUNCELLEME SONUCU",
-             f"Tarih: {time.strftime('%Y-%m-%d %H:%M:%S UTC', time.gmtime())}",
-             f"Toplam mod: {len(final_results)} | Basarili: {len(ok)} | Sorunlu: {len(bad)}", ""]
-    lines += ["=== SORUNLU ==="]
-    for r in bad:
-        lines.append(f"[{r['status']}] {r['requested']} {r.get('error', '')} {r.get('slug', '')}")
-    with open(os.path.join(MERGE, "OZET.txt"), "w", encoding="utf-8") as f:
-        f.write("\n".join(lines))
-    print("\n".join(lines), flush=True)
-
-    # 5) final zip + dogrulama
-    jars = [n for n in os.listdir(MERGE) if n.lower().endswith(".jar")]
-    names = [n.lower() for n in os.listdir(MERGE)]
-    dups = sorted({n for n in names if names.count(n) > 1})
-    # tum OK kayitlarin dosyalari mevcut mu?
-    ok_files = [r.get("file_name") for r in final_results if r["status"] == "OK" and r.get("file_name")]
-    missing_files = [f for f in ok_files if not os.path.exists(os.path.join(MERGE, f))]
-    print(f"merge jars: {len(jars)} | dups: {dups} | eksik: {missing_files}", flush=True)
-    assert not dups, f"kopya dosya adlari: {dups}"
-    assert not missing_files, f"eksik dosyalar: {missing_files}"
-    assert len(jars) == len(ok_files), f"jar sayisi uyusmazligi: {len(jars)} != {len(ok_files)}"
     if os.path.exists(zip_path):
         os.remove(zip_path)
-    run(f"cd {MERGE} && zip -q -r -1 {zip_path} . && cd {ROOT}")
-    run(f"unzip -t {ZIP_NAME} | tail -1")
-    run(f"unzip -l {ZIP_NAME} | tail -1")
-    sha = subprocess.run(["sha256sum", ZIP_NAME], capture_output=True, text=True,
+    run(f"cd {out_dir} && zip -q -r -1 {zip_path} .")
+    sha = subprocess.run(["sha256sum", zip_path], capture_output=True, text=True,
                          check=True).stdout.split()[0]
-    print("FINAL SHA256:", sha, flush=True)
+    print("SHA256:", sha, flush=True)
 
-    # 6) GitHub Release (kullanici indirme sayfasi)
     try:
-        tag = "mods-1.21.1-" + time.strftime("%Y%m%d-%H%M%S")
-        notes = open(os.path.join(MERGE, "OZET.txt"), encoding="utf-8").read()
-        size = os.path.getsize(zip_path)
-        if size < 1950000000:
-            assets = [zip_path]
-        else:
-            os.makedirs("parts", exist_ok=True)
-            run(f"split -b 90m -d -a 2 {ZIP_NAME} parts/part_")
-            assets = [os.path.join("parts", p) for p in sorted(os.listdir("parts")) if p.startswith("part_")]
-        assets += [os.path.join(MERGE, "manifest.json"), os.path.join(MERGE, "GUNCELLEME_REHBERI.txt")]
-        run(["gh", "release", "create", tag] + assets +
-            ["--title", "Kitsugi Mods 1.21.1 NeoForge (guncel)", "--notes", notes])
+        tag = "majrusz-port-1.21.1-" + time.strftime("%Y%m%d-%H%M%S")
+        notes = "\n".join(summary) + "\n\nSmoke tail:\n" + tail[-1500:]
+        run(["gh", "release", "create", tag, zip_path] + files +
+            ["--title", "Majrusz Port 1.21.1 NeoForge", "--notes", notes])
         print("RELEASE_TAG=" + tag, flush=True)
     except Exception as e:  # noqa: BLE001
-        print("release olusturulamadi (onemsiz):", e, flush=True)
+        print("release olusturulamadi:", e, flush=True)
 
-    # 7) parcalari mods-cache branch'ine push et
-    os.makedirs("parts", exist_ok=True)
-    run(f"split -b 90m -d -a 2 {ZIP_NAME} parts/part_")
-    with open(os.path.join("parts", "SHA256.txt"), "w") as f:
+    # cache branch push (sandbox'a tasima kanali)
+    parts_dir = os.path.join(ROOT, "parts")
+    os.makedirs(parts_dir, exist_ok=True)
+    for f in os.listdir(parts_dir):
+        os.remove(os.path.join(parts_dir, f))
+    run(f"split -b 90m -d -a 2 {zip_path} {parts_dir}/part_")
+    with open(os.path.join(parts_dir, "SHA256.txt"), "w") as f:
         f.write(sha + "  " + ZIP_NAME + "\n")
-    for extra in ("manifest.json", "GUNCELLEME_REHBERI.txt"):
-        shutil.copy(os.path.join(MERGE, extra), os.path.join("parts", extra))
-    shutil.copy(os.path.join(MERGE, "OZET.txt"), os.path.join("parts", "OZET.txt"))
+    for extra in ("README.txt",):
+        shutil.copy(os.path.join(out_dir, extra), os.path.join(parts_dir, extra))
+    with open(os.path.join(parts_dir, "BUILD_SUMMARY.txt"), "w", encoding="utf-8") as f:
+        f.write("\n".join(summary) + "\n\nSMOKE:\n" + tail[-4000:])
     run(["git", "config", "user.name", "github-actions[bot]"])
     run(["git", "config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"])
     run(["git", "checkout", "--orphan", BRANCH])
     run("git rm -rf --quiet . || true")
-    for name in sorted(os.listdir("parts")):
+    for name in sorted(os.listdir(parts_dir)):
         run(f"git add parts/{name}")
-    run(["git", "commit", "-m", f"mods cache {time.strftime('%Y%m%d-%H%M%S')}"])
+    run(["git", "commit", "-m", f"majrusz port {time.strftime('%Y%m%d-%H%M%S')}"])
     run(["git", "push", "origin", BRANCH, "--force"])
     ref = os.environ.get("GITHUB_REF_NAME", "")
     if ref:
         run(["git", "checkout", "-f", ref])
-    run(f"rm -rf parts mods_out2 {ZIP_NAME}")
+    run(f"rm -rf {parts_dir} {out_dir} {ZIP_NAME}")
 
-    print(f"DONE in {int(time.time() - t0)}s - mods-cache push edildi, SHA256={sha}", flush=True)
+    print(f"DONE in {int(time.time() - t0)}s", flush=True)
 
 
 if __name__ == "__main__":

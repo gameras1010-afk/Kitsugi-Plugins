@@ -1,0 +1,35 @@
+package com.majruszsenchantments.enchantments;
+
+import com.majruszsenchantments.common.Categories;
+import com.majruszsenchantments.MajruszsEnchantments;
+import com.majruszsenchantments.common.Handler;
+import com.majruszlibrary.annotation.AutoInstance;
+import com.majruszlibrary.item.CustomEnchantment;
+import com.majruszlibrary.item.EquipmentSlots;
+import net.minecraft.world.damagesource.DamageSource;
+import net.minecraft.world.damagesource.DamageTypes;
+import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.ProtectionEnchantment;
+
+@AutoInstance
+public class MagicProtectionEnchantment extends Handler {
+	public static CustomEnchantment create() {
+		return new CustomEnchantment() {
+			@Override
+			public int getDamageProtection( int level, DamageSource source ) {
+				return !source.isCreativePlayer() && ( source.is( DamageTypes.MAGIC ) || source.is( DamageTypes.INDIRECT_MAGIC ) ) ? level * 2 : 0;
+			}
+		}
+			.rarity( CustomEnchantment.Rarity.UNCOMMON )
+			.category( Categories.ARMOR )
+			.slots( EquipmentSlots.ARMOR )
+			.maxLevel( 4 )
+			.minLevelCost( level->level * 11 - 10 )
+			.maxLevelCost( level->level * 11 + 1 )
+			.compatibility( enchantment->!( enchantment instanceof ProtectionEnchantment ) );
+	}
+
+	public MagicProtectionEnchantment() {
+		super( MajruszsEnchantments.MAGIC_PROTECTION, MagicProtectionEnchantment.class, false );
+	}
+}

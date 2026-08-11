@@ -1,0 +1,1 @@
+- fixed crash when Aquaculture 2 is present (reported by @LilChromie, @Crankonator)

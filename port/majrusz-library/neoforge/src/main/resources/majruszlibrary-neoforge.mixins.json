@@ -1,0 +1,18 @@
+{
+  "required": false,
+  "package": "com.majruszlibrary.mixin.neoforge",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "refmap": "majruszlibrary.refmap.json",
+  "client": [
+    "MixinAbstractContainerScreen"
+  ],
+  "mixins": [
+    "MixinAquaFishingBobberEntity",
+    "MixinEnchantment",
+    "MixinLootTable"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

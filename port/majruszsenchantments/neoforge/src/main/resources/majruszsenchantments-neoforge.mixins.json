@@ -1,0 +1,14 @@
+{
+  "required": false,
+  "package": "com.majruszsdifficulty.mixin.neoforge",
+  "compatibilityLevel": "JAVA_21",
+  "minVersion": "0.8",
+  "refmap": "majruszsdifficulty.refmap.json",
+  "client": [],
+  "mixins": [
+    "IMixinLootTable"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}

@@ -1,0 +1,183 @@
+plugins {
+    id 'java'
+    id 'eclipse'
+    id 'idea'
+    id 'maven-publish'
+    id 'net.neoforged.moddev' version '2.0.107'
+    id 'net.darkhax.curseforgegradle'
+    id 'com.modrinth.minotaur'
+}
+
+base {
+    archivesName = "${mod_archives_name}-neoforge-${minecraft_version}-${mod_version}"
+}
+
+repositories {
+    maven {
+        name = 'CurseForge'
+        url 'https://www.cursemaven.com'
+    }
+    maven {
+        name = 'Modrinth'
+        url = 'https://api.modrinth.com/maven'
+    }
+}
+
+def commonSrcDir = "${project.buildDir}/classes/generated/main"
+def changelogText = rootProject.file('changelog.md').text
+
+project.delete(fileTree(dir: commonSrcDir))
+
+project(':common') {
+    task replaceNeoForgeAnnotations(type: Copy) {
+        from 'src/main/java'
+        into commonSrcDir
+        duplicatesStrategy = DuplicatesStrategy.INCLUDE
+
+        filter {
+            String line ->  line.replaceAll('com.majruszlibrary.annotation.Dist', 'net.neoforged.api.distmarker.Dist')
+                    .replaceAll('com.majruszlibrary.annotation.OnlyIn', 'net.neoforged.api.distmarker.OnlyIn')
+        }
+    }
+
+    tasks.withType(JavaCompile) {
+        dependsOn replaceNeoForgeAnnotations
+    }
+}
+
+java {
+    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
+}
+
+neoForge {
+    version = neoforge_version
+
+    runs {
+        configureEach {
+            systemProperty 'forge.logging.console.level', 'debug'
+            systemProperty 'fml.earlyprogresswindow', 'false'
+        }
+
+        client {
+            client()
+        }
+
+        client2 {
+            client()
+            programArguments.addAll '--username', 'Dev2'
+        }
+
+        server {
+            server()
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet sourceSets.main
+        }
+    }
+}
+
+dependencies {
+    compileOnly project(':common')
+    implementation 'curse.maven:aquaculture-60028:4921323'
+}
+
+// Ensure sourceSets.main.output includes our compiled classes
+sourceSets.main.output.classesDirs.from(file("${project.buildDir}/classes/java/main"))
+
+tasks.withType(JavaCompile).configureEach {
+    options.setEncoding('UTF-8')
+    options.release.set(21)
+    options.compilerArgs.add('-AdisableTargetValidator=true')
+    source(commonSrcDir)
+}
+
+tasks.withType(Jar).configureEach {
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    manifest {
+        attributes([
+            'FMLModType': 'MOD',
+            'MixinConfigs': "${mod_id}-common.mixins.json,${mod_id}-neoforge.mixins.json"
+        ])
+    }
+}
+
+processResources {
+    from project(':common').sourceSets.main.resources
+    filesMatching(['META-INF/mods.toml', 'pack.mcmeta']) {
+        expand project.properties
+    }
+    // NeoForge 1.21.1 requires neoforge.mods.toml
+    rename 'mods.toml', 'neoforge.mods.toml'
+    outputs.upToDateWhen {
+        false
+    }
+}
+
+// Ensure FML metadata is in the class output directory for dev runtime
+tasks.register('copyModMetadata') {
+    dependsOn 'processResources', 'compileJava'
+    doLast {
+        def metaDir = file("${project.buildDir}/classes/java/main/META-INF")
+        metaDir.mkdirs()
+        file("${project.buildDir}/classes/java/main/META-INF/MANIFEST.MF").text = "Manifest-Version: 1.0\nFMLModType: MOD\nMixinConfigs: ${mod_id}-common.mixins.json,${mod_id}-neoforge.mixins.json\n"
+        copy {
+            from "${project.buildDir}/resources/main/META-INF"
+            into "${project.buildDir}/classes/java/main/META-INF"
+            include 'neoforge.mods.toml'
+        }
+    }
+}
+tasks.named('classes').configure {
+    dependsOn 'copyModMetadata'
+}
+
+modrinth {
+    token.set(System.getenv('MODRINTH_TOKEN'))
+    projectId.set(modrinth_project_id)
+    changelog.set(changelogText)
+    versionNumber.set(mod_version)
+    versionName.set("${mod_display_name} ${mod_version}")
+    versionType.set('release')
+    uploadFile.set(file("build/libs/${mod_archives_name}-neoforge-${minecraft_version}-${mod_version}.jar"))
+    gameVersions.set([minecraft_version])
+    loaders.set(['neoforge'])
+}
+
+task curseforge(type: net.darkhax.curseforgegradle.TaskPublishCurseForge) {
+    dependsOn 'build'
+    group = 'publishing'
+    apiToken = System.getenv('CURSEFORGE_TOKEN')
+
+    def file = upload(curseforge_project_id, file("build/libs/${mod_archives_name}-neoforge-${minecraft_version}-${mod_version}.jar"))
+    file.displayName = "${mod_display_name} ${mod_version} (NeoForge)"
+    file.changelog = changelogText
+    file.changelogType = 'markdown'
+    file.addModLoader('NeoForge')
+    file.addGameVersion(minecraft_version)
+    file.addGameVersion('Client', 'Server')
+    file.addJavaVersion('Java 21')
+    file.releaseType = 'release'
+}
+
+tasks.register('publishMods') {
+    group = 'publishing'
+    if( !mod_version.contains('unfinished') ) {
+        dependsOn tasks.named('modrinth')
+        dependsOn tasks.named('curseforge')
+    } else {
+        logger.error('Tried to publish unfinished mod')
+    }
+}
+// Try to generate refmap with AP
+afterEvaluate {
+    tasks.named('compileJava', JavaCompile).configure {
+        options.compilerArgs.addAll([
+            '-ArefMap=majruszlibrary.refmap.json',
+            '-AmapNamedPresent=true',
+            '-AdisableTargetValidator=true'
+        ])
+    }
+}
