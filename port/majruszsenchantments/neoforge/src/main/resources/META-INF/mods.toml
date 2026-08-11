@@ -29,7 +29,37 @@ issueTrackerURL = "${mod_issues}"
 
 [[dependencies.${ mod_id }]]
     modId = "majruszlibrary"
-    mandatory = false
+    mandatory = true
     versionRange = "${neoforge_majruszlibrary_version_range}"
+    ordering = "NONE"
+    side = "BOTH"
+
+# GOMULU Majrusz Library (ayri jar yok - mod jar'inin icinde)
+[[mods]]
+    modId = "majruszlibrary"
+    version = "7.0.8"
+    displayName = "Majrusz Library"
+    displayURL = "https://modrinth.com/mod/majrusz-library"
+    authors = "Majrusz"
+    description = "Library with common code for my other modifications."
+    license = "MIT License"
+
+[[mixins]]
+    config = "majruszlibrary-common.mixins.json"
+
+[[mixins]]
+    config = "majruszlibrary-neoforge.mixins.json"
+
+[[dependencies.majruszlibrary]]
+    modId = "neoforge"
+    mandatory = true
+    versionRange = "${neoforge_version_range}"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[dependencies.majruszlibrary]]
+    modId = "minecraft"
+    mandatory = true
+    versionRange = "${neoforge_minecraft_version_range}"
     ordering = "NONE"
     side = "BOTH"

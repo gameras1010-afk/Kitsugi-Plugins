@@ -190,7 +190,8 @@ def main():
     files = []
     for j in glob.glob(os.path.join(out_dir, "*")):
         os.remove(j)
-    for j in (mod_jars if 'mod_jars' in dir() else []) + (lib_jars if 'lib_jars' in dir() else []):
+    # SADECE mod jar'i paketlenir - Majrusz Library mod jar'inin ICINE gomuludur
+    for j in (mod_jars if 'mod_jars' in dir() else []):
         if os.path.exists(j):
             dst = os.path.join(out_dir, os.path.basename(j))
             shutil.copy(j, dst)

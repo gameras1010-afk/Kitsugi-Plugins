@@ -87,9 +87,17 @@ tasks.withType(Jar).configureEach {
     manifest {
         attributes([
             'FMLModType': 'MOD',
-            'MixinConfigs': "${mod_id}-common.mixins.json,${mod_id}-neoforge.mixins.json"
+            'MixinConfigs': "${mod_id}-common.mixins.json,${mod_id}-neoforge.mixins.json,majruszlibrary-common.mixins.json,majruszlibrary-neoforge.mixins.json"
         ])
     }
+}
+
+// Majrusz Library'yi mod jar'inin ICINE gom (ayri jar gerektirmez)
+tasks.named('jar', Jar) {
+    from(zipTree(rootProject.file('libs/majrusz-library-neoforge-1.21.1-7.0.8.jar'))) {
+        exclude 'META-INF/mods.toml', 'META-INF/neoforge.mods.toml', 'META-INF/MANIFEST.MF'
+    }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
 processResources {
@@ -109,7 +117,7 @@ tasks.register('copyModMetadata') {
     doLast {
         def metaDir = file("${project.buildDir}/classes/java/main/META-INF")
         metaDir.mkdirs()
-        file("${project.buildDir}/classes/java/main/META-INF/MANIFEST.MF").text = "Manifest-Version: 1.0\nFMLModType: MOD\nMixinConfigs: ${mod_id}-common.mixins.json,${mod_id}-neoforge.mixins.json\n"
+        file("${project.buildDir}/classes/java/main/META-INF/MANIFEST.MF").text = "Manifest-Version: 1.0\nFMLModType: MOD\nMixinConfigs: ${mod_id}-common.mixins.json,${mod_id}-neoforge.mixins.json,majruszlibrary-common.mixins.json,majruszlibrary-neoforge.mixins.json\n"
         copy {
             from "${project.buildDir}/resources/main/META-INF"
             into "${project.buildDir}/classes/java/main/META-INF"
