@@ -22,50 +22,124 @@ worker-threads = (çekirdek / 2) / 2
 
 # Moonrise senin makinende TEK THREAD ile chunk üretiyordu.
 
-C2ME aynı makinede 5-6 thread kullanır. **"Moonrise amk çok yavaş" dediğin
-şey buydu.** Kod kalitesi değil, thread sayısı. 1 vs 6.
+Bunu 3'e çıkardık, yine de yetmedi. Sebebi basit: **Moonrise'ın mimarisi
+worldgen'i paralelleştirmek için tasarlanmadı.** Paper'dan geliyor ve
+Paper'ın önceliği worldgen hızı değil, tick stabilitesi. Moonrise chunk
+sistemini *düzenli* yapar, *hızlı* yapmaz.
 
-Bu düzeltilince ~3x hızlanma alacaksın ve muhtemelen C2ME'ye hiç ihtiyacın
-kalmayacak.
+C2ME'nin tek işi ise worldgen'i paralelleştirmek. O yüzden C2ME'de kalıyoruz.
+
+**Karar: Moonrise silindi. Tüm ayarlar C2ME'ye göre.**
+
+---
+
+## ⭐ EN ÖNEMLİ AYAR: `globalExecutorParallelism = 5`
+
+Bu tek satır, bu dokümandaki her şeyden daha önemli.
+
+### C2ME geliştiricisinin (ishland) resmî tavsiyesi
+
+> *"change globalExecutorParallelism to your thread count or slightly below.
+> Note: if you need fps and tps stability, you need to reserve a few threads
+> for the rest of the system."*
+
+### C2ME'nin KENDİ varsayılan formülü (Linux)
+
+```
+max(1, min(cpus / 1.2 - 2, RAM tabanlı sınır))
+   = 6 / 1.2 - 2
+   = 3
+```
+
+**C2ME kendi haline bırakılırsa senin makinende 3 thread açar.** Bu, mevcut
+kurulumunda muhtemelen böyle çalışıyor — yani C2ME'yi de tam kapasite
+kullanmıyorsun.
+
+### Neden 5?
+
+Thread bütçen (toplam **6**, hyperthreading YOK):
+
+| Değer | Ne olur |
+|---|---|
+| 3 (varsayılan) | Gereksiz ihtiyatlı. CPU'nun yarısı boşta. |
+| 4 | Muhafazakâr. TPS taş gibi, worldgen biraz yavaş. |
+| **5** | ✅ **DOĞRU.** 5 worker + 1 çekirdek ana tick/netty/GC'ye kalır. |
+| 6 | Ana tick thread'i CPU bulamaz. Chunk hızlı gelir ama TPS düşer. |
+
+i5-9400F'te **SMT yok** — her worker gerçek bir fiziksel çekirdeği tamamen
+işgal eder. 12 thread'lik bir CPU'da 12 yazabilirsin çünkü SMT sayesinde
+ana thread yine çalışır. Sende yazamazsın.
+
+**3 → 5 = %67 daha fazla worker.** Moonrise'ın 1'ine göre 5x.
+
+### Nasıl ince ayar yaparsın
+
+```
+5 ile başla → /spark tps
+  TPS sürekli 19.5 altı  → 4 yap
+  TPS 20.0 sabit + chunk yavaş → 6 dene (riskli)
+Chunky pregen sırasında (oyuncu yok) → geçici 6
+```
+
+---
+
+## ⭐ İKİNCİ EN ÖNEMLİ: `threadedWorldGen.enabled = true`
+
+```toml
+[threadedWorldGen]
+enabled = true   # VARSAYILAN: false
+```
+
+**Bu varsayılan olarak KAPALI.** Açmazsan C2ME'nin asıl özelliğini —
+paralel worldgen'i — hiç kullanmıyorsun demektir. `globalExecutorParallelism`
+kaç olursa olsun fark etmez.
+
+Yanına bunları da aç:
+```toml
+allowThreadedFeatures = true   # ağaç/cevher/mağara üretimi de paralel
+reduceLockRadius = true        # daha çok eşzamanlı chunk
+asyncScheduling = true         # ana thread'in zamanlama yükü azalır
+```
+
+Tam config: `config/c2me.toml` (satır satır yorumlu).
+
+---
+
+## 🔴 ScalableLux — atlanamaz
+
+Moonrise'ı silince **Starlight'ı kaybettin.** Işık motoru vanilla'ya döndü.
+
+C2ME dokümantasyonu birebir:
+> *"It is **strongly recommended** to install ScalableLux, because lighting
+> can easily become a bottleneck"*
+
+ScalableLux'u C2ME'nin **kendi geliştiricisi** yazdı ve C2ME'ye özel entegre etti:
+> *"Reduced scheduling overhead with proper chunk system integration with C2ME"*
+
+Kurmazsan ışık hesabı yeni darboğazın olur ve C2ME'nin hızını hiç göremezsin.
+**Bu, Moonrise'dan çıkmanın tek gerçek bedeliydi ve tam karşılığı var.**
+
+---
+
+## Moonrise gidince NE KAZANDIN
+
+Moonrise kuruluyken kuramadığın modlar artık serbest:
+
+| Mod | Moonrise varken | Şimdi |
+|---|---|---|
+| **ScalableLux** | ❌ Boot'ta uyumsuzluk hatası (`Tuinity/Moonrise#11`) | ✅ Zorunlu |
+| **Fast Noise** | ❌ Biyomlar bozuluyordu | ✅ Uyumlu (Connector gerekir) |
+| **ServerCore** | ⚠️ Chunk ayarları çakışıyordu | ✅ Kur |
+| **Lithium collision** | ❌ Moonrise zorla kapatıyordu | ✅ **Tam kapasite** |
+| **Lithium entity tracker** | ❌ Aynı | ✅ **Tam kapasite** |
+| **Lithium random tick** | ❌ Aynı | ✅ **Tam kapasite** |
+
+Son üç satır önemli: Moonrise'ın "collision/entity tracker/random tick
+optimizasyonu" diye sattığı şeyleri **artık Lithium yapıyor.** Kaybetmedin.
 
 ---
 
 ## Neyi neden böyle ayarladım
-
-### `worker-threads: 3`
-
-Thread bütçen (toplam **6**, hyperthreading YOK):
-
-| Thread | İş |
-|---|---|
-| 1 | Ana tick thread — aç kalırsa TPS düşer |
-| 3 | Chunk worker ← **buraya yatırım yapıyoruz** |
-| 2 | GC + netty + Ubuntu + I/O |
-
-**Neden 3, neden 6 değil?** i5-9400F'te **SMT yok**. Her worker thread gerçek
-bir fiziksel çekirdeği tamamen işgal eder. 12-thread'lik bir CPU'da 6 worker
-yazabilirsin çünkü SMT sayesinde ana thread yine çalışır. Sende yazamazsın —
-sunucu chunk'ları hızlı üretir ama oyun donar.
-
-**1 → 3 zaten 3x.** Açgözlü olma.
-
-### `io-threads: 2`
-
-Moonrise'ın notu: `>1` sadece SSD'de mantıklı, HDD'de negatif ölçekleniyor.
-Sende **NVMe** var → 1'in üstüne çıkmak doğru.
-
-Ama 6 thread'e 4 I/O thread'i fazla. **2** doğru. I/O thread'leri çoğunlukla
-disk bekler, CPU yemez — o yüzden 3+2+1=6 olması sorun değil.
-
-### `player-max-gen-rate: 5.0` ← genel pakette `-1.0` idi
-
-**Bunu senin için değiştirdim.** SMT olmadığı için, limitsiz bırakırsan yeni
-araziye uçan tek bir oyuncu 3 worker'ı da kilitler ve sunucunun geri kalanı
-(mob, redstone, hopper) durur. 12-thread'lik CPU'da bu risk düşük, sende yüksek.
-
-- Tek başına oynuyorsan → `8.0`
-- 2-5 kişi → `5.0` (mevcut)
-- 5+ kişi → `3.0`
 
 ### `MEMORY="8G"` ← genel pakette `12G` idi
 
@@ -115,25 +189,37 @@ simulation-distance=6
 ```
 
 6 thread için doğru denge. `simulation-distance` maliyeti **kübik** büyür —
-8 yapma. `view-distance=10` güvenli çünkü `auto-config-send-distance: true`
-sunucu zorlanınca kendisi düşürüyor.
+8 yapma.
+
+`view-distance=10` C2ME ile **ucuz**, çünkü `noTickViewDistance` özelliği
+uzaktaki chunk'ları oyuncuya gönderir ama **tick'lemez** — içindeki mob,
+redstone, su akışı hesaplanmaz. Görsel mesafe bedava, simülasyon değil.
 
 Tek başına oynuyorsan `view-distance=12` deneyebilirsin.
 
----
-
-## population-gen-parallelism kararı
-
-```yaml
-population-gen-parallelism: false   # şu an böyle
+```properties
+sync-chunk-writes=false    # C2ME ioSystem.async ile birlikte şart
+max-tick-time=60000
 ```
 
-Moonrise'ın açma koşulu: "~10 worker thread sürekli chunk üretiyorsa".
-Sende **3** worker var → teknik olarak eşiğin altındasın.
+---
 
-**Önce `worker-threads: 3`'ün etkisini gör.** Muhtemelen yeterli gelecek.
-Hâlâ yavaşsa ve worldgen modun yoksa (BOP/Terralith/YUNG's yok) yedek alıp
-`true` dene.
+## `maxConcurrentChunkLoads` kararı
+
+```toml
+[noTickViewDistance]
+maxConcurrentChunkLoads = 3
+```
+
+Aynı anda kaç chunk yüklenebileceği. Değiş tokuş:
+
+| Değer | Sonuç |
+|---|---|
+| Düşük (2-3) | Daha iyi latency, chunk'lar düzenli akar |
+| Yüksek (5+) | Daha hızlı toplu yükleme, tick lag riski |
+
+6 thread için **3** doğru. "Chunk yavaş yükleniyor" hissi devam ederse
+4'e çıkar ama `/spark tps` ile MSPT'yi izle — 50 ms'i geçiyorsa geri in.
 
 ---
 
@@ -198,19 +284,55 @@ Kioxia Exceria QLC değil TLC — iyi. 338 GB boş, doluluk sorunu yok.
 ## Uygulama sırası
 
 ```
-1. [ ] cpupower governor = performance          ← en kolay %10-15
-2. [ ] config/moonrise.yml kopyala (worker-threads: 3)
-3. [ ] start.sh içindeki NEOFORGE_VERSION'ı düzelt
-4. [ ] server.properties: view=10, sim=6
-5. [ ] Sunucuyu aç, /spark tps → ÖLÇ
-6. [ ] 15 dk yeni araziye uç
+1.  [ ] DÜNYA YEDEĞİ AL                          ← atlamak yok
+
+2.  [ ] mods/ içinden SİL:
+        Moonrise*.jar
+        MoonriseCompats*.jar
+        generator-accelerator*.jar
+
+3.  [ ] config/moonrise.yml SİL  (kalıntı bırakma)
+
+4.  [ ] EKLE:
+        c2me-neoforge-mc1.21.1-0.3.0+alpha.0.91.jar
+        ScalableLux 0.2.0+neoforge        ← ATLAMA
+        ServerCore
+        Structure Layout Optimizer + Resourceful Config
+
+5.  [ ] cpupower governor = performance          ← en kolay %10-15
+
+6.  [ ] Sunucuyu AÇ → KAPAT   (config/c2me.toml oluşsun)
+
+7.  [ ] c2me.toml düzenle:
+        globalExecutorParallelism = 5
+        [threadedWorldGen] enabled = true         ← EN KRİTİK
+        allowThreadedFeatures = true
+        reduceLockRadius = true
+        asyncScheduling = true
+        [ioSystem] replaceImpl = true
+        [ioSystem] chunkDataCacheLimit = 16384
+        [generalOptimizations.autoSave] mode = "ENHANCED"
+
+8.  [ ] start.sh içindeki NEOFORGE_VERSION'ı düzelt
+
+9.  [ ] server.properties: view=10, sim=6, sync-chunk-writes=false
+
+10. [ ] Aç, /spark tps → ÖLÇ
+
+11. [ ] 15 dk yeni araziye uç → chunk hızını hisset
 ```
 
-**Adım 5'ten sonra bana MSPT değerini söyle.** Öncesi/sonrası farkı göreceğiz.
+**Adım 10'dan sonra bana MSPT değerini söyle.** Öncesi/sonrası farkı göreceğiz.
 
 ---
 
 ## Sonra: pregen (asıl çözüm)
+
+Hiçbir mod, "chunk zaten üretilmiş" olmanın yerini tutmaz. C2ME worldgen'i
+birkaç kat hızlandırır; **pregen onu tamamen ortadan kaldırır.**
+
+Bittiğinde kalan tek iş chunk'ı diskten okumak — NVMe'de mikrosaniye.
+**Bu, hangi modu kullandığından bağımsız olarak en büyük kazanç.**
 
 ```bash
 # server.properties geçici:
@@ -218,8 +340,13 @@ Kioxia Exceria QLC değil TLC — iyi. 338 GB boş, doluluk sorunu yok.
 #   view-distance=4
 #   simulation-distance=4
 #   spawn-monsters=false
-# moonrise.yml geçici:
-#   worker-threads: 4     ← oyuncu yokken 4 güvenli
+#   spawn-animals=false
+#
+# c2me.toml geçici (oyuncu yok, TPS önemsiz):
+#   globalExecutorParallelism = 6
+#
+# start.sh'ta zaten var:
+#   -Dchunky.maxWorkingCount=768
 ```
 
 ```
@@ -232,26 +359,42 @@ Kioxia Exceria QLC değil TLC — iyi. 338 GB boş, doluluk sorunu yok.
 **3000 seçtim, 5000 değil.** i5-9400F'te 5000 radius bir geceden uzun sürer.
 3000 zaten 6000x6000 blokluk alan — normal bir sunucu için fazlasıyla yeterli.
 
-Bitince ayarları geri al.
+Bitince ayarları geri al, `globalExecutorParallelism = 5` yap.
 
 ---
 
-## C2ME'ye geçmeli miyim?
+## Beklenti — dürüst konuşalım
 
-**Hayır, henüz değil.** Şu anki karşılaştırma adil değildi:
+C2ME'nin gücü **thread sayısıyla** ölçeklenir. Resmî benchmark'ları 16-80
+thread'lik makinelerde yapılıyor. Sen 6 thread'desin.
 
-| | Thread |
+`globalExecutorParallelism = 5` ile:
+- Moonrise'ın varsayılan **1** thread'ine göre → **5x** worker
+- C2ME'nin kendi varsayılan **3**'üne göre → **%67** daha fazla
+
+Fark net hissedilecek. **Ama 6 thread'lik bir CPU'da hiçbir mod sana 16
+thread'lik sunucu hissi veremez.** Fizik kanunu, mod seçimi değil.
+
+Bu yüzden **pregen şart.** Yukarıdaki adımı atlama.
+
+---
+
+## Ölçüm — nereye bakacaksın
+
+```
+/spark profiler start --thread * --not-combined
+# 60 sn HİÇ gitmediğin yöne uç (chunk üretimini zorla)
+/spark profiler stop
+/spark tps
+/spark health
+```
+
+| Profilde üstte görünen | Anlamı / Çözüm |
 |---|---|
-| Moonrise (varsayılan) | **1** |
-| C2ME | 5-6 |
+| `NoiseBasedChunkGenerator` | Worldgen. `threadedWorldGen.enabled` gerçekten `true` mu? |
+| `ThreadedLevelLightEngine` | **ScalableLux kurmayı unutmuşsun** |
+| `RegionFileStorage` | Disk. `ioSystem.replaceImpl = true` mu? |
+| `ServerChunkCache.tick` | `globalExecutorParallelism` düşük, 5'e çek |
+| `ServerEntity` / `ChunkMap.tick` | Entity tracker → ServerCore kur |
 
-Elbette C2ME hızlı geldi. `worker-threads: 3` yaptıktan sonra tekrar ölç.
-
-Ayrıca C2ME'ye geçersen Starlight'ı kaybedersin → ScalableLux kurman gerekir
-→ ve **6 thread'lik bir CPU'da** C2ME'nin agresif paralelliği ana tick
-thread'ini aç bırakır. C2ME 12+ thread'lik CPU'larda parlar. Senin donanımın
-aslında Moonrise'ın muhafazakâr yaklaşımına daha uygun — sadece varsayılanı
-fazla muhafazakârdı.
-
-Düzelttikten sonra hâlâ memnun değilsen `NEDEN-YAVAS.md`'deki geçiş rehberi
-hazır bekliyor.
+**Sonucu bana at**, ince ayar yaparız.

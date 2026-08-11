@@ -1,7 +1,7 @@
 @echo off
 REM ============================================================
 REM  Minecraft 1.21.1 NeoForge - Sunucu Baslatma Scripti (Windows)
-REM  Moonrise + Generator Accelerator yigini icin ayarlanmis
+REM  C2ME + ScalableLux + Lithium yigini icin ayarlanmis
 REM ============================================================
 
 setlocal enabledelayedexpansion
@@ -84,8 +84,14 @@ set FLAGS=%FLAGS% -XX:+UseVectorCmov
 set FLAGS=%FLAGS% -XX:+UseFastUnorderedTimeStamps
 set FLAGS=%FLAGS% -XX:AllocatePrefetchStyle=3
 
-REM --- Vector API (Generator Accelerator SIMD noise) ---
+REM --- Vector API (SIMD noise - Fast Noise vb.) ---
 set FLAGS=%FLAGS% --add-modules=jdk.incubator.vector
+
+REM --- C2ME: Chunky pregen worker limiti (ishland tavsiyesi) ---
+set FLAGS=%FLAGS% -Dchunky.maxWorkingCount=768
+
+REM --- UseCompactObjectHeaders: JAVA 24+ ister, Java 21'de ACMA ---
+REM set FLAGS=%FLAGS% -XX:+UseCompactObjectHeaders
 
 REM --- Netty ---
 set FLAGS=%FLAGS% -Dio.netty.allocator.maxOrder=9
@@ -104,8 +110,10 @@ echo   Heap : %MEMORY%
 echo   GC   : G1GC (Aikar flags)
 echo ===============================================
 echo.
-echo   Hatirlatma: config\moonrise.yml icindeki
-echo   worker-threads degerini CPU'na gore ayarladin mi?
+echo   Hatirlatma: config\c2me.toml icinde
+echo     globalExecutorParallelism = (thread sayisi - 1)
+echo     [threadedWorldGen] enabled = true
+echo   ayarlarini yaptin mi? (bkz. C2ME-PAKET.md)
 echo.
 
 :restart

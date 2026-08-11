@@ -1,0 +1,240 @@
+# ============================================================
+#  C2ME (Concurrent Chunk Management Engine)
+#  Minecraft 1.21.1 · NeoForge
+#
+#  SENIN DONANIMIN:
+#    CPU : Intel i5-9400F — 6 cekirdek / 6 THREAD (SMT/HT YOK)
+#    RAM : 16 GB DDR4-2667  (heap 8G)
+#    Disk: Kioxia Exceria NVMe
+#    OS  : Ubuntu 24.04 LTS
+#
+#  KULLANIM:
+#    Bu dosyayi DOGRUDAN kopyalama. Once sunucuyu bir kez
+#    ac-kapat, C2ME kendi config/c2me.toml dosyasini olustursun.
+#    Sonra asagidaki DEGERLERI kendi dosyanda bul ve degistir.
+#    (Anahtar isimleri C2ME surumune gore farklilik gosterebilir.)
+# ============================================================
+
+version = 3
+
+# ############################################################
+# ##                                                        ##
+# ##   EN ONEMLI AYAR — BUNU DOGRU YAPMAZSAN GERISI BOSA    ##
+# ##                                                        ##
+# ############################################################
+#
+#  globalExecutorParallelism = C2ME'nin actigi worker thread sayisi.
+#  Chunk uretimi, chunk yukleme, chunk IO — hepsi bu havuzda kosar.
+#
+#  --- C2ME gelistiricisinin (ishland) resmi tavsiyesi ---
+#    "change globalExecutorParallelism to your thread count
+#     or slightly below. Note: if you need fps and tps
+#     stability, you need to reserve a few threads for the
+#     rest of the system."
+#
+#  --- C2ME'nin KENDI varsayilan formulu (Linux) ---
+#    max(1, min(cpus / 1.2 - 2, RAM tabanli sinir))
+#    Senin makinen: 6 / 1.2 - 2 = 3
+#    => C2ME kendi basina birakilirsa 3 thread acar. AZ.
+#
+#  --- Neden 5 ve neden 6 degil ---
+#    i5-9400F'te SMT YOK. 6 thread = 6 gercek cekirdek.
+#    Her C2ME worker'i bir cekirdegi TAM isgal eder.
+#
+#      6 yazarsan -> ana tick thread'i (server thread) CPU
+#                    bulamaz, chunk hizli gelir ama TPS duser.
+#                    Oyuncu "lag" hisseder.
+#      5 yazarsan -> 5 worker + 1 cekirdek ana tick / netty /
+#                    GC icin serbest. DOGRU DENGE.  <<<
+#      4 yazarsan -> daha muhafazakar, TPS taş gibi olur,
+#                    worldgen biraz yavaslar.
+#      3 (varsayilan) -> gereksiz ihtiyatli, CPU'nu bosa harciyor.
+#
+#  --- NASIL AYAR YAPARSIN ---
+#    1. 5 ile basla.
+#    2. Oyna, /spark tps calistir.
+#    3. TPS surekli 19.5 altindaysa  -> 4 yap.
+#    4. TPS 20.0 sabit + chunk yavas -> 6 dene (riskli).
+#
+#  --- PREGEN SIRASINDA ---
+#    Chunky ile onceden dunya uretirken oyuncu yok, TPS
+#    onemsiz. GECICI olarak 6 yap, pregen bitince 5'e don.
+#
+globalExecutorParallelism = 5
+
+
+# ============================================================
+#  [threadedWorldGen] — C2ME'NIN ASIL OZELLIGI
+# ============================================================
+[threadedWorldGen]
+
+# ############################################################
+# ##  VARSAYILAN: false                                     ##
+# ##  BUNU AÇMAZSAN C2ME'nin PARALEL WORLDGEN'INI HIC       ##
+# ##  KULLANMIYORSUN. Sikayetinin asil cevabi bu satir.     ##
+# ############################################################
+enabled = true
+
+# Ozellik (feature) uretimi de paralel olsun:
+# agaclar, cevherler, magaralar, bitki ortusu...
+# Chunk'in "surface" asamasindan sonraki tum sus isleri.
+# Kapaliyken worldgen'in yarisi tek thread'de kalir.
+allowThreadedFeatures = true
+
+# Chunk uretiminde kullanilan kilit yaricapini kucultur.
+# Kucuk yaricap = ayni anda daha cok chunk uretilebilir.
+# 6 thread'de fark yaratir, ac.
+reduceLockRadius = true
+
+# Chunk gorevlerini async zamanla. Ana thread'in zamanlama
+# yuku azalir. C2ME'nin kendi tavsiye ettigi ayar.
+asyncScheduling = true
+
+
+# ============================================================
+#  [vanillaWorldGenOptimizations]
+#  Vanilla worldgen algoritmalarinin optimize edilmis
+#  versiyonlari. Sonuc birebir ayni (parity korunur),
+#  sadece daha hizli hesaplanir. Ikisi de acik olmali.
+# ============================================================
+[vanillaWorldGenOptimizations]
+
+# Aquifer = yeralti su/lav cepleri hesabi.
+# Overworld'de en pahali worldgen adimlarindan biri.
+optimizeAquifer = true
+
+# End biome hesabini cache'ler. End'e gidiyorsan buyuk fark.
+useEndBiomeCache = true
+
+
+# ============================================================
+#  [ioSystem] — DISK
+#  NVMe'n var, bu bolum senin lehine calisir.
+# ============================================================
+[ioSystem]
+
+# Chunk okuma/yazma ana thread'i bloklamasin.
+# Bu KAPALIYSA her chunk kaydi bir tick lag'i demektir.
+async = true
+
+# Vanilla RegionFileStorage yerine C2ME'nin optimize
+# implementasyonu. Varsayilan false, ac.
+replaceImpl = true
+
+# --- NBT CACHE ---
+# Chunk verisi RAM'de tutulur, ayni chunk tekrar
+# istendiginde diskten okunmaz.
+#
+# Varsayilanlar: soft 1536 / hard 6144
+# Sen 8G heap + 16 GB RAM'desin, cok daha fazlasini
+# kaldirirsin. Chunk yukleme yavasligina dogrudan iyi gelir.
+#
+# soft limit  = bu sayidan sonra GC baskisi olursa atilir
+# hard limit  = mutlak tavan
+chunkDataCacheSoftLimit = 4096
+chunkDataCacheLimit = 16384
+
+# Chunk sikistirma seviyesi. -1 = varsayilan (deflate).
+# NVMe'de disk hizi darbogaz degil, CPU degil.
+# Degistirme, -1 birak.
+chunkCompressionLevel = -1
+
+
+# ============================================================
+#  [generalOptimizations]
+# ============================================================
+[generalOptimizations]
+
+# Tick dongusunun ORTASINDA chunk gorevleri calistirir.
+# Chunk'lar oyuncuya daha hizli ulasir, karsiliginda
+# MSPT birazcik yukselir.
+#
+# Varsayilan: 100000 (nanosaniye = 0.1 ms)
+# -1 yaparsan kapanir.
+#
+# ⚠️ Dimensional Threading (dimthread) modu ile UYUMSUZ.
+#    O modu kurma zaten (bkz. C2ME-PAKET.md yasak liste).
+#
+# Chunk yukleme yavasligindan sikayetci oldugun icin
+# varsayilanda birak, hatta 200000'e cikarabilirsin.
+midTickChunkTasksInterval = 100000
+
+# Async chunk istek yolunu optimize eder. Ac.
+optimizeAsyncChunkRequest = true
+
+[generalOptimizations.autoSave]
+# VANILLA  = her tick bir miktar chunk kaydeder (surekli disk)
+# ENHANCED = sunucu bos vakti buldugunda toplu kaydeder
+#
+# ENHANCED kesinlikle dogru secim. Tick basina disk yuku
+# ortadan kalkar, NVMe'de zaten kayip riski minimal.
+mode = "ENHANCED"
+
+
+# ============================================================
+#  [noTickViewDistance]
+#  Oyuncuya chunk GONDER ama TICK'LEME.
+#
+#  Bu ozellik sayesinde view-distance'i yuksek tutmak ucuz:
+#  uzaktaki chunk'lar goruntulenir, ama icindeki mob/redstone/
+#  su akisi hesaplanmaz. Gorsel mesafe bedava, simulasyon degil.
+# ============================================================
+[noTickViewDistance]
+
+enabled = true
+
+# Mod uyumlulugu icin. Acik birak — kapatirsan bazi modlar
+# uzak chunk'lari goremez.
+compatibilityMode = true
+
+# Ayni anda kac chunk yuklenebilir.
+#   Dusuk = daha iyi latency, chunk'lar duzenli akar
+#   Yuksek = daha hizli toplu yukleme, tick lag riski
+#
+# 6 thread icin 3 dogru deger. Chunk yuklemeyi hizlandirmak
+# icin 4-5 deneyebilirsin AMA MSPT'yi izle.
+maxConcurrentChunkLoads = 3
+
+# true yaparsan C2ME chunk'lari 2 KEZ gonderir (bir kez
+# no-tick, bir kez tam). Ag trafigi ikiye katlanir.
+# Kesinlikle false.
+ensureChunkCorrectness = false
+
+# Tick basina kac no-tick chunk guncellemesi gonderilsin.
+updatesPerTick = 12
+
+
+# ============================================================
+#  [asyncScheduling]
+# ============================================================
+[asyncScheduling]
+# Chunk zamanlamasini ana thread'den alir.
+enabled = true
+
+
+# ============================================================
+#  [fixes]
+# ============================================================
+[fixes]
+
+# Off-thread'den dunya random'ina erisimi yakalar ve loglar.
+#
+# ⚠️ KAPATMA. Bu kapaliyken uyumsuz bir mod dunyayi sessizce
+#    bozabilir ve sen aylar sonra fark edersin.
+#    Log'da bu uyariyi goruyorsan -> o modu cikar, ayari degil.
+safeWorldRandomAccess = true
+
+disableLoggingShutdownHook = false
+
+
+# ============================================================
+#  HIZLI OZET — sadece bunlari degistir
+# ============================================================
+#   globalExecutorParallelism        3   -> 5
+#   [threadedWorldGen] enabled       false -> true   << EN KRITIK
+#   [threadedWorldGen] allowThreadedFeatures -> true
+#   [threadedWorldGen] asyncScheduling      -> true
+#   [ioSystem] replaceImpl           false -> true
+#   [ioSystem] chunkDataCacheLimit   6144  -> 16384
+#   [generalOptimizations.autoSave] mode   -> ENHANCED
+# ============================================================

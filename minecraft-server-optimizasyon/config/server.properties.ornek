@@ -13,8 +13,8 @@
 # ------------------------------------------------------------
 #
 #  Bu ikisi sunucunun performansini diger her seyden daha cok
-#  belirler. Moonrise, Lithium, Generator Accelerator — hepsi
-#  toplamda bu iki sayinin verecegi kadar fark yaratmaz.
+#  belirler. C2ME, Lithium, ScalableLux — hepsi toplamda
+#  bu iki sayinin verecegi kadar fark yaratmaz.
 #
 #  ONEMLI KURAL:  simulation-distance <= view-distance
 #
@@ -50,9 +50,12 @@ simulation-distance=6
 #  NOT: simulation-distance=4 vanilla mob spawn mekaniginin
 #  calistigi minimum degerdir. Altina inme, mob farm'lar bozulur.
 #
-#  NOT 2: Moonrise'in "auto-config-send-distance: true" ayari
-#  sunucu zorlandiginda view-distance'i gecici olarak kendisi
-#  dusurur. Yani view-distance=12 yazmak riskli degil.
+#  NOT 2: C2ME'nin [noTickViewDistance] ozelligi sayesinde
+#  view-distance'i yuksek tutmak UCUZ. Uzaktaki chunk'lar
+#  oyuncuya gonderilir ama TICK'LENMEZ — icindeki mob,
+#  redstone, su akisi hesaplanmaz.
+#  Yani view-distance=12 yazmak C2ME ile riskli degil.
+#  (c2me.toml: [noTickViewDistance] enabled = true olmali)
 
 
 # ------------------------------------------------------------

@@ -154,11 +154,33 @@ JVM_FLAGS=(
 
     # --- UseNUMA YOK ---
     # Tek soketli masaustu sistem. NUMA yok, flag anlamsiz.
-    # (Onceki genel scriptte vardi, senin makinen icin cikardim.)
 
-    # --- Vector API (Generator Accelerator SIMD noise) ---
+    # --- Vector API (SIMD noise — Fast Noise / bazi worldgen modlari) ---
     # i5-9400F AVX2 destekler. Coffee Lake, AVX-512 YOK.
     --add-modules=jdk.incubator.vector
+
+    # --- C2ME: Chunky pregen worker limiti ---
+    # C2ME gelistiricisinin (ishland) tavsiye ettigi deger.
+    # Chunky kurulu degilse zararsiz, gormezden gelinir.
+    -Dchunky.maxWorkingCount=768
+
+    # --- UseCompactObjectHeaders — SENDE KAPALI, sebebi asagida ---
+    #
+    # ishland (C2ME gelistiricisi) bu flag'i tavsiye ediyor:
+    # nesne basliklarini 12 byte'tan 8 byte'a dusurur.
+    # C2ME milyonlarca kucuk chunk/blockstate objesi tuttugu
+    # icin RAM ve CPU cache kazanci ciddi olur.
+    #
+    # ⚠️ ANCAK: bu flag JAVA 24+ ister (JEP 450, Java 24'te
+    #    experimental). Java 21'de YOK — eklersen JVM
+    #    "Unrecognized VM option" verip HIC ACILMAZ.
+    #
+    # Bu script Java 21 hedefliyor (NeoForge 1.21.1'in resmi
+    # gereksinimi), o yuzden kapali.
+    #
+    # Java 24/25'e gecersen: asagidaki satirin basindaki #
+    # isaretini kaldir. (UnlockExperimentalVMOptions zaten var.)
+    # -XX:+UseCompactObjectHeaders
 
     # --- Netty ---
     -Dio.netty.allocator.maxOrder=9
@@ -179,9 +201,29 @@ echo "  Heap : $MEMORY   (kalan ~5G -> OS page cache)"
 echo "  GC   : G1GC, ParallelGCThreads=4"
 echo "==============================================="
 echo ""
-echo "  moonrise.yml kontrol:"
-grep -E "worker-threads|io-threads" config/moonrise.yml 2>/dev/null \
-    | sed 's/^/    /' || echo "    (config/moonrise.yml bulunamadi)"
+
+# --- C2ME sanity check ---
+if [ -f config/c2me.toml ]; then
+    echo "  c2me.toml kontrol:"
+    grep -E "globalExecutorParallelism|^\s*enabled" config/c2me.toml 2>/dev/null \
+        | head -4 | sed 's/^/    /'
+    if ! grep -qE "globalExecutorParallelism\s*=\s*[45]" config/c2me.toml; then
+        echo "    !! UYARI: globalExecutorParallelism 4 veya 5 degil."
+        echo "       i5-9400F icin 5 olmali. C2ME-PAKET.md'ye bak."
+    fi
+else
+    echo "  (config/c2me.toml yok — sunucu bir kez acilinca olusur)"
+fi
+
+# --- Moonrise kalintisi uyarisi ---
+if ls mods/ 2>/dev/null | grep -qi "moonrise"; then
+    echo ""
+    echo "  !! DIKKAT: mods/ icinde Moonrise var."
+    echo "     Moonrise C2ME ile TEMELDEN UYUMSUZ. Sunucu ya"
+    echo "     acilmaz ya da ikisinden biri devre disi kalir."
+    echo "     mods/Moonrise*.jar dosyasini SIL."
+    sleep 5
+fi
 echo ""
 
 # --- Otomatik yeniden baslatma ---
