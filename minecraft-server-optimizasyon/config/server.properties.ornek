@@ -32,7 +32,7 @@
 # ------------------------------------------------------------
 
 # --- Oneri: 1-10 oyuncu, guclu CPU ---
-view-distance=12
+view-distance=10
 simulation-distance=6
 
 # --- Oneri: 10-30 oyuncu ---

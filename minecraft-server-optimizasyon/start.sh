@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
 # ============================================================
 #  Minecraft 1.21.1 NeoForge — Sunucu Baslatma Scripti
-#  Moonrise + Generator Accelerator yigini icin ayarlanmis
+#
+#  SENIN DONANIMINA GORE AYARLANDI:
+#    CPU  : Intel i5-9400F, 6 cekirdek / 6 THREAD (SMT yok)
+#    RAM  : 16 GB DDR4-2667
+#    Disk : Kioxia Exceria NVMe
+#    OS   : Ubuntu 24.04 LTS / kernel 6.8
 #
 #  Kullanim:
 #     chmod +x start.sh
@@ -9,66 +14,64 @@
 # ============================================================
 
 # ------------------------------------------------------------
-#  1) RAM AYARI  —  BURAYI DUZENLE
+#  RAM — 8G. Bu bilincli bir secim, 12G DEGIL.
 # ------------------------------------------------------------
-#  KURAL: Xms ve Xmx AYNI olmali. Farkli yaparsan JVM heap'i
-#  surekli buyutup kucultur, bu GC duraklamalari yaratir.
+#  16 GB toplam RAM'in var. Neden hepsini heap'e vermiyoruz:
 #
-#  Makinede TOPLAM ne kadar RAM varsa, isletim sistemine
-#  en az 2 GB birak.
+#    8 GB   -> JVM heap (Minecraft)
+#    ~1 GB  -> JVM overhead (metaspace, code cache, GC yapilari,
+#              netty direct buffer, thread stack)
+#    ~2 GB  -> Ubuntu 24.04 + arka plan servisleri
+#    ~5 GB  -> OS PAGE CACHE  <<< BU ONEMLI
 #
-#     8 GB makine  -> 6G
-#    12 GB makine  -> 8G
-#    16 GB makine  -> 12G
-#    32 GB makine  -> 16G   (asagiyi oku)
+#  Page cache = Linux'un region dosyalarini (.mca) RAM'de
+#  tutmasi. Senin sikayetin "chunk yavas yukleniyor" idi.
+#  Page cache dolu oldugunda chunk'lar diskten degil RAM'den
+#  gelir. 5 GB page cache ~ oyuncunun cevresindeki tum
+#  bolgenin RAM'de durmasi demek.
 #
-#  !!! 16G USTUNE CIKMA !!!
-#  Java 32GB'in altinda "Compressed OOPs" kullanir (pointer'lar
-#  32-bit). 32GB'i gecince pointer'lar 64-bit olur, EFEKTIF
-#  bellek DUSER ve GC yavaslar. 12-16G tatli nokta.
-#  Daha fazla RAM'in varsa onu OS disk cache'ine birak —
-#  chunk okuma hizini bu daha cok artirir.
+#  Heap'i 12G yaparsan page cache'i 1 GB'a dusurursun ve
+#  chunk yukleme YAVASLAR. Modern bir sunucuda 8G heap +
+#  bol page cache, 12G heap + kuru cache'ten hizlidir.
+#
+#  ---- Ne zaman 10G yaparsin? ----
+#  100+ modluk agir bir modpack calistiriyorsan ve log'da
+#  surekli GC uyarisi / OutOfMemory goruyorsan. Onun disinda 8G.
+#
+#  Vanilla / hafif mod (20-30 mod) ise 6G bile yeter,
+#  page cache 7 GB olur, chunk yukleme ucar.
 # ------------------------------------------------------------
-MEMORY="12G"
+MEMORY="8G"
 
 # ------------------------------------------------------------
-#  2) JAR / LAUNCHER  —  BURAYI DUZENLE
+#  LAUNCHER — surum numarasini KENDINE gore duzelt
 # ------------------------------------------------------------
-#  NeoForge 1.21.1 modern kurulumda @ dosyalari kullanilir.
-#  Klasorunde hangisi varsa onu birak, digerini yorum yap.
+#  Kontrol et:  ls libraries/net/neoforged/neoforge/
+NEOFORGE_VERSION="21.1.209"
+LAUNCH_ARGS="@libraries/net/neoforged/neoforge/${NEOFORGE_VERSION}/unix_args.txt"
 
-# Modern NeoForge (onerilen, cogu kurulum bu):
-LAUNCH_ARGS="@libraries/net/neoforged/neoforge/21.1.209/unix_args.txt"
-#            ^^^^^^^^^^ SURUM NUMARASINI KENDI KURULUMUNA GORE DUZELT
-#            Kontrol:  ls libraries/net/neoforged/neoforge/
-
-# Eski tarz (duz jar):
+# Eski tarz duz jar kullaniyorsan:
 # LAUNCH_ARGS="-jar server.jar"
 
 # ------------------------------------------------------------
-#  3) JAVA
+#  JAVA 21 — Ubuntu 24.04'te kurulum:
+#     sudo apt install openjdk-21-jdk-headless
 # ------------------------------------------------------------
-#  1.21.1 icin Java 21 SART. Java 17 calismaz, Java 25'i
-#  NeoForge 21.1.x henuz tam desteklemiyor.
 JAVA="java"
-# Belirli bir Java'yi zorlamak istersen:
+# Birden fazla Java varsa zorla:
 # JAVA="/usr/lib/jvm/java-21-openjdk-amd64/bin/java"
 
 # ============================================================
-#  BURADAN ASAGISINA DOKUNMA
+#  BURADAN ASAGISI — kontroller
 # ============================================================
 
-# --- Java surum kontrolu ---
 JAVA_VER=$("$JAVA" -version 2>&1 | head -1 | grep -oP '(?<=version ")[0-9]+')
 if [ "$JAVA_VER" != "21" ]; then
-    echo "==============================================="
-    echo "  UYARI: Java 21 bekleniyordu, bulunan: $JAVA_VER"
-    echo "  Minecraft 1.21.1 + NeoForge Java 21 ister."
-    echo "==============================================="
+    echo "UYARI: Java 21 bekleniyordu, bulunan: ${JAVA_VER:-yok}"
+    echo "  sudo apt install openjdk-21-jdk-headless"
     sleep 3
 fi
 
-# --- EULA kontrolu ---
 if [ ! -f eula.txt ] || ! grep -q "eula=true" eula.txt; then
     echo "HATA: eula.txt yok veya eula=true degil."
     echo "  echo 'eula=true' > eula.txt"
@@ -76,39 +79,41 @@ if [ ! -f eula.txt ] || ! grep -q "eula=true" eula.txt; then
 fi
 
 # ------------------------------------------------------------
-#  JVM FLAG'LERI — Aikar's Flags (G1GC), 12G+ icin ayarlanmis
+#  JVM FLAG'LERI — 8G heap / 6 thread icin
 # ------------------------------------------------------------
-#  Neden G1GC ve ZGC degil:
-#  ZGC duraklamalari daha kisa AMA toplam throughput'u dusuk.
-#  Minecraft sunucusu icin onemli olan metrik ortalama MSPT'dir,
-#  worst-case pause degil. 12-16G heap'te G1GC daha iyi TPS verir.
-#  ZGC'nin anlamli oldugu yer 32GB+ heap'lerdir.
+#  Neden G1GC:
+#  ZGC'nin duraklamalari kisa ama throughput'u dusuk ve
+#  GC icin daha cok THREAD ister. Senin 6 thread'in var,
+#  ZGC bunlari ana tick thread'inden calar. G1 dogru secim.
 #
-#  MaxGCPauseMillis=200:
-#  Bir tick 50ms. 200ms pause = 4 tick kaybi. Daha dusuk yazmak
-#  (or. 50) G1'i cok sik GC yapmaya zorlar, throughput coker.
-#  200 dogru deger.
+#  ParallelGCThreads=4:
+#  VARSAYILANI DEGISTIRIYORUZ. Java 6 cekirdekte varsayilan
+#  olarak ~6 GC thread'i acar. Bu, GC sirasinda ana tick
+#  thread'inin ve chunk worker'larinin CPU'sunu tamamen calar.
+#  4'e sabitliyoruz.
 #
-#  G1NewSizeSercent=40 / MaxNewSizePercent=50:
-#  Minecraft cok sayida kisa omurlu obje uretir (chunk section,
-#  packet, vektor). Young gen'i buyuk tutmak bunlarin old gen'e
-#  terfi etmesini engeller — asil kazanc burada.
-#  (12G+ heap icin degerler. 8G altindaysan asagidaki nota bak.)
+#  ConcGCThreads=1:
+#  Concurrent (arka plan) GC thread'i. Varsayilan
+#  ParallelGCThreads/4 = 1, ama acikca yaziyoruz ki
+#  Java surumu degisince bozulmasin.
 #
-#  G1MixedGCLiveThresholdPercent=90 / G1RSetUpdatingPauseTimePercent=5:
-#  Mixed GC'nin daha agresif temizlik yapmasini saglar.
+#  G1NewSizePercent=30 / MaxNewSizePercent=40:
+#  8G heap icin. (12G+ icin 40/50 kullanilir, sen 8G'desin.)
 #
-#  MaxTenuringThreshold=1 + AlwaysPreTouch:
-#  Objeleri hizlica ya temizle ya terfi ettir. Ara durumda
-#  surunmesinler. AlwaysPreTouch tum heap'i basta OS'ten alir —
-#  acilis 5-10 sn uzar, karsiliginda runtime'da page fault olmaz.
+#  G1HeapRegionSize=8M:
+#  8G heap icin dogru deger. 16M sadece 12G+ heap'te mantikli.
+#
+#  AlwaysPreTouch:
+#  Tum 8G'i basta OS'ten alir. Acilis ~5 sn uzar,
+#  karsiliginda runtime'da page fault olmaz.
+#  16 GB RAM'in var, 8G'i pre-touch etmek guvenli.
 # ------------------------------------------------------------
 
 JVM_FLAGS=(
     -Xms${MEMORY}
     -Xmx${MEMORY}
 
-    # --- Cop toplayici: G1 ---
+    # --- G1 ---
     -XX:+UseG1GC
     -XX:+ParallelRefProcEnabled
     -XX:MaxGCPauseMillis=200
@@ -116,31 +121,26 @@ JVM_FLAGS=(
     -XX:+DisableExplicitGC
     -XX:+AlwaysPreTouch
 
-    # --- Young generation boyutlandirma (12G+ icin) ---
-    # 8G ve altindaysan bu iki satiri sil, yerine:
-    #   -XX:G1NewSizePercent=30
-    #   -XX:G1MaxNewSizePercent=40
-    -XX:G1NewSizePercent=40
-    -XX:G1MaxNewSizePercent=50
+    # --- GC thread limiti (6-thread CPU icin KRITIK) ---
+    -XX:ParallelGCThreads=4
+    -XX:ConcGCThreads=1
 
-    # --- Region boyutu (12G+ icin 16M; 8G ve altinda 8M yap) ---
-    -XX:G1HeapRegionSize=16M
+    # --- Young gen: 8G heap degerleri ---
+    -XX:G1NewSizePercent=30
+    -XX:G1MaxNewSizePercent=40
+    -XX:G1HeapRegionSize=8M
 
-    -XX:G1ReservePercent=15
+    -XX:G1ReservePercent=20
     -XX:G1HeapWastePercent=5
     -XX:G1MixedGCCountTarget=4
-    -XX:InitiatingHeapOccupancyPercent=20
+    -XX:InitiatingHeapOccupancyPercent=15
     -XX:G1MixedGCLiveThresholdPercent=90
     -XX:G1RSetUpdatingPauseTimePercent=5
     -XX:SurvivorRatio=32
     -XX:+PerfDisableSharedMem
     -XX:MaxTenuringThreshold=1
 
-    # --- Chunk sistemi / worldgen icin ek ---
-    # Buyuk chunk dizileri ve mixin'li kod yollari icin
-    # JIT'in daha agresif inline yapmasini saglar.
-    -XX:+UseNUMA
-    -XX:NmethodSweepActivity=1
+    # --- JIT / code cache ---
     -XX:ReservedCodeCacheSize=400M
     -XX:NonNMethodCodeHeapSize=12M
     -XX:ProfiledCodeHeapSize=194M
@@ -149,62 +149,48 @@ JVM_FLAGS=(
     -XX:MaxNodeLimit=240000
     -XX:NodeLimitFudgeFactor=8000
     -XX:+UseVectorCmov
-    -XX:+PerfDisableSharedMem
     -XX:+UseFastUnorderedTimeStamps
-    -XX:+UseCriticalJavaThreadPriority
     -XX:AllocatePrefetchStyle=3
 
-    # --- Vector API (Generator Accelerator'in SIMD noise'u icin) ---
-    # VectorNoise modulu Java Vector API kullaniyor.
+    # --- UseNUMA YOK ---
+    # Tek soketli masaustu sistem. NUMA yok, flag anlamsiz.
+    # (Onceki genel scriptte vardi, senin makinen icin cikardim.)
+
+    # --- Vector API (Generator Accelerator SIMD noise) ---
+    # i5-9400F AVX2 destekler. Coffee Lake, AVX-512 YOK.
     --add-modules=jdk.incubator.vector
 
-    # --- Bayraklar ---
-    -Dusing.aikars.flags=https://mcflags.emc.gs
-    -Daikars.new.flags=true
-
-    # --- NeoForge / mixin ---
-    -Dfile.encoding=UTF-8
-    -Djava.awt.headless=true
-
-    # --- Netty (ag) ---
-    # Chunk paketleri buyuk. Netty'nin direct buffer'lari heap
-    # disinda tutmasi GC baskisini azaltir.
+    # --- Netty ---
     -Dio.netty.allocator.maxOrder=9
     -Dio.netty.leakDetection.level=disabled
 
-    # --- Log4j guvenlik (eski surumlerden kalma, zararsiz) ---
+    # --- Diger ---
+    -Dusing.aikars.flags=https://mcflags.emc.gs
+    -Daikars.new.flags=true
+    -Dfile.encoding=UTF-8
+    -Djava.awt.headless=true
     -Dlog4j2.formatMsgNoLookups=true
 )
 
 echo "==============================================="
-echo "  Minecraft 1.21.1 NeoForge Server"
-echo "  Heap    : $MEMORY"
-echo "  GC      : G1GC (Aikar flags)"
-echo "  Java    : $($JAVA -version 2>&1 | head -1)"
-echo "  CPU     : $(nproc) thread"
+echo "  Minecraft 1.21.1 NeoForge"
+echo "  CPU  : $(nproc) thread (i5-9400F, SMT yok)"
+echo "  Heap : $MEMORY   (kalan ~5G -> OS page cache)"
+echo "  GC   : G1GC, ParallelGCThreads=4"
 echo "==============================================="
 echo ""
-echo "  Hatirlatma: config/moonrise.yml icindeki"
-echo "  worker-threads degerini CPU'na gore ayarladin mi?"
+echo "  moonrise.yml kontrol:"
+grep -E "worker-threads|io-threads" config/moonrise.yml 2>/dev/null \
+    | sed 's/^/    /' || echo "    (config/moonrise.yml bulunamadi)"
 echo ""
 
-# --- Otomatik yeniden baslatma dongusu ---
-# Crash olursa sunucu kendini toparlar.
-# Istemiyorsan bu while dongusunu silip sadece
-# "$JAVA" "${JVM_FLAGS[@]}" $LAUNCH_ARGS nogui  birak.
+# --- Otomatik yeniden baslatma ---
 while true; do
     "$JAVA" "${JVM_FLAGS[@]}" $LAUNCH_ARGS nogui
-
     EXIT_CODE=$?
     echo ""
-    echo "Sunucu kapandi (exit code: $EXIT_CODE)"
-
-    if [ $EXIT_CODE -eq 0 ]; then
-        echo "Duzgun kapanis. Cikiliyor."
-        break
-    fi
-
-    echo "Crash tespit edildi. 10 saniye sonra yeniden baslatiliyor..."
-    echo "Iptal etmek icin Ctrl+C."
+    echo "Sunucu kapandi (exit: $EXIT_CODE)"
+    [ $EXIT_CODE -eq 0 ] && { echo "Duzgun kapanis."; break; }
+    echo "Crash. 10 sn sonra yeniden baslatiliyor... (Ctrl+C = iptal)"
     sleep 10
 done
