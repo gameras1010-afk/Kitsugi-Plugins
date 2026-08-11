@@ -1,0 +1,158 @@
+# ============================================================
+#  Moonrise Config — Minecraft 1.21.1 / NeoForge (Dedicated Server)
+#  Konum: <sunucu>/config/moonrise.yml
+#
+#  Bu dosya Moonrise'in kendi MoonriseConfig.java kaynak kodundan
+#  (branch: mc/1.21.1) cikarilan GERCEK sema uzerine yazildi.
+#  Uydurma anahtar YOK.
+#
+#  NOT: Moonrise config'i olusturduktan sonra icinde
+#  "config-version" gibi ek alanlar gorebilirsin — onlara dokunma.
+#  Asagidaki degerleri KENDI dosyanin uzerine isle.
+# ============================================================
+
+chunk-loading:
+
+  basic:
+    # Oyuncu basina saniyede gonderilen chunk limiti.
+    # <=0  -> limitsiz.
+    # Limitsiz birakmak chunk'larin oyunculara olabildigince hizli
+    # ulasmasini saglar. Ag baglantin (upload) yetersizse burayi
+    # 15.0 civarina cekmeyi dene.
+    player-max-send-rate: -1.0
+
+    # Oyuncu basina saniyede yuklenen (diskten okunan) chunk limiti.
+    # <=0 -> limitsiz. Disk hizli ise limitsiz birak.
+    player-max-load-rate: -1.0
+
+    # Oyuncu basina saniyede URETILEN chunk limiti.
+    # <=0 -> limitsiz.
+    # DIKKAT: Bunu limitsiz birakmak worldgen'i hizlandirir AMA
+    # yeni araziye ucan bir oyuncu tum worker thread'leri kilitleyip
+    # sunucunun geri kalanini yavaslatabilir.
+    # Cok oyunculu ve modlu sunucuda 3.0 - 8.0 arasi mantikli.
+    # Tek/az oyunculuysan -1.0 birak.
+    player-max-gen-rate: -1.0
+
+    # Oyuncu uzaklastiktan sonra chunk'in bosaltilma gecikmesi.
+    # 0t = aninda.
+    # UYARI (Moonrise'in kendi notu): bu degeri buyutursen evcil
+    # hayvanlar sahibine isinlanabiliyor (chunk hala yuklu kaldigi icin).
+    # Oyuncular surekli ayni bolgede gidip geliyorsa 5s dene,
+    # ama hayvan isinma yan etkisini kabul ediyorsan.
+    player-chunk-unload-delay: 0t
+
+  advanced:
+    # Sunucunun oyuncuya gonderdigi chunk mesafesini otomatik ayarlar.
+    # true birak. Sunucu zorlandiginda kendini korur.
+    auto-config-send-distance: true
+
+    # Oyuncu basina es zamanli chunk YUKLEME islemi.
+    #  0 -> otomatik
+    # <0 -> limitsiz
+    # Chunk sistemi doygunlugunu ayarlamak icin dogru yer burasi.
+    # NVMe SSD'de 0 (otomatik) genelde yeterli.
+    # Chunk yuklemenin gorunur sekilde yavas oldugunu ve CPU'nun
+    # bos oldugunu goruyorsan 16 dene.
+    player-max-concurrent-chunk-loads: 0
+
+    # Oyuncu basina es zamanli chunk URETME islemi.
+    #  0 -> otomatik
+    # Modlu sunucuda 0 birak. Modlar worldgen'de agir is yapar,
+    # elle buyutmek MSPT'yi patlatir.
+    player-max-concurrent-chunk-generates: 0
+
+chunk-saving:
+  # Otomatik kayit araligi.
+  # Varsayilan 5m. Guclu diskin varsa ve crash riskini dusurmek
+  # istiyorsan 3m yap. HDD'deysen 10m yaparak I/O spike'larini azalt.
+  auto-save-interval: 5m
+
+  # Tick basina otomatik kaydedilecek maksimum chunk.
+  # Varsayilan 12.
+  # NVMe SSD  -> 24  (kayit yuku daha kisa surede biter, spike kisalir)
+  # SATA SSD  -> 12  (varsayilan)
+  # HDD       -> 6   (I/O tikanmasini onler)
+  max-auto-save-chunks-per-tick: 24
+
+worker-pool:
+  # Chunk sistemi worker thread sayisi.
+  # <=0 -> otomatik.
+  #
+  # Moonrise/Paper'in otomatik formulu:
+  #     (CPU_cekirdek / 2) / 2      (4 cekirdek ustu sistemlerde, min 1)
+  #
+  # Yani:
+  #    4  cekirdek -> 1
+  #    8  cekirdek -> 2
+  #    12 cekirdek -> 3
+  #    16 cekirdek -> 4
+  #
+  # Bu formul cok muhafazakar. Sunucu MAKINESI sadece Minecraft
+  # calistiriyorsa (baska servis yok) elle buyutmek belirgin
+  # kazanc verir. Onerilen:
+  #
+  #    4  cekirdek / 8  thread  -> 3
+  #    6  cekirdek / 12 thread  -> 4
+  #    8  cekirdek / 16 thread  -> 6
+  #    12 cekirdek / 24 thread  -> 8
+  #    16 cekirdek / 32 thread  -> 10
+  #
+  # KURAL: toplam thread sayisinin YARISINI gecme. Ana tick thread'i
+  # ac kalirsa TPS duser — chunk hizli gelir ama oyun takilir.
+  #
+  # Kendi CPU'na gore duzenle. Bilmiyorsan -1 birak, sonra artir.
+  worker-threads: 6
+
+  # Disk I/O thread sayisi.
+  # <=0 -> 1 thread kullanilir.
+  #
+  # ONEMLI: Moonrise'in kendi notu — 1'in ustune cikmak SADECE
+  # SSD'de mantikli. HDD'de negatif olceklenir (kafa surekli
+  # seek yapar, yavaslar).
+  #
+  #    NVMe SSD -> 4
+  #    SATA SSD -> 2
+  #    HDD      -> -1  (yani 1)
+  io-threads: 4
+
+chunk-system:
+  # Population generation'i paralellestirir.
+  #
+  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  # !!  MODLU SUNUCUDA FALSE BIRAK. ELLEME.                 !!
+  # !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+  #
+  # Moonrise'in kendi aciklamasi: varsayilan false, cunku
+  # worldgen'i etkileyen modlar paralel calismaya guvenli degil.
+  # Sadece HIC worldgen modu yoksa VE population generation
+  # doyuyorsa (~10 worker thread surekli chunk uretiyorsa)
+  # true yapilabilir.
+  #
+  # Sen Generator Accelerator + muhtemelen baska modlar
+  # kullaniyorsun -> FALSE.
+  # True yaparsan: bozuk chunk, kayip yapi, rastgele crash.
+  population-gen-parallelism: false
+
+bug-fixes:
+  # MC-224294: lav bloklari random tick'te CIFT tick'leniyor.
+  # Bunu true yapmak world random ticking maliyetini belirgin
+  # sekilde dusurur. Nether'i ve lav golu olan bolgeleri
+  # dogrudan rahatlatir.
+  #
+  # Yan etki: vanilla davranistan sapma (lav yayilma hizi
+  # teknik olarak degisir). Teknik redstone/lav farmi
+  # calistirmiyorsan sorun degil.
+  #
+  # ONERI: true
+  fix-MC-224294: true
+
+  # MC-159283: End adalari uzak mesafede duzgun uretilmiyor.
+  # Zaten uretilmis alanlari ETKILEMEZ, sadece yeni uretilecek
+  # End chunk'larini duzeltir.
+  # Kozmetik/dogruluk duzeltmesi, performansa etkisi yok.
+  fix-MC-159283: true
+
+misc:
+  # Client tarafi. Dedicated server'da anlamsiz, false birak.
+  immediately-close-loading-screen: false

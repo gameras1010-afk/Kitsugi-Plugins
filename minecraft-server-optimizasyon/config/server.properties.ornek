@@ -1,0 +1,141 @@
+# ============================================================
+#  server.properties — Performans Ayarlari
+#  Minecraft 1.21.1 NeoForge
+#
+#  BU DOSYAYI OLDUGU GIBI KOPYALAMA.
+#  Kendi server.properties'ini ac, asagidaki satirlarin
+#  karsiliklarini bul ve degistir. Diger ayarlarina dokunma.
+# ============================================================
+
+
+# ------------------------------------------------------------
+#  EN ONEMLI IKI AYAR
+# ------------------------------------------------------------
+#
+#  Bu ikisi sunucunun performansini diger her seyden daha cok
+#  belirler. Moonrise, Lithium, Generator Accelerator — hepsi
+#  toplamda bu iki sayinin verecegi kadar fark yaratmaz.
+#
+#  ONEMLI KURAL:  simulation-distance <= view-distance
+#
+#  view-distance       : oyuncunun GORDUGU chunk yaricapi
+#                        (yuklenir, gonderilir, ama tick'lenmez)
+#  simulation-distance : GERCEKTEN calisan chunk yaricapi
+#                        (mob, redstone, bitki, su, hopper...)
+#
+#  CPU maliyeti simulation-distance ile KUBIK buyur.
+#  view-distance ise cogunlukla ag + RAM maliyetidir.
+#
+#  Yani: view yuksek tut, simulation dusuk tut.
+#  Oyuncu uzagi gorur ama uzakta hicbir sey calismaz — ki
+#  zaten uzaktaki mobun ne yaptigini goremez.
+# ------------------------------------------------------------
+
+# --- Oneri: 1-10 oyuncu, guclu CPU ---
+view-distance=12
+simulation-distance=6
+
+# --- Oneri: 10-30 oyuncu ---
+# view-distance=10
+# simulation-distance=5
+
+# --- Oneri: 30+ oyuncu veya zayif CPU ---
+# view-distance=8
+# simulation-distance=4
+
+# --- Oneri: agir modpack (100+ mod) ---
+# view-distance=8
+# simulation-distance=4
+
+#  NOT: simulation-distance=4 vanilla mob spawn mekaniginin
+#  calistigi minimum degerdir. Altina inme, mob farm'lar bozulur.
+#
+#  NOT 2: Moonrise'in "auto-config-send-distance: true" ayari
+#  sunucu zorlandiginda view-distance'i gecici olarak kendisi
+#  dusurur. Yani view-distance=12 yazmak riskli degil.
+
+
+# ------------------------------------------------------------
+#  ENTITY / MOB YUKU
+# ------------------------------------------------------------
+
+# Chunk basina maksimum entity sayisi (spawn limiti degil,
+# hard cap). Varsayilan 8. Mob farm calistirmiyorsan dusurme.
+max-entity-cramming=24
+
+# Entity broadcast araligi (tick).
+# Varsayilan 4. Yukseltmek ag trafigini dusurur ama
+# entity hareketleri kesik gorunur. 4'te birak.
+entity-broadcast-range-percentage=100
+#  ^ Bunu 75 yapmak uzaktaki entity'lerin gonderilmesini keser.
+#    Kalabalik sunucuda anlamli kazanc, gorsel kayip minimal.
+#    50'nin altina inme.
+
+
+# ------------------------------------------------------------
+#  AG
+# ------------------------------------------------------------
+
+# Sikistirma esigi (byte). Bu boyuttan buyuk paketler sikistirilir.
+# Varsayilan 256.
+#   256 : dengeli (VARSAYILAN, buyuk ihtimalle bunu birak)
+#   512 : daha az CPU, daha cok bant genisligi
+#         -> CPU'n darboğazsa ve bant genisligin bolsa
+#    64 : daha cok CPU, daha az bant genisligi
+#         -> bant genisligin kisitliysa
+network-compression-threshold=256
+
+# Yerel/LAN sunucusuysan sikistirmayi tamamen kapatabilirsin:
+# network-compression-threshold=-1
+
+
+# ------------------------------------------------------------
+#  DIGER PERFORMANS AYARLARI
+# ------------------------------------------------------------
+
+# Sunucu donduğunda watchdog'un kac ms bekleyecegi.
+# Varsayilan 60000 (60 sn). Chunk pregen sirasinda veya
+# agir modpack acilisinda watchdog bosuna sunucuyu oldurebilir.
+# Pregen yaparken gecici olarak -1 (kapali) yap, sonra geri al.
+max-tick-time=60000
+
+# Kalici olarak kapatmak istersen (ONERMEM — gercek donmalarda
+# sunucu sonsuza kadar asili kalir):
+# max-tick-time=-1
+
+# Spawn koruma. 0 = kapali. Kucuk tutmak spawn chunk'larindaki
+# gereksiz yuku azaltmaz ama admin isini kolaylastirir.
+spawn-protection=0
+
+# Sync chunk yazmalari. false = async (HIZLI).
+# true yapma, ana thread'i disk I/O'ya kilitlersin.
+sync-chunk-writes=false
+
+# Rate limit. 0 = kapali. Bunu acmak (>0) chunk yuklerken
+# oyuncuyu yanlislikla atabilir.
+rate-limit=0
+
+# Oyuncu bos kalinca atma. 0 = kapali.
+# Kalabalik sunucuda 30 (dakika) yapmak AFK oyuncularin
+# chunk'lari yuklu tutmasini engeller — belirgin kazanc.
+player-idle-timeout=0
+
+# Mob spawn. Kapatmak buyuk kazanc verir ama oyunu bozar.
+spawn-monsters=true
+spawn-animals=true
+spawn-npcs=true
+
+
+# ------------------------------------------------------------
+#  PREGEN SIRASINDA GECICI OLARAK
+# ------------------------------------------------------------
+#  Chunky ile pregen yaparken bunlari gecici yap, bitince geri al:
+#
+#     max-tick-time=-1
+#     view-distance=4
+#     simulation-distance=4
+#     spawn-monsters=false
+#     spawn-animals=false
+#
+#  Pregen 2-3x hizlanir.
+# ------------------------------------------------------------
