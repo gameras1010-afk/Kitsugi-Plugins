@@ -29,7 +29,7 @@ public class BreakingCurse extends Handler {
 			.maxLevel( 3 )
 			.minLevelCost( level->10 )
 			.maxLevelCost( level->50 )
-			.compatibility( enchantment->!( enchantment instanceof DigDurabilityEnchantment ) );
+			.compatibility( enchantment->!EnchantmentCompat.is( enchantment, Enchantments.UNBREAKING ) );
 	}
 
 	public BreakingCurse() {

@@ -27,7 +27,7 @@ public class MagicProtectionEnchantment extends Handler {
 			.maxLevel( 4 )
 			.minLevelCost( level->level * 11 - 10 )
 			.maxLevelCost( level->level * 11 + 1 )
-			.compatibility( enchantment->!( enchantment instanceof ProtectionEnchantment ) );
+			.compatibility( enchantment->!EnchantmentCompat.is( enchantment, Enchantments.PROTECTION, Enchantments.FIRE_PROTECTION, Enchantments.BLAST_PROTECTION, Enchantments.PROJECTILE_PROTECTION ) );
 	}
 
 	public MagicProtectionEnchantment() {

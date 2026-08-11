@@ -131,7 +131,7 @@ public class FishingFanaticEnchantment extends Handler {
 
 	private List< ItemStack > spawnExtraLoot( OnFishingExtraItemsGet data, int level ) {
 		LootParams lootParams = LootHelper.toGiftParams( data.player );
-		LootTable standard = LootHelper.getLootTable( BuiltInLootTables.FISHING );
+		LootTable standard = LootHelper.getLootTable( BuiltInLootTables.FISHING.location() );
 		LootTable special = LootHelper.getLootTable( this.specialDropId );
 		List< ItemStack > extraLoot = new ArrayList<>();
 		for( int idx = 0; idx < level; idx++ ) {

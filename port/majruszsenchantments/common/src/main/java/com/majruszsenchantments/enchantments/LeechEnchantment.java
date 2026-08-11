@@ -17,6 +17,7 @@ import com.majruszsenchantments.MajruszsEnchantments;
 import com.majruszsenchantments.common.Handler;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.sounds.SoundEvents;
+import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.entity.player.Player;
@@ -94,7 +95,7 @@ public class LeechEnchantment extends Handler {
 
 	private boolean leechEffect( OnEntityDamaged data ) {
 		for( MobEffectInstance effectInstance : data.target.getActiveEffects() ) {
-			MobEffect effect = effectInstance.getEffect();
+			Holder< MobEffect > effect = effectInstance.getEffect();
 			if( effect.isBeneficial() ) {
 				int duration = effectInstance.isInfiniteDuration() ? MAX_DURATION : Math.min( MAX_DURATION, effectInstance.getDuration() );
 				data.attacker.addEffect( new MobEffectInstance( effect, duration, effectInstance.getAmplifier() ) );

@@ -30,7 +30,7 @@ public class SmelterEnchantment extends Handler {
 			.slots( EquipmentSlots.MAINHAND )
 			.minLevelCost( level->15 )
 			.maxLevelCost( level->45 )
-			.compatibility( enchantment->!( enchantment instanceof UntouchingEnchantment ) );
+			.compatibility( enchantment->!EnchantmentCompat.is( enchantment, Enchantments.SILK_TOUCH ) );
 	}
 
 	public SmelterEnchantment() {

@@ -4,6 +4,7 @@ import com.majruszlibrary.MajruszLibrary;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.LivingEntity;
+import net.minecraft.core.Holder;
 import net.minecraft.world.entity.ai.attributes.Attribute;
 import net.minecraft.world.entity.ai.attributes.AttributeInstance;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
@@ -13,18 +14,18 @@ import java.util.function.Supplier;
 public class AttributeHandler {
 	final ResourceLocation id;
 	final String name;
-	final Supplier< Attribute > attribute;
+	final Supplier< Holder< Attribute > > attribute;
 	final AttributeModifier.Operation operation;
 	double value = 0.0;
 
-	public AttributeHandler( String uuid, String name, Supplier< Attribute > attribute, AttributeModifier.Operation operation ) {
+	public AttributeHandler( String uuid, String name, Supplier< Holder< Attribute > > attribute, AttributeModifier.Operation operation ) {
 		this.id = ResourceLocation.fromNamespaceAndPath( MajruszLibrary.MOD_ID, uuid.replace( "-", "" ) );
 		this.name = name;
 		this.attribute = attribute;
 		this.operation = operation;
 	}
 
-	public AttributeHandler( String name, Supplier< Attribute > attribute, AttributeModifier.Operation operation ) {
+	public AttributeHandler( String name, Supplier< Holder< Attribute > > attribute, AttributeModifier.Operation operation ) {
 		this.id = ResourceLocation.fromNamespaceAndPath( MajruszLibrary.MOD_ID, name.toLowerCase().replace( " ", "_" ) );
 		this.name = name;
 		this.attribute = attribute;

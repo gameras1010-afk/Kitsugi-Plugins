@@ -35,7 +35,7 @@ public class MisanthropyEnchantment extends Handler {
 			.maxLevel( 5 )
 			.minLevelCost( level->level * 8 - 3 )
 			.maxLevelCost( level->level * 8 + 17 )
-			.compatibility( enchantment->!( enchantment instanceof DamageEnchantment ) );
+			.compatibility( enchantment->!EnchantmentCompat.is( enchantment, Enchantments.SHARPNESS, Enchantments.SMITE, Enchantments.BANE_OF_ARTHROPODS ) );
 	}
 
 	public MisanthropyEnchantment() {
