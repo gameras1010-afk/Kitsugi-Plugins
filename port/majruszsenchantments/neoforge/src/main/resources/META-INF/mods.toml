@@ -29,7 +29,7 @@ issueTrackerURL = "${mod_issues}"
 
 [[dependencies.${ mod_id }]]
     modId = "majruszlibrary"
-    mandatory = true
+    mandatory = false
     versionRange = "${neoforge_majruszlibrary_version_range}"
     ordering = "NONE"
     side = "BOTH"
