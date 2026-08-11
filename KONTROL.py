@@ -175,6 +175,12 @@ def main():
             dst = os.path.join(out_dir, os.path.basename(j))
             shutil.copy(j, dst)
             files.append(dst)
+    try:
+        smokef = os.path.join(MOD_DIR, "run", "smoke.log")
+        if os.path.exists(smokef):
+            shutil.copy(smokef, os.path.join(out_dir, "SMOKE_LOG.txt"))
+    except Exception:  # noqa: BLE001
+        pass
     readme = os.path.join(out_dir, "README.txt")
     with open(readme, "w", encoding="utf-8") as f:
         f.write("MAJRUSZ PORT 1.21.1 NeoForge\n")
