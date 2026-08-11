@@ -141,6 +141,10 @@ public class CustomEnchantment {
 		return this.canEnchant( itemStack );
 	}
 
+	public int getDamageProtection( int level, net.minecraft.world.damagesource.DamageSource source ) {
+		return 0;
+	}
+
 	public String getDescriptionId() {
 		return "enchantment." + this.key.location().getNamespace() + "." + this.key.location().getPath();
 	}

@@ -12,7 +12,9 @@ import com.majruszlibrary.level.LevelHelper;
 import com.majruszlibrary.math.Range;
 import com.majruszsenchantments.MajruszsEnchantments;
 import com.majruszsenchantments.common.Handler;
+import net.minecraft.world.InteractionHand;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
 
