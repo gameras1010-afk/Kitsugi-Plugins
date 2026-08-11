@@ -33,7 +33,7 @@ public class AttributeHandler {
 	}
 
 	public boolean hasAttribute( LivingEntity entity ) {
-		return entity.getAttributes().hasAttribute( BuiltInRegistries.ATTRIBUTE.wrapAsHolder( this.attribute.get() ) );
+		return entity.getAttributes().hasAttribute( this.attribute.get() );
 	}
 
 	public boolean hasValueChanged( AttributeInstance attributeInstance ) {
@@ -53,7 +53,7 @@ public class AttributeHandler {
 	}
 
 	public AttributeHandler apply( LivingEntity entity ) {
-		AttributeInstance attributeInstance = entity.getAttribute( BuiltInRegistries.ATTRIBUTE.wrapAsHolder( this.attribute.get() ) );
+		AttributeInstance attributeInstance = entity.getAttribute( this.attribute.get() );
 		if( attributeInstance != null && this.hasValueChanged( attributeInstance ) ) {
 			attributeInstance.removeModifier( this.id );
 			attributeInstance.addTransientModifier( this.createAttribute() );
@@ -63,7 +63,7 @@ public class AttributeHandler {
 	}
 
 	public AttributeHandler remove( LivingEntity entity ) {
-		AttributeInstance attributeInstance = entity.getAttribute( BuiltInRegistries.ATTRIBUTE.wrapAsHolder( this.attribute.get() ) );
+		AttributeInstance attributeInstance = entity.getAttribute( this.attribute.get() );
 		if( attributeInstance != null ) {
 			attributeInstance.removeModifier( this.id );
 		}
