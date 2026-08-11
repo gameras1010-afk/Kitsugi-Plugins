@@ -34,7 +34,7 @@ public class HorseProtectionEnchantment extends Handler {
 	public HorseProtectionEnchantment() {
 		super( MajruszsEnchantments.HORSE_PROTECTION, HorseProtectionEnchantment.class, false );
 
-		this.attribute = new AttributeHandler( "%s_armor".formatted( this.enchantment.getId() ), ()->Attributes.ARMOR, AttributeModifier.Operation.ADDITION );
+		this.attribute = new AttributeHandler( "%s_armor".formatted( this.enchantment.getId() ), ()->Attributes.ARMOR, AttributeModifier.Operation.ADD_VALUE );
 
 		OnItemEquipped.listen( this::updateArmor )
 			.addCondition( Condition.isLogicalServer() )

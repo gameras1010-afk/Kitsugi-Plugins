@@ -93,7 +93,7 @@ public class FishingFanaticEnchantment extends Handler {
 	public FishingFanaticEnchantment() {
 		super( MajruszsEnchantments.FISHING_FANATIC, FishingFanaticEnchantment.class, false );
 
-		this.attackSpeed = new AttributeHandler( "%s_attack_speed".formatted( this.enchantment.getId() ), ()->Attributes.ATTACK_SPEED, AttributeModifier.Operation.MULTIPLY_TOTAL );
+		this.attackSpeed = new AttributeHandler( "%s_attack_speed".formatted( this.enchantment.getId() ), ()->Attributes.ATTACK_SPEED, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL );
 
 		OnFishingExtraItemsGet.listen( this::increaseLoot )
 			.addCondition( data->EnchantmentHelper.has( this.enchantment, data.player ) );

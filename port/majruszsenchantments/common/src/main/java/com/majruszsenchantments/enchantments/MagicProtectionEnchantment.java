@@ -2,6 +2,7 @@ package com.majruszsenchantments.enchantments;
 
 import com.majruszsenchantments.common.Categories;
 import com.majruszsenchantments.MajruszsEnchantments;
+import com.majruszsenchantments.common.EnchantmentCompat;
 import com.majruszsenchantments.common.Handler;
 import com.majruszlibrary.annotation.AutoInstance;
 import com.majruszlibrary.item.CustomEnchantment;
@@ -9,7 +10,7 @@ import com.majruszlibrary.item.EquipmentSlots;
 import net.minecraft.world.damagesource.DamageSource;
 import net.minecraft.world.damagesource.DamageTypes;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.ProtectionEnchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 
 @AutoInstance
 public class MagicProtectionEnchantment extends Handler {

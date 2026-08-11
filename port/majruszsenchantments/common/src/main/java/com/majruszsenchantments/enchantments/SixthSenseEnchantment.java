@@ -34,7 +34,7 @@ import java.util.List;
 
 @AutoInstance
 public class SixthSenseEnchantment extends Handler {
-	List< ResourceLocation > chestIds = List.of( BuiltInLootTables.ANCIENT_CITY, BuiltInLootTables.ANCIENT_CITY_ICE_BOX );
+	List< ResourceLocation > chestIds = List.of( BuiltInLootTables.ANCIENT_CITY.location(), BuiltInLootTables.ANCIENT_CITY_ICE_BOX.location() );
 	ResourceLocation lootId = MajruszsEnchantments.HELPER.getLocation( "chests/ancient_city_sixth_sense" );
 	float glowDuration = 2.0f;
 

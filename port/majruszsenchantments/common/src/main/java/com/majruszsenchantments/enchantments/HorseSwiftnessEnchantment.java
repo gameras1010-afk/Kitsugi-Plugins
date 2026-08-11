@@ -34,7 +34,7 @@ public class HorseSwiftnessEnchantment extends Handler {
 	public HorseSwiftnessEnchantment() {
 		super( MajruszsEnchantments.HORSE_SWIFTNESS, HorseSwiftnessEnchantment.class, false );
 
-		this.attribute = new AttributeHandler( "%s_speed".formatted( this.enchantment.getId() ), ()->Attributes.MOVEMENT_SPEED, AttributeModifier.Operation.MULTIPLY_BASE );
+		this.attribute = new AttributeHandler( "%s_speed".formatted( this.enchantment.getId() ), ()->Attributes.MOVEMENT_SPEED, AttributeModifier.Operation.ADD_MULTIPLIED_BASE );
 
 		OnItemEquipped.listen( this::updateSpeed )
 			.addCondition( Condition.isLogicalServer() )

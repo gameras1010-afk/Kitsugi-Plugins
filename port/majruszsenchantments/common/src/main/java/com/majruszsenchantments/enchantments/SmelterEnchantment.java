@@ -2,6 +2,7 @@ package com.majruszsenchantments.enchantments;
 
 import com.majruszsenchantments.common.Categories;
 import com.majruszsenchantments.MajruszsEnchantments;
+import com.majruszsenchantments.common.EnchantmentCompat;
 import com.majruszsenchantments.common.Handler;
 import com.majruszlibrary.annotation.AutoInstance;
 import com.majruszlibrary.events.OnLootGenerated;
@@ -16,7 +17,7 @@ import com.majruszlibrary.math.AnyPos;
 import com.majruszlibrary.math.Random;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.UntouchingEnchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 
 import java.util.Optional;
 

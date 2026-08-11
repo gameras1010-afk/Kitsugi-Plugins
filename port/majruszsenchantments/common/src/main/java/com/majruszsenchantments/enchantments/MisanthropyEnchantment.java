@@ -10,11 +10,12 @@ import com.majruszlibrary.item.EnchantmentHelper;
 import com.majruszlibrary.item.EquipmentSlots;
 import com.majruszlibrary.math.Range;
 import com.majruszsenchantments.MajruszsEnchantments;
+import com.majruszsenchantments.common.EnchantmentCompat;
 import com.majruszsenchantments.common.Handler;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SwordItem;
-import net.minecraft.world.item.enchantment.DamageEnchantment;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 
 @AutoInstance
 public class MisanthropyEnchantment extends Handler {

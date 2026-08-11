@@ -1,11 +1,9 @@
 package com.majruszsenchantments.mixin;
 
 import com.majruszsenchantments.data.Config;
-import net.minecraft.core.component.DataComponents;
-import net.minecraft.world.entity.EquipmentSlot;
-import net.minecraft.world.item.Equippable;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
+import net.minecraft.world.item.Items;
 import net.minecraft.world.item.ShieldItem;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
@@ -43,7 +41,7 @@ public abstract class MixinItem {
 	}
 
 	private static boolean isHorseArmor( ItemStack itemStack ) {
-		Equippable equippable = itemStack.get( DataComponents.EQUIPPABLE );
-		return equippable != null && equippable.slot() == EquipmentSlot.BODY;
+		return itemStack.is( Items.LEATHER_HORSE_ARMOR ) || itemStack.is( Items.IRON_HORSE_ARMOR )
+			|| itemStack.is( Items.GOLDEN_HORSE_ARMOR ) || itemStack.is( Items.DIAMOND_HORSE_ARMOR );
 	}
 }

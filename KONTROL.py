@@ -104,6 +104,37 @@ def main():
             print("kopyalandi:", os.path.basename(j), flush=True)
         summary.append("Library: OK")
 
+        # API dump: sponge joined jar'dan kritik siniflarin imzalari (log'a)
+        try:
+            import glob as g2
+            jars = []
+            for pat in ["/home/runner/.gradle/caches/**/*joined*.jar",
+                        "/home/runner/.gradle/caches/**/minecraft-*.jar",
+                        "/home/runner/.gradle/caches/**/*1.21.1*.jar"]:
+                jars += g2.glob(pat, recursive=True)
+            jars = sorted(set(jars))
+            print("CANDIDATE_JARS:", jars, flush=True)
+            for j in jars:
+                if not os.path.exists(j):
+                    continue
+                for cls in ["net.minecraft.world.item.Item",
+                            "net.minecraft.world.item.HorseArmorItem",
+                            "net.minecraft.world.item.Equippable",
+                            "net.minecraft.core.component.DataComponents",
+                            "net.minecraft.world.damagesource.DamageSource",
+                            "net.minecraft.world.entity.animal.horse.Horse",
+                            "net.minecraft.client.renderer.entity.layers.HorseArmorLayer"]:
+                    try:
+                        out = subprocess.run(["javap", "-p", "-classpath", j, cls],
+                                             capture_output=True, text=True, timeout=60)
+                        if out.returncode == 0:
+                            print(f"=== {cls} ===", flush=True)
+                            print(out.stdout[:2500], flush=True)
+                    except Exception as e:  # noqa: BLE001
+                        print(cls, "ERR", e, flush=True)
+        except Exception as e:  # noqa: BLE001
+            print("API dump basarisiz:", e, flush=True)
+
         # 2) Enchantments mod derle
         build_gradle(MOD_DIR, env)
         mod_jars = [j for j in glob.glob(os.path.join(MOD_DIR, "neoforge/build/libs/majruszs-enchantments-neoforge-*.jar"))

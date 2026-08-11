@@ -14,12 +14,13 @@ import com.majruszlibrary.item.EquipmentSlots;
 import com.majruszlibrary.math.Random;
 import com.majruszlibrary.math.Range;
 import com.majruszsenchantments.MajruszsEnchantments;
+import com.majruszsenchantments.common.EnchantmentCompat;
 import com.majruszsenchantments.common.Handler;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
-import net.minecraft.world.item.enchantment.DiggingEnchantment;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 
 @AutoInstance
 public class FatigueCurse extends Handler {
@@ -47,8 +48,8 @@ public class FatigueCurse extends Handler {
 	public FatigueCurse() {
 		super( MajruszsEnchantments.FATIGUE, FatigueCurse.class, true );
 
-		this.attackSpeed = new AttributeHandler( "%s_attack_speed".formatted( this.enchantment.getId() ), ()->Attributes.ATTACK_SPEED, AttributeModifier.Operation.MULTIPLY_TOTAL );
-		this.movementSpeed = new AttributeHandler( "%s_movement_speed".formatted( this.enchantment.getId() ), ()->Attributes.MOVEMENT_SPEED, AttributeModifier.Operation.MULTIPLY_TOTAL );
+		this.attackSpeed = new AttributeHandler( "%s_attack_speed".formatted( this.enchantment.getId() ), ()->Attributes.ATTACK_SPEED, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL );
+		this.movementSpeed = new AttributeHandler( "%s_movement_speed".formatted( this.enchantment.getId() ), ()->Attributes.MOVEMENT_SPEED, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL );
 
 		OnBreakSpeedGet.listen( this::reduceMiningSpeed )
 			.addCondition( data->EnchantmentHelper.has( this.enchantment, data.player ) );

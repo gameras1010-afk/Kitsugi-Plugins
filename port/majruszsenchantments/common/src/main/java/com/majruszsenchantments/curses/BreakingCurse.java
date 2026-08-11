@@ -11,9 +11,10 @@ import com.majruszlibrary.item.EquipmentSlots;
 import com.majruszlibrary.math.Random;
 import com.majruszlibrary.math.Range;
 import com.majruszsenchantments.MajruszsEnchantments;
+import com.majruszsenchantments.common.EnchantmentCompat;
 import com.majruszsenchantments.common.Handler;
-import net.minecraft.world.item.enchantment.DigDurabilityEnchantment;
 import net.minecraft.world.item.enchantment.Enchantment;
+import net.minecraft.world.item.enchantment.Enchantments;
 
 @AutoInstance
 public class BreakingCurse extends Handler {
