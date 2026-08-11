@@ -1,15 +1,17 @@
 package com.majruszlibrary.item;
 
+import net.minecraft.ChatFormatting;
+import net.minecraft.core.Holder;
+import net.minecraft.core.HolderSet;
 import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.network.chat.MutableComponent;
-import net.minecraft.ChatFormatting;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.world.entity.EquipmentSlot;
+import net.minecraft.world.entity.EquipmentSlotGroup;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.enchantment.Enchantment;
-import net.minecraft.world.item.enchantment.ItemTagBased;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -161,32 +163,28 @@ public class CustomEnchantment {
 
 	public Enchantment toEnchantment( ResourceKey< Enchantment > key ) {
 		this.key = key;
-		List< Item > items = new ArrayList<>();
+		List< Holder< Item > > itemHolders = new ArrayList<>();
 		for( Item item : BuiltInRegistries.ITEM ) {
 			if( this.enchantability.test( new ItemStack( item ) ) ) {
-				items.add( item );
+				itemHolders.add( BuiltInRegistries.ITEM.wrapAsHolder( item ) );
 			}
 		}
-		ItemTagBased supportedItems = ItemTagBased.items( items.toArray( new Item[ 0 ] ) );
+		HolderSet< Item > supportedItems = HolderSet.direct( itemHolders );
+		List< EquipmentSlotGroup > slotGroups = new ArrayList<>();
+		for( EquipmentSlot slot : this.slots ) {
+			slotGroups.add( EquipmentSlotGroup.bySlot( slot ) );
+		}
 		int minCostBase = this.minLevelCost.getLevelCost( 1 );
 		int minCostPerLevel = Math.max( this.minLevelCost.getLevelCost( 2 ) - minCostBase, 1 );
 		int maxCostBase = this.maxLevelCost.getLevelCost( 1 );
 		int maxCostPerLevel = Math.max( this.maxLevelCost.getLevelCost( 2 ) - maxCostBase, 1 );
-		Enchantment.EnchantmentDefinition.Builder builder = Enchantment.EnchantmentDefinition.builder( supportedItems )
-			.withPrimaryItems( supportedItems )
-			.withMaxLevel( this.maxLevel )
-			.withWeight( this.isCurse ? 3 : 10 )
-			.withMinCost( new Enchantment.Cost( minCostBase, minCostPerLevel ) )
-			.withMaxCost( new Enchantment.Cost( maxCostBase, maxCostPerLevel ) )
-			.withAnvilCost( 1 );
-		for( EquipmentSlot slot : this.slots ) {
-			builder.withSlot( slot );
-		}
-		if( this.isCurse ) {
-			builder.withCurse();
-			builder.withTreasureOnly();
-		}
-		return Enchantment.enchantment( builder.build() ).build( key );
+		Enchantment.EnchantmentDefinition definition = Enchantment.definition(
+			supportedItems, supportedItems, this.maxLevel, this.isCurse ? 3 : 10,
+			new Enchantment.Cost( minCostBase, minCostPerLevel ),
+			new Enchantment.Cost( maxCostBase, maxCostPerLevel ),
+			1, slotGroups.toArray( new EquipmentSlotGroup[ 0 ] )
+		);
+		return Enchantment.enchantment( definition ).build( key.location() );
 	}
 
 	@FunctionalInterface
