@@ -55,8 +55,15 @@ def smoke_server(mod_dir, env):
     """Start NeoForge dev server briefly; report OK/CRASH/UNCLEAR."""
     rundir = os.path.join(mod_dir, "run")
     os.makedirs(rundir, exist_ok=True)
+    os.makedirs(os.path.join(rundir, "mods"), exist_ok=True)
     with open(os.path.join(rundir, "eula.txt"), "w") as f:
         f.write("eula=true\n")
+    # library jar'ini dev mods klasorune koy (eger yoksa)
+    for j in glob.glob(os.path.join(MOD_DIR, "libs", "majrusz-library-*.jar")):
+        dst = os.path.join(rundir, "mods", os.path.basename(j))
+        if not os.path.exists(dst):
+            shutil.copy(j, dst)
+            print("dev mods'a kopyalandi:", os.path.basename(j), flush=True)
     log_path = os.path.join(rundir, "smoke.log")
     logf = open(log_path, "w")
     proc = subprocess.Popen(["./gradlew", ":neoforge:runServer", "--no-daemon"],

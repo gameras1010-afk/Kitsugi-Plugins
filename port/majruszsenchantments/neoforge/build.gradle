@@ -66,8 +66,7 @@ neoForge {
 
 dependencies {
     compileOnly project(':common')
-    // Library JAR embedded into the mod jar (jarJar) so it works standalone
-    jarJar(files(rootProject.file('libs/majrusz-library-neoforge-1.21.1-7.0.8.jar')))
+    // Library JAR provided via run/mods folder at runtime
     compileOnly files(rootProject.file('libs/majrusz-library-neoforge-1.21.1-7.0.8.jar'))
 }
 
