@@ -67,7 +67,7 @@ neoForge {
 dependencies {
     compileOnly project(':common')
     // Library JAR provided via run/mods folder at runtime
-    compileOnly files('libs/majrusz-library-neoforge-1.21.1-7.0.8.jar')
+    compileOnly files(rootProject.file('libs/majrusz-library-neoforge-1.21.1-7.0.8.jar'))
 }
 
 // Ensure sourceSets.main.output includes our compiled classes

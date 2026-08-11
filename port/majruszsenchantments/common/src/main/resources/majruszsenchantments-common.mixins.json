@@ -4,13 +4,9 @@
   "compatibilityLevel": "JAVA_17",
   "minVersion": "0.8",
   "refmap": "majruszsenchantments.refmap.json",
-  "client": [
-    "MixinHorseArmorLayer"
-  ],
+  "client": [],
   "mixins": [
-    "MixinHorseArmorItem",
-    "MixinItem",
-    "MixinShieldItem"
+    "MixinItem"
   ],
   "injectors": {
     "defaultRequire": 1

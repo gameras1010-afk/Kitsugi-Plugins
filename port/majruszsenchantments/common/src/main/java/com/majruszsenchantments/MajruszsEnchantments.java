@@ -21,6 +21,9 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.Equippable;
+import net.minecraft.core.component.DataComponents;
+import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.item.*;
 import net.minecraft.world.item.enchantment.Enchantment;
 
@@ -70,7 +73,10 @@ public class MajruszsEnchantments {
 	// Enchantment Categories
 	public static final Predicate< ItemStack > IS_BOW_OR_CROSSBOW = itemStack->ItemHelper.isRangedWeapon( itemStack.getItem() );
 	public static final Predicate< ItemStack > IS_GOLDEN = itemStack->ItemHelper.isGoldenToolOrArmor( itemStack.getItem() );
-	public static final Predicate< ItemStack > IS_HORSE_ARMOR = itemStack->itemStack.getItem() instanceof HorseArmorItem;
+	public static final Predicate< ItemStack > IS_HORSE_ARMOR = itemStack->{
+		Equippable equippable = itemStack.get( DataComponents.EQUIPPABLE );
+		return equippable != null && equippable.slot() == EquipmentSlot.BODY;
+	};
 	public static final Predicate< ItemStack > IS_HOE = itemStack->itemStack.getItem() instanceof HoeItem;
 	public static final Predicate< ItemStack > IS_MELEE_MINECRAFT = itemStack->itemStack.getItem() instanceof SwordItem || itemStack.getItem() instanceof AxeItem; // for some reason all minecraft sword enchantments are applicable to axes
 	public static final Predicate< ItemStack > IS_MELEE = itemStack->ItemHelper.isMeleeWeapon( itemStack.getItem() );
