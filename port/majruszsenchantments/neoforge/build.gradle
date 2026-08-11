@@ -76,6 +76,9 @@ sourceSets.main.output.classesDirs.from(file("${project.buildDir}/classes/java/m
 tasks.withType(JavaCompile).configureEach {
     options.setEncoding('UTF-8')
     options.release.set(21)
+}
+
+tasks.named('compileJava', JavaCompile) {
     source(commonSrcDir)
 }
 
