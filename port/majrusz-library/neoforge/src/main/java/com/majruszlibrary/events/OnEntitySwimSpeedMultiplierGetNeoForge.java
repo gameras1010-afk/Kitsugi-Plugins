@@ -8,7 +8,7 @@ import net.neoforged.neoforge.common.NeoForgeMod;
 
 @AutoInstance
 public class OnEntitySwimSpeedMultiplierGetNeoForge {
-	private final AttributeHandler attribute = new AttributeHandler( "majrusz_library_swim_speed", () -> NeoForgeMod.SWIM_SPEED.value(), AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL );
+	private final AttributeHandler attribute = new AttributeHandler( "majrusz_library_swim_speed", () -> NeoForgeMod.SWIM_SPEED, AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL );
 
 	public OnEntitySwimSpeedMultiplierGetNeoForge() {
 		OnEntityTicked.listen( data->{
