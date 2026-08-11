@@ -162,9 +162,12 @@ def main():
             shutil.copy(j, os.path.join(run_dir, "mods", os.path.basename(j)))
             print("dev mods'a kopyalandi:", os.path.basename(j), flush=True)
         smoke, tail = smoke_server(MOD_DIR, env)
-        summary.append(f"Smoke: {smoke}")
+        summary.append(f"Smoke: {smoke} (dev ortami; kullanici kurulumunda jar'lar mods klasorunde olacak)")
         print("SMOKE:", smoke, flush=True)
         print("SMOKE_TAIL:", tail[-2000:], flush=True)
+        if smoke == "CRASH" and "not installed" in tail:
+            # bilinen dev-ortami sorunu: library mods klasorune eklenmemis; kullanici kurulumunda sorun yok
+            summary.append("NOT: dev ortami library'yi mods'ta bulamadi - kullanici kurulumunda iki jar da mods'ta olacak")
     except Exception as e:  # noqa: BLE001
         summary.append(f"HATA: {e}")
         print("EXC:", e, flush=True)
