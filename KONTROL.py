@@ -58,8 +58,13 @@ def smoke_server(mod_dir, env):
     os.makedirs(os.path.join(rundir, "mods"), exist_ok=True)
     with open(os.path.join(rundir, "eula.txt"), "w") as f:
         f.write("eula=true\n")
-    # library jar'ini dev mods klasorune koy (eger yoksa)
+    # library + mod jar'larini dev mods klasorune koy (eger yoksa)
     for j in glob.glob(os.path.join(MOD_DIR, "libs", "majrusz-library-*.jar")):
+        dst = os.path.join(rundir, "mods", os.path.basename(j))
+        if not os.path.exists(dst):
+            shutil.copy(j, dst)
+            print("dev mods'a kopyalandi:", os.path.basename(j), flush=True)
+    for j in glob.glob(os.path.join(MOD_DIR, "neoforge", "build", "libs", "majruszs-enchantments-*.jar")):
         dst = os.path.join(rundir, "mods", os.path.basename(j))
         if not os.path.exists(dst):
             shutil.copy(j, dst)
