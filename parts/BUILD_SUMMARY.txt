@@ -1,0 +1,53 @@
+Library: OK
+Mod: OK
+Smoke: CRASH (dev ortami; kullanici kurulumunda jar'lar mods klasorunde olacak)
+
+SMOKE:
+OOTSTRAP/org.spongepowered.mixin/org.spongepowered.asm.mixin.transformer.Config.create(Config.java:168)
+	at MC-BOOTSTRAP/org.spongepowered.mixin/org.spongepowered.asm.mixin.Mixins.createConfiguration(Mixins.java:121)
+	at MC-BOOTSTRAP/org.spongepowered.mixin/org.spongepowered.asm.mixin.Mixins.addConfiguration(Mixins.java:108)
+	at MC-BOOTSTRAP/org.spongepowered.mixin/org.spongepowered.asm.mixin.Mixins.addConfiguration(Mixins.java:98)
+	at MC-BOOTSTRAP/fml_loader@4.0.39/net.neoforged.fml.loading.mixin.DeferredMixinConfigRegistration.lambda$registerConfigs$0(DeferredMixinConfigRegistration.java:51)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1596)
+	at MC-BOOTSTRAP/fml_loader@4.0.39/net.neoforged.fml.loading.mixin.DeferredMixinConfigRegistration.registerConfigs(DeferredMixinConfigRegistration.java:51)
+	at MC-BOOTSTRAP/fml_loader@4.0.39/net.neoforged.fml.loading.mixin.FMLMixinPlatformAgent.prepare(FMLMixinPlatformAgent.java:24)
+	at MC-BOOTSTRAP/org.spongepowered.mixin/org.spongepowered.asm.launch.platform.MixinContainer.prepare(MixinContainer.java:122)
+	at MC-BOOTSTRAP/org.spongepowered.mixin/org.spongepowered.asm.launch.platform.MixinPlatformManager.prepare(MixinPlatformManager.java:166)
+	at MC-BOOTSTRAP/org.spongepowered.mixin/org.spongepowered.asm.launch.MixinBootstrap.doInit(MixinBootstrap.java:196)
+	at MC-BOOTSTRAP/org.spongepowered.mixin/org.spongepowered.asm.launch.MixinLaunchPluginLegacy.initializeLaunch(MixinLaunchPluginLegacy.java:200)
+	at MC-BOOTSTRAP/org.spongepowered.mixin/org.spongepowered.asm.launch.MixinLaunchPlugin.initializeLaunch(MixinLaunchPlugin.java:34)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.4/cpw.mods.modlauncher.LaunchPluginHandler.lambda$announceLaunch$11(LaunchPluginHandler.java:106)
+	at java.base/java.util.HashMap.forEach(HashMap.java:1429)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.4/cpw.mods.modlauncher.LaunchPluginHandler.announceLaunch(LaunchPluginHandler.java:106)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.4/cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:51)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.4/cpw.mods.modlauncher.LaunchServiceHandler.launch(LaunchServiceHandler.java:71)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.4/cpw.mods.modlauncher.Launcher.run(Launcher.java:103)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.4/cpw.mods.modlauncher.Launcher.main(Launcher.java:74)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.4/cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:26)
+	at MC-BOOTSTRAP/cpw.mods.modlauncher@11.0.4/cpw.mods.modlauncher.BootstrapLaunchConsumer.accept(BootstrapLaunchConsumer.java:23)
+	at cpw.mods.bootstraplauncher@2.0.2/cpw.mods.bootstraplauncher.BootstrapLauncher.run(BootstrapLauncher.java:210)
+	at cpw.mods.bootstraplauncher@2.0.2/cpw.mods.bootstraplauncher.BootstrapLauncher.main(BootstrapLauncher.java:69)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:580)
+	at net.neoforged.devlaunch.Main.main(Main.java:57)
+Caused by: java.lang.IllegalArgumentException: The specified resource 'majruszlibrary-common.mixins.json' was invalid or could not be read
+	at MC-BOOTSTRAP/org.spongepowered.mixin/org.spongepowered.asm.mixin.transformer.MixinConfig.create(MixinConfig.java:1395)
+	at MC-BOOTSTRAP/org.spongepowered.mixin/org.spongepowered.asm.mixin.transformer.Config.create(Config.java:163)
+	... 26 more
+
+> Task :neoforge:runServer FAILED
+
+FAILURE: Build failed with an exception.
+
+* What went wrong:
+Execution failed for task ':neoforge:runServer'.
+> Process 'command '/usr/lib/jvm/temurin-21-jdk-amd64/bin/java'' finished with non-zero exit value 1
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+
+BUILD FAILED in 21s
+14 actionable tasks: 9 executed, 5 up-to-date
