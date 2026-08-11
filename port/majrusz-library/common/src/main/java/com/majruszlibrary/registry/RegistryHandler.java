@@ -2,6 +2,7 @@ package com.majruszlibrary.registry;
 
 import com.majruszlibrary.modhelper.ModHelper;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +19,13 @@ public class RegistryHandler {
 
 	public < Type > RegistryGroup< Type > create( Registry< Type > registry ) {
 		RegistryGroup< Type > group = new RegistryGroup<>( this.helper, registry );
+		this.groups.add( group );
+
+		return group;
+	}
+
+	public < Type > RegistryGroup< Type > create( ResourceKey< ? extends Registry< Type > > registryKey ) {
+		RegistryGroup< Type > group = new RegistryGroup<>( this.helper, registryKey );
 		this.groups.add( group );
 
 		return group;

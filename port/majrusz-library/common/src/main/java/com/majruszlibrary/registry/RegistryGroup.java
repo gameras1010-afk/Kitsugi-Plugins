@@ -2,6 +2,7 @@ package com.majruszlibrary.registry;
 
 import com.majruszlibrary.modhelper.ModHelper;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -10,11 +11,19 @@ import java.util.function.Supplier;
 public class RegistryGroup< Type > {
 	final ModHelper helper;
 	final Registry< Type > registry;
+	final ResourceKey< ? extends Registry< Type > > registryKey;
 	final List< RegistryObject< ? > > objects = new ArrayList<>();
 
 	public RegistryGroup( ModHelper helper, Registry< Type > registry ) {
 		this.helper = helper;
 		this.registry = registry;
+		this.registryKey = registry.key();
+	}
+
+	public RegistryGroup( ModHelper helper, ResourceKey< ? extends Registry< Type > > registryKey ) {
+		this.helper = helper;
+		this.registry = null;
+		this.registryKey = registryKey;
 	}
 
 	public < ObjectType extends Type > RegistryObject< ObjectType > create( String id, Supplier< ObjectType > supplier ) {

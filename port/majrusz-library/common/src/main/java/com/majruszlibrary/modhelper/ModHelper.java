@@ -15,6 +15,7 @@ import com.majruszlibrary.registry.RegistryGroup;
 import com.majruszlibrary.registry.RegistryHandler;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.core.Registry;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.level.ServerPlayer;
 import org.slf4j.Logger;
@@ -54,6 +55,10 @@ public class ModHelper {
 
 	public < Type > RegistryGroup< Type > create( Registry< Type > registry ) {
 		return this.registryHandler.create( registry );
+	}
+
+	public < Type > RegistryGroup< Type > create( ResourceKey< ? extends Registry< Type > > registryKey ) {
+		return this.registryHandler.create( registryKey );
 	}
 
 	public < Type > NetworkObject< Type > create( String id, Class< Type > clazz ) {

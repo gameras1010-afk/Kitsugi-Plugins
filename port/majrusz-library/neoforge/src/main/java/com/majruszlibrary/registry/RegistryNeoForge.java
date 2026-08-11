@@ -39,7 +39,11 @@ public class RegistryNeoForge implements IRegistryPlatform {
 	@Override
 	public < Type > void register( RegistryGroup< Type > group ) {
 		DataNeoForge data = group.helper.getData( DataNeoForge.class );
-		data.lastDeferredRegister = DeferredRegister.create( group.registry.key(), group.helper.getModId() );
+		if( group.registry != null ) {
+			data.lastDeferredRegister = DeferredRegister.create( group.registry.key(), group.helper.getModId() );
+		} else {
+			data.lastDeferredRegister = DeferredRegister.create( group.registryKey, group.helper.getModId() );
+		}
 		data.lastDeferredRegister.register( DataNeoForge.MOD_EVENT_BUS );
 	}
 
@@ -91,7 +95,13 @@ public class RegistryNeoForge implements IRegistryPlatform {
 
 	@Override
 	public IAccessor< Enchantment > getEnchantments() {
-		return new Accessor<>( BuiltInRegistries.ENCHANTMENT );
+		return new LazyAccessor<>( ()->{
+			var server = net.neoforged.neoforge.server.ServerLifecycleHooks.getCurrentServer();
+			if( server != null ) {
+				return server.registryAccess().registryOrThrow( net.minecraft.core.registries.Registries.ENCHANTMENT );
+			}
+			return net.minecraft.client.Minecraft.getInstance().level.registryAccess().registryOrThrow( net.minecraft.core.registries.Registries.ENCHANTMENT );
+		} );
 	}
 
 	@Override
@@ -141,6 +151,45 @@ public class RegistryNeoForge implements IRegistryPlatform {
 		@Override
 		public @NotNull Iterator< Type > iterator() {
 			return this.registry.iterator();
+		}
+	}
+
+	private static class LazyAccessor< Type > implements IAccessor< Type > {
+		private final Supplier< Registry< Type > > registrySupplier;
+
+		public LazyAccessor( Supplier< Registry< Type > > registrySupplier ) {
+			this.registrySupplier = registrySupplier;
+		}
+
+		private Registry< Type > registry() {
+			return this.registrySupplier.get();
+		}
+
+		@Override
+		public ResourceLocation getId( Type value ) {
+			return this.registry().getResourceKey( value ).map( ResourceKey::location ).orElseThrow();
+		}
+
+		@Override
+		public Type get( ResourceLocation id ) {
+			return this.registry().getOptional( ResourceKey.create( this.registry().key(), id ) ).orElse( null );
+		}
+
+		@Override
+		public Iterable< Type > get() {
+			return this.registry();
+		}
+
+		@Override
+		public Holder< Type > getHolder( Type value ) {
+			return this.registry().getResourceKey( value )
+				.flatMap( this.registry()::getHolder )
+				.orElseThrow();
+		}
+
+		@Override
+		public @NotNull Iterator< Type > iterator() {
+			return this.registry().iterator();
 		}
 	}
 

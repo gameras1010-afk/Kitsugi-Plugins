@@ -36,7 +36,7 @@ public class MajruszsEnchantments {
 	}
 
 	// Registry Groups
-	public static final RegistryGroup< Enchantment > ENCHANTMENTS = HELPER.create( BuiltInRegistries.ENCHANTMENT );
+	public static final RegistryGroup< Enchantment > ENCHANTMENTS = HELPER.create( Registries.ENCHANTMENT );
 	public static final RegistryGroup< ParticleType< ? > > PARTICLES = HELPER.create( BuiltInRegistries.PARTICLE_TYPE );
 
 	// Enchantments
