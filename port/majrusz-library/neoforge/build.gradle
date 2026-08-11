@@ -91,6 +91,9 @@ tasks.withType(JavaCompile).configureEach {
     options.setEncoding('UTF-8')
     options.release.set(21)
     options.compilerArgs.add('-AdisableTargetValidator=true')
+}
+
+tasks.named('compileJava', JavaCompile) {
     source(commonSrcDir)
 }
 
