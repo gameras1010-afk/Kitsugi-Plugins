@@ -143,7 +143,12 @@ def main():
         assert mod_jars, "mod jar bulunamadi"
         summary.append("Mod: OK")
 
-        # 3) Smoke test (dev server)
+        # 3) Smoke test (dev server) - library jar'ini dev mods klasorune koy
+        run_dir = os.path.join(MOD_DIR, "run")
+        os.makedirs(os.path.join(run_dir, "mods"), exist_ok=True)
+        for j in lib_jars:
+            shutil.copy(j, os.path.join(run_dir, "mods", os.path.basename(j)))
+            print("dev mods'a kopyalandi:", os.path.basename(j), flush=True)
         smoke, tail = smoke_server(MOD_DIR, env)
         summary.append(f"Smoke: {smoke}")
         print("SMOKE:", smoke, flush=True)
