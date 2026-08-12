@@ -1,8 +1,90 @@
 # Simple Voice Chat — Gerçek Teşhis
 
 > Bu doküman, daha önce verilen "klasör kilidi + timeout 30 saniye" teşhisini
-> **düzeltiyor.** O teşhisin bir kısmı doğru, bir kısmı **yanlış**, ve asıl
-> sebep muhtemelen hiç bakılmamış bir yerde.
+> **düzeltiyor.** O teşhisin bir kısmı doğru, bir kısmı **yanlış**.
+
+---
+
+## ⚠️ ÖNEMLİ DÜZELTME — MTU teorisinin zayıf noktası
+
+Aşağıdaki Bölüm 3'te MTU çakışmasını "en olası sebep" diye sundum.
+Sonradan Opus spesifikasyonunu (RFC 6716) kontrol ettim ve **teorinin
+sandığım kadar güçlü olmadığını gördüm.** Dürüst olmak için burada
+düzeltiyorum.
+
+### Sorun ne
+
+`mtu_size=1275` sayısı tesadüf değil. RFC 6716:
+
+> *"The maximum representable length is 255\*4+255=**1275 bytes**.
+> For 20 ms frames, this represents a bitrate of **510 kbit/s**, which is
+> approximately the highest useful rate for lossily compressed
+> **fullband stereo music**."*
+
+Yani 1275 bir **tavan değeri** — Opus'un teorik olarak üretebileceği
+en büyük paket. Gerçek konuşma paketleri buna hiç yaklaşmıyor:
+
+| Bitrate | 20 ms frame boyutu |
+|---|---|
+| 24 kbps (VOIP tipik) | **~60 bayt** |
+| 64 kbps (yüksek kalite) | **~160 bayt** |
+| 510 kbps (stereo müzik, teorik tavan) | 1275 bayt |
+
+SVC `codec=VOIP` kullanıyor ve konuşma için tipik paket **100-250 bayt**
+civarında. Üstüne SVC'nin kendi başlığı ve şifreleme yükü binse bile
+**1280'in çok altında.**
+
+### Bu ne demek
+
+Eğer paketler zaten ~200 baytsa, `mtu_size`'ı 1275'ten 1000'e çekmek
+**hiçbir şeyi değiştirmez** — çünkü o tavana zaten hiç değilmiyordu.
+
+`mtu_size=1000` **zararsız** (bırakabilirsin, ses kalitesini düşürmez).
+Ama "kesin tanı" demek doğru değil. Ben öyle sunmuştum, hatalıydı.
+
+### MTU teorisi hangi durumda hâlâ geçerli
+
+- Biri müzik botu / `AUDIO` codec / yüksek bitrate kullanıyorsa
+- Bir ses eklentisi (addon) büyük paket gönderiyorsa
+- Tailscale **DERP relay** üzerinden gidiyorsa (efektif MTU daha da düşer)
+
+DERP kontrolü — bu önemli:
+
+```bash
+tailscale status
+```
+
+Satırlarda `direct` yerine `relay "xxx"` görüyorsan trafik Tailscale'in
+relay sunucularından dolaşıyor. **Bu gerçek bir gecikme ve paket kaybı
+kaynağı** ve ses için MTU'dan çok daha ciddi bir sorun.
+
+```bash
+tailscale ping DIGER_MAKINE
+```
+`via DERP` diyorsa direkt bağlantı kurulamamış.
+
+**Çare:** Tailscale'in UDP 41641 portunu sunucuda dışarı aç —
+resmî dokümana göre bu direkt bağlantı ihtimalini ciddi artırıyor:
+
+```bash
+sudo ufw allow 41641/udp
+```
+
+### Şu an ne yapmalı
+
+Sunucu açıldığında **önce test et.**
+
+- **Ses düzeldiyse:** sebep muhtemelen `login_timeout` revert'i veya
+  `voice_host` değişikliğiydi — MTU değil.
+- **Düzelmediyse:** MTU'yu suçlama, aşağıdaki log adımına geç.
+
+Her hâlükârda log'a bak:
+
+```bash
+grep -iE "voicechat|Dropping voice" logs/latest.log | tail -50
+```
+
+---
 
 ---
 
@@ -86,9 +168,12 @@ sudo chown -R minecraft:minecraft config/voicechat/
 
 ---
 
-## 3. ASIL ŞÜPHELİ — Tailscale MTU (buna hiç bakılmadı)
+## 3. Tailscale MTU — muhtemel ama kesin değil
 
-Bu bence senin gerçek sorunun ve kimse üstünde durmamış.
+> ⚠️ Yukarıdaki düzeltmeyi oku. Bu bölümdeki mantık **teorik olarak
+> doğru** ama pratikte konuşma paketleri 1275'e hiç ulaşmadığı için
+> tek başına yeterli açıklama olmayabilir. `mtu_size=1000` zararsız,
+> bırakabilirsin — ama "kesin tanı" değil.
 
 ### Rakamlar
 
@@ -322,6 +407,18 @@ allow_pings=true
 | "Mod ayarsız, körlemesine çalışıyordu" | ⚠️ Abartı — config yoksa varsayılanlar geçerli ve makul |
 | "Timeout 10 sn'ydi, 30'a çektik" | ❌ **Yanlış.** `login_timeout` sadece `force_voice_chat=true` iken çalışır. `keep_alive`'ı yükselttiysen **timeout'a sebep oldun** |
 | "Can't keep up sesi etkiliyor" | ⚠️ Kısmen — ses ayrı thread'de. Etkisi sadece konum gecikmesi + CPU açlığı. `Dropping voice chat packets` log'u yoksa sebep bu değil |
-| **Tailscale MTU 1280 vs mtu_size** | ❌ **Hiç bakılmamış. En olası sebep bu.** |
+| **Tailscale MTU 1280 vs mtu_size** | ⚠️ Bakılmamıştı, ama tek başına yeterli açıklama değil — konuşma paketleri zaten ~200 bayt. Bkz. baştaki düzeltme |
+| **`voice_host` elle IP yazılmıştı** | ✅ **Bu gerçek bir hataydı.** Boşaltılması muhtemelen asıl düzeltme |
+| **Tailscale DERP relay** | ❓ Hâlâ kontrol edilmedi — `tailscale status` çıktısına bak |
 
-**Önce `mtu_size=1000` yap ve `keep_alive=1000` olduğunu doğrula.**
+### En olası sebep sıralaması (güncel)
+
+1. **`voice_host=100.70.34.111` sabitlenmişti** → boşaltıldı ✅
+   Sunucu her client'a "ses için şu IP'ye bağlan" diyordu. Tailscale
+   IP'si olsa bile o adrese ulaşamayan biri varsa (farklı tailnet
+   yolu, DERP üzerinden gelen, ya da IP değişmişse) ses kurulmuyordu.
+2. **Klasör izni** → config yazılamıyordu, değişiklikler kaydolmuyordu ✅
+3. **Tailscale DERP relay** → henüz kontrol edilmedi
+4. **MTU** → zararsız değişiklik, düşük ihtimal
+
+**Test et, sonra log'u at.**
