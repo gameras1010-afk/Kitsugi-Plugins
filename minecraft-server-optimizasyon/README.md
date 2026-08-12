@@ -207,6 +207,7 @@ Bitince ayarları geri al, `globalExecutorParallelism = 5` yap.
 | `MOD-LISTESI.md` | İndirme linkleri + sürüm notları |
 | **`BOSLUK-ANALIZI.md`** | 🆕 "Başka mod kalmadı mı?" — Moonrise'ın 11 resmî özelliğinin tek tek karşılığı, elenen 6 aday ve sebepleri |
 | **`UYUMLULUK-KANITI.md`** | 🆕 **Her modun C2ME uyumluluğu, gerçek log kanıtlarıyla.** ServerCore `dynamic=false` şartı, Architectury tuzağı, uyumsuz mod listesi |
+| **`OYUN-ONCESI-SON-KONTROL.md`** | 🆕 **Kurulum bittikten sonra oku.** ServerCore dynamic uyarısı, Annuus client şartı, MSPT yanılgısı, oyun içi test listesi, belirti→çözüm tablosu |
 | `DONANIMIMA-OZEL.md` | Donanımına özel karar gerekçeleri (heap, GC, Ubuntu ayarları) |
 | `NEDEN-YAVAS.md` | Chunk yüklemenin neden yavaş olduğunun teknik açıklaması |
 | `config/c2me.toml` | Satır satır yorumlu C2ME config |

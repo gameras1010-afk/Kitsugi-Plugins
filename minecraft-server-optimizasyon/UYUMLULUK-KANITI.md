@@ -87,9 +87,18 @@ Burada olan şey: ServerCore chunk ticking'e dokunmak istiyor, sistem
 
 **Sonuç:** ✅ Uyumlu — ama tek uyarıyla 👇
 
-> ⚠️ **ServerCore'un `dynamic` bölümünü KAPAT.** Dinamik view/simulation
-> distance, C2ME'nin `noTickViewDistance`'ı ile aynı işi yapıyor. İkisi
-> birbirinin ayarını ezer. `config/servercore.toml` içinde:
+> ⚠️ **ServerCore'un `dynamic` bölümünü KAPAT — iki sebepten.**
+>
+> **(1)** Dinamik view/simulation distance, C2ME'nin `noTickViewDistance`'ı
+> ile aynı işi yapıyor; ikisi birbirinin ayarını ezer.
+>
+> **(2)** Daha kötüsü: 1.18'den beri view distance değişimi **client'ta
+> chunk reload tetikliyor.** someaddon'un Dynamic View sayfasından birebir:
+> *"Version 1.18 Note: Vanilla changed behaviour of view distance changes,
+> now they trigger a chunk reload on client-side."* Yani mesafe her
+> oynadığında ekranın yeniden yükleniyor — lag'i önleyen sistem lag üretiyor.
+>
+> `config/servercore.toml` içinde:
 > ```toml
 > [dynamic]
 >     enabled = false

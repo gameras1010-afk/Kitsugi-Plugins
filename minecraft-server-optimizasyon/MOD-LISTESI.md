@@ -141,7 +141,7 @@ tek bir mod için Connector kurmaya değmez, C2ME ana kazancı zaten veriyor.
 
 | Mod | Link | Ne zaman |
 |---|---|---|
-| **Annuus** | `modrinth.com/mod/annuus` | 🆕 Ağ paketi sıkıştırma. Chunk data (VD 10): **13.94 MB → 1.17 MB**, 35.03 → 29.76 ms. NeoForge 1.21.x, bağımlılık yok. **Sadece 5+ oyuncu + düşük upload varsa.** Tek başına oynuyorsan gereksiz. ⚠️ Experimental, C2ME ile birlikte resmî test edilmemiş. |
+| **Annuus** (+**Daisy**) | `modrinth.com/mod/annuus` | 🆕 Ağ paketi sıkıştırma. Chunk data (VD 10): **13.94 MB → 1.17 MB**. 🔴 **KRİTİK: client'a da kurulmalı!** Mod açıklaması birebir: *"When the player doesn't install annuus on the client, network packet will send normally **like vanilla**"* — tek taraflıysa kazanç SIFIR. Kazancı bant genişliği; tek başına oynuyorsan gereksiz. Daisy = cao_awa kütüphanesi, gerekli. |
 | **ThreadTweak Reforged** | `curseforge.com/minecraft/mc-mods/threadtweak-reforged` | 🆕 `threadtweak-1.21.1-NeoForge-1.0.0.jar` (248.5K indirme). CPU scheduling / thread önceliği. **En son dene**, spark ile ölç, fark yoksa kaldır. |
 
 ---
