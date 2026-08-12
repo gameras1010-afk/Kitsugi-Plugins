@@ -257,6 +257,43 @@ if ls mods/ 2>/dev/null | grep -qi "servercore"; then
         fi
     fi
 fi
+
+# --- TEHLIKELI C2ME AYARLARI ---
+# Bu iki ayar chunk sinirlarinda bozulmaya yol acar:
+# yarim agac, kesik yapi, yarim acilan kapi, chunk duvari.
+# reduceLockRadius icin C2ME'nin kendi aciklamasi:
+#   "(faster but UNSAFE) (YOU HAVE BEEN WARNED)"
+if [ -f config/c2me.toml ]; then
+    UNSAFE=0
+    if grep -qE '^\s*allowThreadedFeatures\s*=\s*true' config/c2me.toml; then
+        echo ""
+        echo "  !! c2me.toml -> allowThreadedFeatures = true"
+        echo "     Agac/cevher/yapi uretimi chunk sinirini asar."
+        echo "     Paralel uretimde YARIM kalir. false yap."
+        UNSAFE=1
+    fi
+    if grep -qE '^\s*reduceLockRadius\s*=\s*true' config/c2me.toml; then
+        echo ""
+        echo "  !! c2me.toml -> reduceLockRadius = true"
+        echo "     C2ME'nin kendi uyarisi: UNSAFE / YOU HAVE BEEN WARNED"
+        echo "     Chunk sinirlarinda bozulma yapar. false yap."
+        UNSAFE=1
+    fi
+    if grep -qE '^\s*gcFreeChunkSerializer\s*=\s*true' config/c2me.toml; then
+        echo ""
+        echo "  !! c2me.toml -> gcFreeChunkSerializer = true"
+        echo "     Mod chunk verisi sessizce kaybolur. false yap."
+        UNSAFE=1
+    fi
+    if grep -qE '^\s*recoverFromErrors\s*=\s*true' config/c2me.toml; then
+        echo ""
+        echo "  !! c2me.toml -> recoverFromErrors = true"
+        echo "     Bozuk chunk'i sormadan SILIP yeniden uretir."
+        echo "     Yapilarini kaybedersin. false yap."
+        UNSAFE=1
+    fi
+    [ $UNSAFE -eq 1 ] && { echo ""; echo "     Detay: BOZUK-CHUNK-COZUMU.md"; sleep 8; }
+fi
 echo ""
 
 # --- Otomatik yeniden baslatma ---

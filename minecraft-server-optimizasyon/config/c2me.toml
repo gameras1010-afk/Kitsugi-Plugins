@@ -75,16 +75,29 @@ globalExecutorParallelism = 5
 # ############################################################
 enabled = true
 
-# Ozellik (feature) uretimi de paralel olsun:
-# agaclar, cevherler, magaralar, bitki ortusu...
-# Chunk'in "surface" asamasindan sonraki tum sus isleri.
-# Kapaliyken worldgen'in yarisi tek thread'de kalir.
-allowThreadedFeatures = true
+# ############################################################
+# ##  DIKKAT — BU IKI AYAR "YARIM CHUNK" BUGUNUN SEBEBIDIR  ##
+# ############################################################
+#
+# Ozellik (feature) uretimi = agaclar, cevherler, magaralar,
+# bitki ortusu. Bunlar chunk SINIRLARINI ASAR (bir agac iki
+# chunk'a yayilir). Paralel uretilirse iki thread ayni sinira
+# ayni anda yazmaya calisir -> yarim agac, kesik yapi,
+# eksik dekorasyon.
+#
+# false = vanilla ile BIREBIR ayni dunya, sadece daha yavas.
+allowThreadedFeatures = false
 
-# Chunk uretiminde kullanilan kilit yaricapini kucultur.
-# Kucuk yaricap = ayni anda daha cok chunk uretilebilir.
-# 6 thread'de fark yaratir, ac.
-reduceLockRadius = true
+# Chunk kilit yaricapini kucultur. C2ME'nin KENDI aciklamasi:
+#   "(faster but UNSAFE) (YOU HAVE BEEN WARNED)"
+#
+# Kucuk yaricap = komsu chunk'lar birbirini beklemeden uretilir
+# = sinirda tutarsizlik. Kanit: C2ME issue #508 (Minecolonies
+# yapilari bozuluyor, reduceLockRadius=false ile duzeliyor).
+# Ayrica issue: "Potential deadlock in acquiring chunk locks".
+#
+# TERSINE CEVRILEMEZ: bozuk uretilen chunk diske oyle yazilir.
+reduceLockRadius = false
 
 # Chunk gorevlerini async zamanla. Ana thread'in zamanlama
 # yuku azalir. C2ME'nin kendi tavsiye ettigi ayar.
@@ -166,8 +179,18 @@ optimizeAsyncChunkRequest = true
 # VANILLA  = her tick bir miktar chunk kaydeder (surekli disk)
 # ENHANCED = sunucu bos vakti buldugunda toplu kaydeder
 #
-# ENHANCED kesinlikle dogru secim. Tick basina disk yuku
-# ortadan kalkar, NVMe'de zaten kayip riski minimal.
+# ENHANCED = tick basina disk yuku ortadan kalkar.
+#
+# ⚠ RISK: sunucu temiz kapanmazsa (elektrik kesintisi, kill -9,
+# crash) henuz kaydedilmemis chunk'lar KAYBOLUR. C2ME'nin kendi
+# issue takipcisinde birebir bu var:
+#   "Chunk Corruption After Power Cut to Server ...
+#    chunks around there were scrambled up"
+#
+# Sunucuyu HER ZAMAN konsoldan /stop ile kapat. Asla pencereyi
+# kapatma, asla kill -9 kullanma.
+#
+# Daha once bozuk chunk gorduysen bunu VANILLA yap:
 mode = "ENHANCED"
 
 
@@ -232,9 +255,20 @@ disableLoggingShutdownHook = false
 # ============================================================
 #   globalExecutorParallelism        3   -> 5
 #   [threadedWorldGen] enabled       false -> true   << EN KRITIK
-#   [threadedWorldGen] allowThreadedFeatures -> true
 #   [threadedWorldGen] asyncScheduling      -> true
 #   [ioSystem] replaceImpl           false -> true
 #   [ioSystem] chunkDataCacheLimit   6144  -> 16384
 #   [generalOptimizations.autoSave] mode   -> ENHANCED
+#
+#  ASLA ACMA (dunya bozar):
+#   [threadedWorldGen] allowThreadedFeatures = false
+#   [threadedWorldGen] reduceLockRadius      = false  ("UNSAFE")
+#   [ioSystem] gcFreeChunkSerializer         = false
+#   [ioSystem] recoverFromErrors             = false
+# ============================================================
+#
+#  NOT: allowThreadedFeatures + reduceLockRadius kapali olmasi
+#  worldgen'i ~%15-25 yavaslatir. Karsiliginda dunya BOZULMAZ.
+#  Hizi geri kazanmak icin Chunky ile pregen yap — ayni sonuc,
+#  sifir risk.
 # ============================================================
