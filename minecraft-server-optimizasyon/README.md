@@ -211,6 +211,7 @@ Bitince ayarları geri al, `globalExecutorParallelism = 5` yap.
 | **`OYUN-ONCESI-SON-KONTROL.md`** | 🆕 **Kurulum bittikten sonra oku.** ServerCore dynamic uyarısı, Annuus client şartı, MSPT yanılgısı, oyun içi test listesi, belirti→çözüm tablosu |
 | **`BOZUK-CHUNK-COZUMU.md`** | 🔴 **Yarım açılan kapı, kesik chunk görüyorsan BURAYA BAK.** Sebep: `reduceLockRadius`+`allowThreadedFeatures` |
 | **`CHUNK-DUVARI-GERCEK-COZUM.md`** | 🆕 🔴 **Chunk duvarı / bir bölge komşusundan yüksekte kalmışsa BURAYA BAK.** Gerçek çözüm: MCA Selector **ForceBlend** ile Minecraft'ın kendi harmanlama motorunu tetiklemek. Pregen'in neden çözüm olmadığı + `blending_data` crash tuzağı |
+| **`DUNYA-AKTARIM.md`** | 🆕 🟢 **1.20.1 Forge dünyasını 1.21.1 NeoForge'a taşıma.** Kısa cevap: dünyayı taşıma, **yerinde yükselt** — DataFixerUpper chunk'ları kendi dönüştürür, mod blokları mod yüklü kaldığı sürece korunur. "Aynı seed + yeni dünya + schematic" planının neden üç ayrı yerden kırıldığı + mod eşleştirme kontrol listesi |
 | **`EKSIK-GEDIK.md`** | 🆕 🔴 **Performans dışı katman.** Backup (YOK'tu!), rollback, izin, world border + BlueMap / voice chat / Distant Horizons fikirleri ve tuzakları |
 | `DONANIMIMA-OZEL.md` | Donanımına özel karar gerekçeleri (heap, GC, Ubuntu ayarları) |
 | `NEDEN-YAVAS.md` | Chunk yüklemenin neden yavaş olduğunun teknik açıklaması |
