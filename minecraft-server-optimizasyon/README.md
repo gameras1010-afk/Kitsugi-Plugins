@@ -209,7 +209,8 @@ Bitince ayarları geri al, `globalExecutorParallelism = 5` yap.
 | **`BOSLUK-ANALIZI.md`** | 🆕 "Başka mod kalmadı mı?" — Moonrise'ın 11 resmî özelliğinin tek tek karşılığı, elenen 6 aday ve sebepleri |
 | **`UYUMLULUK-KANITI.md`** | 🆕 **Her modun C2ME uyumluluğu, gerçek log kanıtlarıyla.** ServerCore `dynamic=false` şartı, Architectury tuzağı, uyumsuz mod listesi |
 | **`OYUN-ONCESI-SON-KONTROL.md`** | 🆕 **Kurulum bittikten sonra oku.** ServerCore dynamic uyarısı, Annuus client şartı, MSPT yanılgısı, oyun içi test listesi, belirti→çözüm tablosu |
-| **`BOZUK-CHUNK-COZUMU.md`** | 🔴 **Yarım açılan kapı, kesik chunk, chunk duvarı görüyorsan BURAYA BAK.** Sebep: `reduceLockRadius`+`allowThreadedFeatures`. Tamir: MCA Selector |
+| **`BOZUK-CHUNK-COZUMU.md`** | 🔴 **Yarım açılan kapı, kesik chunk görüyorsan BURAYA BAK.** Sebep: `reduceLockRadius`+`allowThreadedFeatures` |
+| **`CHUNK-DUVARI-GERCEK-COZUM.md`** | 🆕 🔴 **Chunk duvarı / bir bölge komşusundan yüksekte kalmışsa BURAYA BAK.** Gerçek çözüm: MCA Selector **ForceBlend** ile Minecraft'ın kendi harmanlama motorunu tetiklemek. Pregen'in neden çözüm olmadığı + `blending_data` crash tuzağı |
 | **`EKSIK-GEDIK.md`** | 🆕 🔴 **Performans dışı katman.** Backup (YOK'tu!), rollback, izin, world border + BlueMap / voice chat / Distant Horizons fikirleri ve tuzakları |
 | `DONANIMIMA-OZEL.md` | Donanımına özel karar gerekçeleri (heap, GC, Ubuntu ayarları) |
 | `NEDEN-YAVAS.md` | Chunk yüklemenin neden yavaş olduğunun teknik açıklaması |

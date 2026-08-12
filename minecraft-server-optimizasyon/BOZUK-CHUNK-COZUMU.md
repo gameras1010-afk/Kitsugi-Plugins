@@ -5,6 +5,12 @@
 
 **Bu rastgele bir bug değil. Sebebi belli ve senin config'inde.**
 
+> ⚠️ **Sorunun "chunk duvarı" (bir bölge komşusundan yüksekte kalmış)
+> ise bu doküman DEĞİL, → [`CHUNK-DUVARI-GERCEK-COZUM.md`](CHUNK-DUVARI-GERCEK-COZUM.md)**
+> Orası ayrı bir olay: sebebi C2ME değil, çözümü de chunk silmek değil.
+> Doğru araç **MCA Selector `ForceBlend`** — oyunun kendi harmanlama
+> motorunu elle tetikliyorsun.
+
 ---
 
 ## 🔴 SEBEP: İki C2ME ayarı
