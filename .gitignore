@@ -32,3 +32,6 @@ google-services.json
 
 # Android Profiling
 *.hprof
+
+# Arena: paketlenmis optimizasyon zip (repo disi artifact)
+minecraft-server-optimizasyon.zip
