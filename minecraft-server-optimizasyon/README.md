@@ -168,7 +168,8 @@ Bitince ayarları geri al, `globalExecutorParallelism = 5` yap.
 6.  c2me.toml'da şunları değiştir:
        globalExecutorParallelism = 5
        [threadedWorldGen] enabled = true       ← EN KRİTİK
-       allowThreadedFeatures = true
+       allowThreadedFeatures = false           ← AÇMA (chunk bozar)
+       reduceLockRadius      = false           ← AÇMA (chunk bozar)
        asyncScheduling = true
        [ioSystem] replaceImpl = true
        [generalOptimizations.autoSave] mode = "ENHANCED"

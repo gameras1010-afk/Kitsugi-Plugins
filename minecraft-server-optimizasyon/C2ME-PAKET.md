@@ -168,11 +168,21 @@ globalExecutorParallelism = 5
 # ############################################################
 enabled = true
 
-# Ağaç/cevher gibi süslemeler paralel üretilsin
-allowThreadedFeatures = true
+# ############################################################
+# ##  AŞAĞIDAKİ İKİSİ **FALSE** KALACAK — AÇMA.             ##
+# ##  Sebep: BOZUK-CHUNK-COZUMU.md                          ##
+# ############################################################
 
-# Kilit yarıçapını küçült — daha çok paralellik
-reduceLockRadius = true
+# Ağaç/cevher/yapı gibi "feature"lar chunk sınırını AŞAR.
+# Paralel üretilirse iki thread aynı sınıra yazar →
+# yarım kapı, kesik yapı, yarım ağaç.
+allowThreadedFeatures = false
+
+# Upstream C2ME'nin kendi açıklaması:
+#   "(faster but UNSAFE) (YOU HAVE BEEN WARNED)"
+# C2ME issue #508: yapı bozulması + crash, sadece bunu
+# false yapınca düzeliyor. Varsayılanı da zaten false.
+reduceLockRadius = false
 
 # Async + paralel zamanlama, ana thread yükünü azaltır
 asyncScheduling = true
@@ -289,7 +299,8 @@ maliyeti kübik, 6'da tut.
 6. [ ] c2me.toml düzenle:
        globalExecutorParallelism = 5
        [threadedWorldGen] enabled = true      ← EN ÖNEMLİSİ
-       allowThreadedFeatures = true
+       allowThreadedFeatures = false          ← AÇMA (chunk bozar)
+       reduceLockRadius      = false          ← AÇMA (chunk bozar)
        asyncScheduling = true
 
 7. [ ] start.sh'a -XX:+UseCompactObjectHeaders ekle

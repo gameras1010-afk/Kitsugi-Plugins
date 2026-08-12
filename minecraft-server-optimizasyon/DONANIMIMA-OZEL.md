@@ -94,12 +94,20 @@ enabled = true   # VARSAYILAN: false
 paralel worldgen'i — hiç kullanmıyorsun demektir. `globalExecutorParallelism`
 kaç olursa olsun fark etmez.
 
-Yanına bunları da aç:
+Yanına bunu da aç:
 ```toml
-allowThreadedFeatures = true   # ağaç/cevher/mağara üretimi de paralel
-reduceLockRadius = true        # daha çok eşzamanlı chunk
 asyncScheduling = true         # ana thread'in zamanlama yükü azalır
 ```
+
+**Ama bu ikisini AÇMA — `false` kalacak:**
+```toml
+allowThreadedFeatures = false  # AÇMA → yarım ağaç / yarım kapı / kesik yapı
+reduceLockRadius      = false  # AÇMA → upstream: "UNSAFE, YOU HAVE BEEN WARNED"
+```
+Gerekçesi ve kanıtı: **`BOZUK-CHUNK-COZUMU.md`**.
+`enabled = true` kaldığı için paralel worldgen'i yine de kullanıyorsun;
+sadece riskli iki alt-ayar kapalı. Maliyet ~%15-25 worldgen hızı,
+karşılığında dünya bozulmuyor.
 
 Tam config: `config/c2me.toml` (satır satır yorumlu).
 
@@ -306,8 +314,8 @@ Kioxia Exceria QLC değil TLC — iyi. 338 GB boş, doluluk sorunu yok.
 7.  [ ] c2me.toml düzenle:
         globalExecutorParallelism = 5
         [threadedWorldGen] enabled = true         ← EN KRİTİK
-        allowThreadedFeatures = true
-        reduceLockRadius = true
+        allowThreadedFeatures = false             ← AÇMA (chunk bozar)
+        reduceLockRadius      = false             ← AÇMA (chunk bozar)
         asyncScheduling = true
         [ioSystem] replaceImpl = true
         [ioSystem] chunkDataCacheLimit = 16384

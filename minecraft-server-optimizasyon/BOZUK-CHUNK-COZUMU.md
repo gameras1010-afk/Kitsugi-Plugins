@@ -143,6 +143,40 @@ eklemek/çıkarmak için geçerli.
 
 ---
 
+## 🟢 Biyom modları C2ME ile çakışır mı? — HAYIR
+
+Terralith, TerraBlender, Biomes O' Plenty, BetterNether, BetterEnd,
+Oh The Biomes We've Gone… **hiçbiri C2ME ile çakışmaz.**
+
+Sebebi mimari: bu modlar biyomları Minecraft'ın kendi worldgen
+API'sine **kayıt ettirir** (biome source / density function / feature
+tanımı). C2ME o API'yi değiştirmez — sadece **çağıran tarafı**
+paralelleştirir. İki farklı katman, temas etmiyorlar.
+
+`allowThreadedFeatures = false` yaptığımız için biyom sınırındaki
+feature yazımı da artık tek thread'de sıralı ilerliyor; bu modların
+en riskli olabileceği nokta da böylece kapandı.
+
+### Tek istisna — dikkat edilecek 2 şey
+
+**1. `threadedWorldGen` + kendi chunk generator'ını yazan modlar.**
+C2ME issue #22: **Terra** (Terralith değil — "Terra" adlı ayrı,
+tamamen özel generator yazan mod) ile `threadedWorldGen` açıkken
+dünya bozuluyor. Aynı raporda BetterEnd için *"every chunk has a
+random biome"* şikâyeti var. Bunlar **vanilla generator'ı değiştiren**
+modlar; biyom **ekleyen** modlardan farklılar.
+
+> Sende Terra yok. BetterEnd varsa, **End'de** birkaç yüz chunk uç
+> ve biyomların tutarlı olduğunu bir kez gözle doğrula. Rastgele
+> biyom karmaşası görürsen tek çare `threadedWorldGen.enabled = false`.
+> Overworld'ü etkilemez.
+
+**2. Mod listesini dünya kurulduktan SONRA değiştirmek.**
+Biyom modu eklemek/çıkarmak yukarıdaki chunk duvarını yaratır.
+Bu C2ME'nin suçu değil, ama sonuç aynı görünür — karıştırma.
+
+---
+
 ## 🔍 Hangisi olduğunu nasıl anlarsın
 
 | Görüntü | Sebep |

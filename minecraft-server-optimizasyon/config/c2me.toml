@@ -152,6 +152,23 @@ chunkDataCacheLimit = 16384
 # Degistirme, -1 birak.
 chunkCompressionLevel = -1
 
+# ------------------------------------------------------------
+#  ASAGIDAKI IKISI FALSE KALACAK. ACMA.
+#  (Varsayilanlari zaten false; buraya acikca yaziyorum ki
+#   ileride "acsam ne olur" diye merak etme.)
+# ------------------------------------------------------------
+
+# GC yapmayan chunk serializer. HIZLI AMA:
+# ChunkDataEvent.Save event'ini bozar -> chunk kaydini
+# dinleyen modlar (backup, claim, dinamik harita) veri kaybeder.
+gcFreeChunkSerializer = false
+
+# Yuklenemeyen chunk'i HATA VERMEDEN seed'den yeniden uretir.
+# Kulaga iyi geliyor ama pratikte: bozuk chunk'i fark etmezsin,
+# insaatin sessizce silinir. Sessiz veri kaybi. Kapali kalsin ki
+# hata log'a dussun ve yedekten donebilesin.
+recoverFromErrors = false
+
 
 # ============================================================
 #  [generalOptimizations]
