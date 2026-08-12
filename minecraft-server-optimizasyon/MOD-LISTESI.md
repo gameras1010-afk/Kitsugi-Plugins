@@ -94,6 +94,7 @@ tek bir mod için Connector kurmaya değmez, C2ME ana kazancı zaten veriyor.
 | Mod | Link | Notlar |
 |---|---|---|
 | **ServerCore** | `modrinth.com/mod/servercore` | 🟢 **Moonrise gidince artık kurabilirsin.** Entity limitleri, mob AI throttling, async login. Moonrise'ın entity tracker işini kısmen üstlenir. |
+| **Chunk Sending** | `curseforge.com/minecraft/mc-mods/chunk-sending-forge-fabric` | 🆕 `chunksending-1.21-3.7.jar` + **Cupboard** bağımlılığı. Chunk paketlerini zamana yayar → login/teleport donması biter. "No known incompatibilities". Moonrise'ın *packet handling* maddesinin karşılığı. ⚠️ Kurarsan c2me.toml'de `maxConcurrentChunkLoads`'u yükseltme. |
 | **Alternate Current** | `modrinth.com/mod/alternate-current` | Redstone %95. Lithium `block_entity_ticking` ile çakışabilir. |
 | **Clumps** | `curseforge.com/minecraft/mc-mods/clumps` | XP orb birleştirme |
 | **Get It Together, Drops!** | `modrinth.com/mod/get-it-together-drops` | Item birleştirme |
@@ -129,6 +130,19 @@ tek bir mod için Connector kurmaya değmez, C2ME ana kazancı zaten veriyor.
 | **VMP (Very Many Players)** | **Fabric-only.** NeoForge 1.21.1'de yok. |
 | **Gnetum** | Client-side HUD modu. Sunucuya faydası sıfır. |
 | **Krypton** | Fabric-only |
+| **Chunkumulator** | 🆕 Mod sayfası birebir: *"Known Incompatibilities: C2ME"* |
+| **Sepals** | 🆕 C2ME ile **resmî uyumlu** ve entity/AI'da çok güçlü — ama sürümleri 1.21.7+ , **1.21.1 yok**. Sürüm yükseltirsen ★ birinci öneri. |
+| **Async** (AxalotLDev) | 🆕 Entity'leri paralel tick'liyor (9000 villager: 4.4 → 20 TPS). C2ME ile uyumlu, Moonrise ile değil. **Ama MC 26.1+ ve Java 25+ istiyor** → 1.21.1'de kullanılamaz. |
+| **Adaptive Performance Tweaks** | 🆕 TPS düşünce oyun özelliklerini kısıyor (vanilla parity yok). NeoForge 1.21.1 desteği belirsiz. |
+
+---
+
+## 🟡 OPSİYONEL — şartlı kur
+
+| Mod | Link | Ne zaman |
+|---|---|---|
+| **Annuus** | `modrinth.com/mod/annuus` | 🆕 Ağ paketi sıkıştırma. Chunk data (VD 10): **13.94 MB → 1.17 MB**, 35.03 → 29.76 ms. NeoForge 1.21.x, bağımlılık yok. **Sadece 5+ oyuncu + düşük upload varsa.** Tek başına oynuyorsan gereksiz. ⚠️ Experimental, C2ME ile birlikte resmî test edilmemiş. |
+| **ThreadTweak Reforged** | `curseforge.com/minecraft/mc-mods/threadtweak-reforged` | 🆕 `threadtweak-1.21.1-NeoForge-1.0.0.jar` (248.5K indirme). CPU scheduling / thread önceliği. **En son dene**, spark ile ölç, fark yoksa kaldır. |
 
 ---
 

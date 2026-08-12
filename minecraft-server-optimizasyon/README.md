@@ -205,6 +205,7 @@ Bitince ayarları geri al, `globalExecutorParallelism = 5` yap.
 |---|---|
 | **`C2ME-PAKET.md`** | 🔴 **Ana doküman.** Moonrise görev devri, parallelism kararı, kurulum sırası, beklenti |
 | `MOD-LISTESI.md` | İndirme linkleri + sürüm notları |
+| **`BOSLUK-ANALIZI.md`** | 🆕 "Başka mod kalmadı mı?" — Moonrise'ın 11 resmî özelliğinin tek tek karşılığı, elenen 6 aday ve sebepleri |
 | `DONANIMIMA-OZEL.md` | Donanımına özel karar gerekçeleri (heap, GC, Ubuntu ayarları) |
 | `NEDEN-YAVAS.md` | Chunk yüklemenin neden yavaş olduğunun teknik açıklaması |
 | `config/c2me.toml` | Satır satır yorumlu C2ME config |

@@ -17,9 +17,18 @@ Moonrise = Paper'dan portlanmış 5 ayrı yamanın paketi. Tek tek yerine koyuyo
 | **Collision optimizasyonu** | ❌ HAYIR | 🟢 **Lithium** (`mixin.entity.collisions`) |
 | **Entity tracker rewrite** | ❌ HAYIR | 🟢 **Lithium** + **ServerCore** |
 | **Random ticking opt.** | ❌ HAYIR | 🟢 **Lithium** (`mixin.world.tick_scheduler`) |
+| **Block/Entity retrieval (pathfinding/AI)** | ❌ HAYIR | 🟢 **Lithium** (`ai.pathing`, `block`) |
+| **Packet handling while waiting for tick** | ❌ HAYIR | 🟢 **Chunk Sending** (+Cupboard) |
+| **Lower worker thread count (low core)** | ⚙️ ELLE | `globalExecutorParallelism = 5` |
+| **Reduce TPS catchup** | ❌ HAYIR | 🔴 **Karşılığı yok.** Kozmetik, kabul et. |
 | **`fix-MC-224294` (lav çift tick)** | ❌ HAYIR | 🟡 Kayıp. Küçük, kabul et. |
+| **Server list ping UI** | — | Client-only, sunucuda alakasız |
 | **Chunk send/load rate limit** | ✅ EVET | C2ME `noTickViewDistance` |
 | **Async chunk save** | ✅ EVET | C2ME `ioSystem.async` + `autoSave = ENHANCED` |
+
+> Bu tablonun **eksiksizlik denetimi** ayrı bir dosyada: `BOSLUK-ANALIZI.md`.
+> Orada Moonrise'ın resmî README'sindeki 11 maddenin her biri tek tek
+> karşılanıyor, elenen 6 aday mod sebebiyle birlikte yazılı.
 
 **Kritik nokta:** Moonrise'ı silince Lithium'un **kapalı olan kısımları
 otomatik açılır.** Moonrise "çakışan Lithium mixin'lerini kapatıyordu" —
