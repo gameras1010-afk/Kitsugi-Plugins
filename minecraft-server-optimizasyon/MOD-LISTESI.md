@@ -93,7 +93,7 @@ tek bir mod için Connector kurmaya değmez, C2ME ana kazancı zaten veriyor.
 
 | Mod | Link | Notlar |
 |---|---|---|
-| **ServerCore** | `modrinth.com/mod/servercore` | 🟢 **Moonrise gidince artık kurabilirsin.** Entity limitleri, mob AI throttling, async login. Moonrise'ın entity tracker işini kısmen üstlenir. |
+| **ServerCore** | `modrinth.com/mod/servercore` | 🟢 C2ME resmî sayfasında **isim vererek uyumlu** sayılıyor. Entity limitleri, mob AI throttle, async login. ⚠️ **ŞART: `config/servercore.toml` → `[dynamic] enabled = false`** — yoksa C2ME'nin `noTickViewDistance`'ı ile kavga eder. Kanıt: `UYUMLULUK-KANITI.md`. |
 | **Chunk Sending** | `curseforge.com/minecraft/mc-mods/chunk-sending-forge-fabric` | 🆕 `chunksending-1.21-3.7.jar` + **Cupboard** bağımlılığı. Chunk paketlerini zamana yayar → login/teleport donması biter. "No known incompatibilities". Moonrise'ın *packet handling* maddesinin karşılığı. ⚠️ Kurarsan c2me.toml'de `maxConcurrentChunkLoads`'u yükseltme. |
 | **Alternate Current** | `modrinth.com/mod/alternate-current` | Redstone %95. Lithium `block_entity_ticking` ile çakışabilir. |
 | **Clumps** | `curseforge.com/minecraft/mc-mods/clumps` | XP orb birleştirme |

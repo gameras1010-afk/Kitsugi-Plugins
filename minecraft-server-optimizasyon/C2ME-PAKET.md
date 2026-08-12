@@ -91,7 +91,7 @@ hesabı yeni darboğazın olur ve C2ME'nin hızını göremezsin.
 
 | Mod | Neden önemli |
 |---|---|
-| **ServerCore** | 🟢 **Moonrise gidince ARTIK KURABİLİRSİN.** Önceden "chunk ayarları çakışır" diye çekinmiştik. Entity limitleri, mob AI throttling, async login. Moonrise'ın entity tracker işini kısmen üstlenir. |
+| **ServerCore** | 🟢 C2ME'nin resmî sayfası ServerCore'u **isim vererek** uyumlu stack'te sayıyor. Entity limitleri, mob AI throttle, async login. 🔴 **ZORUNLU ŞART:** `config/servercore.toml` içinde `[dynamic] enabled = false` yap — dinamik view/simulation distance C2ME'nin `noTickViewDistance`'ı ile aynı işi yapıp ayarını ezer. Kanıt ve log örnekleri: **`UYUMLULUK-KANITI.md`** |
 | **Alternate Current** | Redstone %95 |
 | **Clumps** | XP orb birleştirme |
 | **Get It Together, Drops!** | Item birleştirme |

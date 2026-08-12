@@ -215,14 +215,47 @@ else
     echo "  (config/c2me.toml yok — sunucu bir kez acilinca olusur)"
 fi
 
-# --- Moonrise kalintisi uyarisi ---
-if ls mods/ 2>/dev/null | grep -qi "moonrise"; then
+# --- C2ME ile UYUMSUZ mod taramasi ---
+# Kanit ve gerekceler: UYUMLULUK-KANITI.md
+BAD_MODS="moonrise radium canary chunkumulator dimthread lucis smoothchunksave"
+FOUND_BAD=""
+for bad in $BAD_MODS; do
+    if ls mods/ 2>/dev/null | grep -qi "$bad"; then
+        FOUND_BAD="$FOUND_BAD $bad"
+    fi
+done
+
+if [ -n "$FOUND_BAD" ]; then
     echo ""
-    echo "  !! DIKKAT: mods/ icinde Moonrise var."
-    echo "     Moonrise C2ME ile TEMELDEN UYUMSUZ. Sunucu ya"
-    echo "     acilmaz ya da ikisinden biri devre disi kalir."
-    echo "     mods/Moonrise*.jar dosyasini SIL."
+    echo "  !! DIKKAT: C2ME ile UYUMSUZ mod(lar) bulundu:"
+    for b in $FOUND_BAD; do
+        case "$b" in
+            moonrise)   echo "     - Moonrise    : resmi README 'fundamentally incompatible'" ;;
+            radium)     echo "     - Radium      : C2ME ile GORUNMEZ CHUNK bugu (dogrulandi)" ;;
+            canary)     echo "     - Canary      : Lithium forku, Radium ile ayni risk" ;;
+            chunkumulator) echo "     - Chunkumulator: mod sayfasi 'Known Incompatibilities: C2ME'" ;;
+            dimthread)  echo "     - dimthread   : c2me.toml midTickChunkTasksInterval ile uyumsuz" ;;
+            lucis)      echo "     - Lucis       : ScalableLux ile 'incompatible by definition'" ;;
+            smoothchunksave) echo "     - SmoothChunkSave: C2ME ioSystem ile ayni is" ;;
+        esac
+    done
+    echo "     Bu jar dosyalarini mods/ icinden SIL."
     sleep 5
+fi
+
+# --- ServerCore dynamic uyarisi ---
+# ServerCore'un dinamik view/simulation distance'i C2ME noTickViewDistance
+# ile ayni isi yapar ve ayarini ezer.
+if ls mods/ 2>/dev/null | grep -qi "servercore"; then
+    if [ -f config/servercore.toml ]; then
+        if grep -A3 '^\[dynamic\]' config/servercore.toml 2>/dev/null | grep -q 'enabled *= *true'; then
+            echo ""
+            echo "  !! ServerCore [dynamic] enabled = true"
+            echo "     Bu ayar C2ME'nin view distance yonetimini EZER."
+            echo "     config/servercore.toml -> [dynamic] enabled = false yap."
+            sleep 5
+        fi
+    fi
 fi
 echo ""
 
