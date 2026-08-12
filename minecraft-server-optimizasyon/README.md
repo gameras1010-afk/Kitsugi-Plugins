@@ -210,6 +210,7 @@ Bitince ayarları geri al, `globalExecutorParallelism = 5` yap.
 | **`UYUMLULUK-KANITI.md`** | 🆕 **Her modun C2ME uyumluluğu, gerçek log kanıtlarıyla.** ServerCore `dynamic=false` şartı, Architectury tuzağı, uyumsuz mod listesi |
 | **`OYUN-ONCESI-SON-KONTROL.md`** | 🆕 **Kurulum bittikten sonra oku.** ServerCore dynamic uyarısı, Annuus client şartı, MSPT yanılgısı, oyun içi test listesi, belirti→çözüm tablosu |
 | **`BOZUK-CHUNK-COZUMU.md`** | 🔴 **Yarım açılan kapı, kesik chunk, chunk duvarı görüyorsan BURAYA BAK.** Sebep: `reduceLockRadius`+`allowThreadedFeatures`. Tamir: MCA Selector |
+| **`EKSIK-GEDIK.md`** | 🆕 🔴 **Performans dışı katman.** Backup (YOK'tu!), rollback, izin, world border + BlueMap / voice chat / Distant Horizons fikirleri ve tuzakları |
 | `DONANIMIMA-OZEL.md` | Donanımına özel karar gerekçeleri (heap, GC, Ubuntu ayarları) |
 | `NEDEN-YAVAS.md` | Chunk yüklemenin neden yavaş olduğunun teknik açıklaması |
 | `config/c2me.toml` | Satır satır yorumlu C2ME config |
