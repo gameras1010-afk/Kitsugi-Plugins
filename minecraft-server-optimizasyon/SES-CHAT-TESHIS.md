@@ -422,3 +422,331 @@ allow_pings=true
 4. **MTU** → zararsız değişiklik, düşük ihtimal
 
 **Test et, sonra log'u at.**
+
+---
+---
+
+# EK BÖLÜM — "Bir süre sonra kopuyor" (Tailscale + SVC)
+
+> Bu bölüm, yukarıdaki teşhisten **sonra** eklendi. Yeni bilgi:
+> ses **hiç bağlanmıyor değil** — **bağlanıyor, bir süre çalışıyor, sonra kopuyor**.
+> Bu tamamen farklı bir arıza sınıfı ve yukarıdaki `voice_host` teşhisi
+> bunu **açıklamıyor**. `voice_host` yanlışsa ses **baştan** kurulmaz.
+
+## E0. Semptomun kendisi bir kanıt
+
+Kullanıcının tarifi: **Minecraft bağlantısı ayakta kalıyor, sadece ses düşüyor.**
+
+Bu tesadüf değil, protokol farkından geliyor:
+
+| Katman | Protokol | Kopunca ne olur |
+|---|---|---|
+| Minecraft oyun bağlantısı | **TCP** 25565 | Gecikmeyi yutar, paket kaybını tekrar gönderir. 30 sn'ye kadar donar ama **düşmez** |
+| Simple Voice Chat sesi | **UDP** 24454 | Gecikme/kayıp = paket çöpe. `keep_alive` cevapsız kalınca **anında "disconnected"** |
+
+Kaynak (SVC resmî wiki, `port` alanı):
+*"Audio packets are always transmitted via the **UDP** protocol on the port
+number specified here, **independently of other networking used for the game server**."*
+— https://modrepo.de/minecraft/voicechat/wiki/server_config
+
+**Çıkarım:** Aradaki yolda **UDP'ye özel** bir şey bozuluyor, genel bir
+"internet koptu" durumu yok. Genel kopma olsaydı MC de düşerdi.
+Bu, şüpheliyi doğrudan **Tailscale'in taşıma katmanına** indiriyor.
+
+---
+
+## E1. ASIL MEKANİZMA — Tailscale direct → DERP düşüşü
+
+Tailscale iki farklı şekilde veri taşır:
+
+| Yol | Nasıl çalışır | Ses için sonuç |
+|---|---|---|
+| **direct** (peer-to-peer) | WireGuard, **UDP**, kaynak port 41641. NAT hole-punching ile kurulur | ✅ Ses sorunsuz |
+| **DERP** (relay) | WireGuard paketleri **TCP/443 TLS içine sarılır**, Tailscale'in sunucusundan geçer | ❌ **Ses ölür** |
+
+Tailscale resmî dokümanı, tam olarak senin semptomunu tarif ediyor:
+
+> *"it might take a long time to establish a direct connection, **or the devices
+> might establish a direct connection and then revert to a relayed one**"*
+> — Tailscale Docs, "Poor performance in a tailnet"
+
+### Neden DERP'e düşünce ses ölüyor da MC yaşıyor?
+
+DERP, UDP olan WireGuard trafiğini **TCP'nin içine** koyar
+(kaynak: r/Tailscale — *"If UDP is blocked, Tailscale tunnels encrypted
+WireGuard traffic over TCP"*). Bu **TCP head-of-line blocking** demektir:
+tek bir paket düşerse, arkasındaki **bütün** paketler o paket yeniden
+gelene kadar bekler.
+
+Yani ses paketlerin sırası şöyle olur:
+```
+[ses][ses][KAYIP][ses][ses][ses]   ← TCP hepsini bekletir
+                 ↓
+        200 ms → 800 ms → 2 sn gecikme birikir
+                 ↓
+   SVC keep_alive (1000 ms) cevapsız kalır → "Voice chat disconnected"
+```
+MC ise zaten TCP ve gecikmeye toleranslı — sadece biraz "lag" hissedersin, düşmezsin.
+
+**Bu, gözlemlenen semptomu tam olarak açıklayan tek mekanizma.**
+
+---
+
+## E2. DERP'e düşüşün 4 somut sebebi (hepsi kaynaklı)
+
+### A) Windows UDP soket kilitlenmesi — ⭐ EN GÜÇLÜ ADAY
+
+Tailscale'de **uzun ömürlü, bilinen bir Windows hatası** var:
+boşta kalan UDP soketleri kilitleniyor ve **tüm direct UDP trafiğini
+öldürüyor** — servis yeniden başlatılana kadar.
+
+> *"Idle UDP sockets can timeout and stall — **blocking all UDP traffic**.
+> Engineering was able to track down those `ReceiveIPv4` errors to an upstream
+> Go bug in how UDP sockets are handled by default on Windows systems...
+> This socket reset behavior... **prevented the node from receiving any direct
+> UDP traffic from peers** [until] the Tailscale service was restarted."*
+> — r/Tailscale, Tailscale mühendisliğinden alıntı
+> Düzeltme PR'ı: `wgengine/magicsock: disable SIO_UDP_NETRESET on Windows` (#12927), **v1.72.0**'da yayınlandı
+
+**Neden bu senin vakana birebir uyuyor:**
+- Arkadaşların **Windows** kullanıyor ✅
+- "Bir süre sonra" kopuyor (soket boşta kalınca kilitleniyor) ✅
+- **Sadece UDP** ölüyor, TCP (Minecraft) yaşıyor ✅
+- Tailscale'i kapat-aç düzeltiyor ✅
+
+### B) Ağ olayı sonrası DERP'te takılıp kalma (self-heal yok)
+
+Wi-Fi düşüp kalkması, mobil↔Wi-Fi geçişi veya ISP'nin IP yenilemesi
+sonrası client DERP'e düşüyor ve **kendiliğinden direct'e geri dönmüyor**:
+
+> *"There are some conditions under which a Tailscale client will not correctly
+> identify that a connection to its home DERP has been lost. Failing to identify
+> this state results in **loss of connectivity with peers**..."*
+> — tailscale/tailscale **issue #15776**
+
+> *"There are some cases where after switching to another DERP server, tailscale
+> clients keep connecting to the old DERP server, and **they can't establish new
+> connections**... **things do not self-heal**."*
+> — tailscale/tailscale **issue #8568**
+
+### C) Symmetric (hard) NAT — direct hiç sağlam kurulamıyor
+
+Bazı modemler/CGNAT'lar her hedef için farklı dış port veriyor;
+hole-punching baştan imkânsız oluyor, bağlantı DERP'te kalıyor.
+
+Teşhisi tek satır: `tailscale netcheck` çıktısında
+**`MappingVariesByDestIP: true`** → symmetric NAT.
+> *"Look for the MappingVariesByDestIP field: **if true, you have symmetric NAT,
+> and hole punching will likely fail**."* — Tailscale Blog, "Peer Relays"
+
+### D) Aynı ağda birden fazla Tailscale cihazı = port çakışması
+
+> *"If so, **only one can use port 41641 at a time**, every other gonna switch to
+> another random port and could be blocked by the firewall again"*
+> — r/Tailscale (Tailscale kurucusu bradfitz'in de katıldığı başlık)
+
+Sunucu PC + senin PC'n aynı evdeyse, biri 41641'i kapar, diğeri rastgele
+porta düşer ve DERP'e gider.
+
+---
+
+## E3. ÖNCE BUNU YAP — ayırt edici tek test
+
+Ses koptuğu **anda**, oyunu kapatmadan, kopan kişinin PC'sinde:
+
+```
+tailscale ping <sunucu-tailscale-adı>
+```
+
+| Çıktı | Anlamı | Yapılacak |
+|---|---|---|
+| `pong ... via 192.168.x.x:41641` veya bir IP:port | **direct** — yol sağlam | Sebep Tailscale değil → E6'ya git |
+| `pong ... via DERP(fra)` | **relay'e düşmüş** | ✅ **Teşhis doğrulandı** → E4'ü uygula |
+| `direct connection not established` | Hiç direct kuramıyor | Symmetric NAT → E4-3 ve E5 |
+
+**İkinci ayırt edici test:** Ses koptuğunda **Minecraft'ı değil, Tailscale'i**
+yeniden başlat (`sağ tık → Exit` → tekrar aç). Ses geri geliyorsa
+sebep **kesin olarak Tailscale**, SVC değil.
+
+Destekleyici komutlar:
+```bash
+tailscale status          # peer satırında "direct" mi "relay <şehir>" mi
+tailscale netcheck        # MappingVariesByDestIP, UDP: true/false, DERP gecikmeleri
+```
+
+---
+
+## E4. KALICI ÇÖZÜM (palyatif değil, sırayla)
+
+### 1. Tailscale'i HER cihazda güncelle — en yüksek fayda/emek oranı
+
+Windows UDP soket hatası **v1.72.0**'da düzeltildi. Ayrıca:
+
+| Sürüm | Düzeltme (resmî changelog) |
+|---|---|
+| **v1.72.0** | Windows `SIO_UDP_NETRESET` UDP soket kilitlenmesi (PR #12927) |
+| **v1.76.0** | *"Clients lacking UDP connectivity no longer skip performing fallback latency measurements with DERP servers."* |
+| **v1.62.0** | *"DERP server region no longer changes if connectivity to the new DERP region is degraded."* |
+| **v1.40.0** | *"Improvements... to reduce the likelihood of a **spurious loss of direct connections**"* (#7877) |
+
+Sürüm kontrolü: `tailscale version` — **1.72'nin altındaysa sebep büyük
+ihtimalle budur.** Sunucu dahil herkes güncellenmeli; tek eski client
+kendi bağlantısını bozar.
+
+### 2. Sunucu tarafında UDP 41641'i sabitle ve aç
+
+Tek tarafın portu açık olması genelde yeterli — ve o taraf **sunucu** olmalı:
+
+> *"It's good to have it open where you can because sometimes you have a really
+> hard NAT and **having someone on the other side with the port opened does help
+> a lot**... I can guarantee you that **having open ports in at least one side of
+> the connection can usually guarantee a connection**"* — r/Tailscale
+
+Sunucuda (Linux):
+```bash
+sudo ufw allow 41641/udp
+sudo ufw reload
+```
+Modemde: **41641/UDP → sunucu PC'nin yerel IP'si** yönlendirmesi.
+Alternatif olarak modemde **NAT-PMP veya UPnP**'yi aç — Tailscale deliği
+kendisi açar (resmî doküman pfSense/OPNsense için bunu öneriyor).
+
+**Dikkat (E2-D):** Evde birden fazla Tailscale cihazı varsa 41641'i
+**sadece sunucuya** yönlendir; diğerleri rastgele porta düşsün.
+
+### 3. Doğrulama: endpoint gerçekten ilan ediliyor mu
+
+https://login.tailscale.com/admin/machines → sunucu makinesine tıkla.
+Endpoint listesinde **`<WAN_IP>:41641`** görünmüyorsa yönlendirme
+çalışmıyor demektir (bkz. tailscale/tailscale issue #14494).
+
+### 4. Symmetric NAT çıktıysa: Peer Relay
+
+`MappingVariesByDestIP: true` ise port açmak **çözmez** — hole-punching
+zaten imkânsız. Bu durumda DERP'e mahkûm olmak yerine **kendi relay'ini**
+kur. Tailscale'in bağlanma sırası:
+
+> *"Direct connection (preferred) → **peer relay connection** (dedicated capacity)
+> → DERP relayed connection (shared infrastructure)"* — Tailscale Docs
+
+Kendi peer relay'in, paylaşımlı DERP'ten kat kat düşük gecikme verir
+(Tailscale'in kendi blog örneğinde **12.5×** hızlanma).
+Kurulum: iyi bağlantılı bir node'da `--relay-server-port` ile aç.
+
+### 5. Router özel ayarları (marka bazlı, resmî tablo)
+
+| Firewall / Router | Tailscale davranışı | Çözüm |
+|---|---|---|
+| **UniFi Gateway** | DERP'e düşüyor | **"Allow peer-to-peer traffic"** aç / *Threat categories → **P2P** işaretini kaldır* |
+| **pfSense / OPNsense** | DERP'e düşüyor | **NAT-PMP** aç veya statik NAT port mapping |
+| **Fortinet** | DERP'e düşüyor | Portu rastgeleleştir; SSL inspection'ı kapat |
+| **Cisco** | DERP'e düşüyor | Firewall portu aç |
+| **Sophos / Check Point** | Direct çalışıyor | — |
+
+Kaynak: https://tailscale.com/docs/integrations/firewalls
+
+---
+
+## E5. `mtu_size` — ÖNEMLİ SAYISAL DÜZELTME
+
+Yukarıdaki bölümde MTU teorisini "zayıf" diye geri çekmiştim. **Bu hâlâ
+büyük ölçüde doğru** (konuşma paketleri ~200 bayt), ama resmî wiki'den
+gelen yeni bir sayı var ve matematiği paylaşmak gerekiyor:
+
+**SVC'nin güncel varsayılanı `mtu_size=1275`** (eski sürümlerde 1024 idi).
+Kaynak: https://modrepo.de/minecraft/voicechat/wiki/server_config
+
+**Tailscale'in MTU'su sabit 1280'dir** ve değiştirilemez:
+> *"Tailscale uses a maximum transmission unit (MTU) of 1280. If there are other
+> interfaces which might send a packet larger than this, **those packets might get
+> dropped silently**."* — r/Tailscale, Tailscale docs alıntısı
+> *"Tailscale **always** sets its MTU to 1280."* — tailscale/tailscale issue #16820
+
+Hesap:
+```
+1275 (SVC yükü) + 8 (UDP başlığı) + 20 (IP başlığı) = 1303 bayt
+1303 > 1280  →  Tailscale tünelinden geçemez, SESSİZCE DÜŞER
+```
+
+**Dürüst değerlendirme:** Normal konuşmada Opus/VOIP paketleri bu boyuta
+**çıkmaz**, o yüzden bu **ana sebep değil**. Ama sınırın **28 bayt
+üstünde** olması bedava bir risk. Bir satırlık sigorta:
+
+```properties
+mtu_size=1000
+```
+
+Wiki uyarısı: *"Setting this to lower values might cause issues"* — bu yüzden
+1000'in altına inme. 1000 hem 1280 sınırının çok altında hem de sorun
+çıkarmayacak kadar yüksek.
+
+---
+
+## E6. `tailscale ping` "direct" diyorsa (Tailscale suçsuzsa)
+
+Bu durumda sebep SVC/sunucu tarafında. Sırayla:
+
+1. **Sürüm eşleşmesi** — client ve sunucudaki SVC sürümü **birebir** aynı olmalı.
+   Uyuşmazlık **sessizce** başarısız olur, hata vermez. Herkesin
+   `voicechat-neoforge-1.21.1-<X>.jar` sürümü aynı mı, tek tek doğrula.
+
+2. **Sunucu log'unda ses ile ilgili ne var:**
+   ```bash
+   grep -iE "voicechat|Dropping voice|keep.?alive|timed out" logs/latest.log
+   ```
+   `Dropping voice chat packets` satırı **varsa** → sunucu CPU açlığı çekiyor,
+   SVC thread'i zamanında paket gönderemiyor. O zaman konu ağ değil, TPS.
+
+3. **UDP erişim testi** (oyuncunun PC'sinden, ses çalışırken ve koptuktan sonra):
+   ```
+   nc -vzu <sunucu-tailscale-ip> 24454
+   ```
+
+4. **`bind_address` boş mu** — Tailscale arayüzü ayrı bir IP verir.
+   Alan doluysa SVC sadece o arayüzü dinler ve Tailscale'den gelen
+   paketleri **hiç görmez**. Boş bırak (= tüm arayüzler).
+
+---
+
+## E7. Bu bölümün güven karnesi
+
+Kullanıcının kuralı: emin olmadığım şeyi emin gibi yazmayacağım.
+
+| İddia | Güven | Dayanak |
+|---|---|---|
+| Ses UDP, MC TCP — bu yüzden sadece ses düşüyor | ✅ **Kesin** | SVC resmî wiki, protokol tanımı |
+| DERP relay TCP/443 üzerinden gider | ✅ **Kesin** | Tailscale dokümantasyonu + davranış |
+| "Direct kurulup sonra relay'e dönme" bilinen bir durum | ✅ **Kesin** | Tailscale resmî docs, birebir alıntı |
+| Windows UDP soket kilitlenmesi tüm direct UDP'yi öldürür | ✅ **Kesin** | Tailscale mühendisliği + PR #12927, v1.72.0 |
+| **Senin vakanda sebep Windows soket hatası** | ⚠️ **Güçlü tahmin, doğrulanmadı** | E3 testi + `tailscale version` gerekli |
+| DERP'e düşüş ağ olayından sonra self-heal etmiyor | ✅ **Kesin** | issue #15776, #8568 |
+| Symmetric NAT teşhisi `MappingVariesByDestIP` ile yapılır | ✅ **Kesin** | Tailscale blog + docs |
+| Tek tarafta 41641 açmak yeterli olabilir | 🟡 **Genelde doğru** | Tailscale KB + saha raporları; garanti değil |
+| `mtu_size=1275` + Tailscale 1280 → 1303 bayt taşar | ✅ **Matematik kesin** | Wiki varsayılanı + Tailscale sabit MTU |
+| **Bu taşmanın senin sorununun sebebi olduğu** | ❌ **Hayır** | Konuşma paketleri ~200 bayt. Sadece ucuz sigorta |
+| `keep_alive` değerini **artırmak** çözer | ❌ **Yanlış** | Wiki: *"Setting this to a higher value **may result in timeouts**"* |
+
+---
+
+## E8. Tek sayfalık eylem planı
+
+```
+1. tailscale version           → herkeste. 1.72'nin altındakiler GÜNCELLENSİN.
+2. Ses koptuğu anda:
+   tailscale ping <sunucu>     → "via DERP" mi diyor?
+   tailscale netcheck          → MappingVariesByDestIP: true mu?
+3. Tailscale'i kapat-aç        → ses geldi mi? (geldiyse suçlu Tailscale, kesin)
+4. Sunucuda:
+   sudo ufw allow 41641/udp
+   Modemde 41641/UDP → sunucu IP'si   (veya NAT-PMP/UPnP aç)
+5. admin/machines'te <WAN_IP>:41641 endpoint'i görünüyor mu, doğrula.
+6. voicechat-server.properties:
+   mtu_size=1000               (1275 → 1000, bedava sigorta)
+   bind_address=               (boş)
+   voice_host=                 (boş)
+   keep_alive=1000             (SAKIN ARTIRMA)
+7. Hâlâ varsa ve netcheck symmetric NAT diyorsa → Peer Relay kur.
+```
+
+**Not:** 1–5 arası hiçbir adım Minecraft'a dokunmuyor. Sorun ağ katmanında;
+mod ayarlarıyla oynayarak çözülmez — Görev 9'da onu denedik, çözmedi.
