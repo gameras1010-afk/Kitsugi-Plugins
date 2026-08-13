@@ -750,3 +750,213 @@ Kullanıcının kuralı: emin olmadığım şeyi emin gibi yazmayacağım.
 
 **Not:** 1–5 arası hiçbir adım Minecraft'a dokunmuyor. Sorun ağ katmanında;
 mod ayarlarıyla oynayarak çözülmez — Görev 9'da onu denedik, çözmedi.
+
+---
+---
+
+# EK BÖLÜM 2 — NİHAİ ÇÖZÜM: Sesi Tailscale'den tamamen çıkar
+
+> Bu bölüm, "41641'i açtık, firewall kurallarını yazdık, hâlâ düşüyor"
+> aşamasından sonra yazıldı. **41641 açmak bu vakada işe yaramaz.**
+> Aşağıda neden yaramadığı ve ne yapılması gerektiği var.
+
+## F0. Kanıt: yapılan işlerin neden hiçbiri tutmadı
+
+Arkadaşın `tailscale ping` çıktısı şuydu:
+
+```
+pong from ... via 159.146.42.120:19216
+                                 ^^^^^
+```
+
+**Port 41641 değil, 19216.**
+
+Bu tek satır her şeyi açıklıyor:
+
+| Yapılan | Neden boşa gitti |
+|---|---|
+| `New-NetFirewallRule ... -LocalPort 41641 -Protocol UDP` | Bağlantı **19216**'dan geçiyor. 41641 kuralı hiç devreye girmiyor |
+| Modemde 41641 yönlendirmesi | Aynı sebep. ISP/modem NAT'ı **rastgele port** atıyor |
+| Ağı "Private" yapmak | Windows firewall zaten sorun değildi; sorun **dışarıda**, ISP NAT'ında |
+| `tailscaled.exe` tam yetki | Paket zaten çıkıyor; **geri dönemiyor** |
+
+**19216 gibi rastgele bir port = arkadaşın modemi/ISP'si her oturuma yeni
+dış port veriyor.** Bu porta kural yazamazsın, çünkü her seferinde değişiyor.
+
+## F1. Kopmanın gerçek mekanizması (bu vakaya özel)
+
+Tailscale'in **açık ve kapatılmamış** iki bug'ı tam bunu tarif ediyor:
+
+> **"Endpoints are not refreshed after stateful NAT timeout"**
+> *"Nodes behind stateful cone NAT with **random port assignment** do not refresh
+> their endpoints **after the first UDP session timed out**. Peers... cannot
+> establish a direct connection using **outdated endpoints**."*
+> — tailscale/tailscale **issue #12256** (hâlâ AÇIK)
+
+> *"Whenever my static IP PPPoE connection re-connects, any previously established
+> UDP connections cannot be re-established... **Tailscale never seems to recover
+> from this, and permanently falls back to a DERP relay.**"*
+> — tailscale/tailscale **issue #18328**
+> (`randomizeClientPort` bunu çözmüyor — sadece **açılışta** portu rastgeleliyor)
+
+Yani olan şu:
+
+```
+1. tailscale ping     → NAT'ta 19216 deliği açılır, direct kurulur → SES ÇALIŞIR ✅
+2. Birkaç dakika      → ISP'nin UDP conntrack'i 19216'yı düşürür
+3. Tailscale endpoint'i YENİLEMİYOR (bug #12256) → eski 19216'ya konuşmaya devam
+4. Cevap gelmez       → DERP (TCP/443) relay'e düşer
+5. DERP = TCP head-of-line blocking → ses paketleri birikir → SVC timeout
+6. MC TCP olduğu için yaşamaya devam eder → "sadece ses düştü" ❌
+```
+
+Tailscale'in **kendi dokümanı** 5. adımı doğruluyor:
+> *"If heavy packets per second... of traffic are relaying over these DERP TCP
+> connections, there is a **higher potential for head-of-line blocking**—and in
+> the extreme case: a **TCP meltdown**."*
+> — Tailscale Docs, "Troubleshoot hard NAT issues"
+
+### Neden `tailscale ping` "çözdü" sanıldı
+
+Ping **NAT deliğini yeniden açtı**. Bu bir tamir değil, **elle delik açma**.
+Delik NAT timeout'una kadar (30 sn – birkaç dk) yaşar, sonra aynı döngü başlar.
+İşte "bir süre sonra düşüyor"un sebebi tam olarak bu.
+
+**Sonuç: bu, ayarla düzelecek bir şey değil. Tailscale'in açık bir bug'ı +
+arkadaşın ISP'sinin NAT davranışı. Sizin tarafınızdan kapatılamaz.**
+
+---
+
+## F2. ÇÖZÜM — Sesi Tailscale'in içinden geçirme
+
+Kilit fikir: **Minecraft Tailscale'de kalsın, ses Tailscale'i hiç kullanmasın.**
+
+SVC'de bunu yapmak için tasarlanmış bir alan zaten var: **`voice_host`**.
+Bu alan client'a *"sesi şu adrese gönder"* der ve **Minecraft bağlantısından
+tamamen bağımsızdır.**
+
+> *"`voice_host`: The hostname that clients should use to connect to the voice chat.
+> This may also include a port, e.g. `'example.com:24454'`"*
+> — SVC resmî wiki
+
+Böylece:
+
+```
+Minecraft  →  Tailscale (100.70.34.111:25565)  TCP   ← dokunma, çalışıyor
+Ses        →  doğrudan public IP :24454        UDP   ← Tailscale'i baypas eder
+```
+
+Ses artık NAT hole-punching'e, DERP'e, endpoint yenilemeye **hiç bağımlı değil.**
+Sorunun tüm sınıfı ortadan kalkar.
+
+### Yöntem A — Modemde port açabiliyorsan (TERCİH EDİLEN)
+
+Sunucu senin evinde, modeme erişimin var. Yapılacak:
+
+**1) Modemde tek bir yönlendirme:**
+```
+Dış port: 24454   Protokol: UDP   →   Sunucu PC'nin yerel IP'si : 24454
+```
+⚠️ Protokolü **UDP** seç. Çoğu modem varsayılan olarak TCP açar, o işe yaramaz.
+
+**2) Sunucuda firewall:**
+```bash
+sudo ufw allow 24454/udp
+sudo ufw reload
+```
+
+**3) `config/voicechat/voicechat-server.properties`:**
+```properties
+port=24454
+bind_address=*
+voice_host=<SENIN_PUBLIC_IP>:24454
+mtu_size=1000
+keep_alive=1000
+```
+
+**4) Sunucuyu tam yeniden başlat** (`/reload` yetmez).
+
+**IP'n değişiyorsa:** public IP yerine bir **DDNS adı** kullan
+(No-IP, DuckDNS — ücretsiz). `voice_host` hostname kabul ediyor:
+```properties
+voice_host=senin-adin.duckdns.org:24454
+```
+Böylece IP değişse de ses kopmaz. **Bunu yap, yoksa IP değiştiği gün yine kopar.**
+
+**Doğrulama:** oyuncunun PC'sinden
+```
+nc -vzu <public-ip> 24454
+```
+
+### Yöntem B — Modemde port açamıyorsan (CGNAT / operatör engeli)
+
+O zaman sesi bir **UDP tüneli** üzerinden ver. playit.gg bunu ücretsiz yapıyor
+ve **resmî SVC entegrasyonu var** (playit'in kendi dokümanında bölüm olarak duruyor).
+
+> Bu playit'e geçmek **değil.** Minecraft yine Tailscale'de kalıyor.
+> Sadece ses için tek bir UDP tüneli açıyorsun.
+
+1. playit.gg'de **yeni bir tünel** oluştur — Protocol: **`MC: Simple Voice Chat`**,
+   Local IP: `127.0.0.1`, Local Port: `24454`
+   ⚠️ Bu, Minecraft tünelinden **ayrı** bir tünel olmalı. Mevcut MC tünelini değiştirme.
+2. Sana `147.185.221.181:25732` gibi bir **IP:port** verir
+3. Config:
+```properties
+port=24454
+bind_address=*
+voice_host=147.185.221.181:25732
+```
+(kendi adresini yaz). `port=24454` **değiştirilmez** — resmî rehber sadece
+`voice_host`'u değiştiriyor.
+4. playit agent'ı sunucuda **servis olarak** çalıştır (yoksa her restartta elle açman gerekir):
+```bash
+sudo systemctl enable --now playit
+```
+
+Kaynak: https://playit.gg/support/svc-minecraft/
+
+### Yöntem C — Tailscale'de kalmak şartsa: Peer Relay
+
+Yukarıdaki ikisi de olmuyorsa, DERP yerine **kendi relay'ini** koy.
+Tailscale'in bağlanma sırası: direct → **peer relay** → DERP.
+Peer relay **UDP** taşır, DERP'in TCP head-of-line blocking'i olmaz.
+
+İyi bağlantılı bir node'da (tercihen İstanbul'da ucuz bir VPS) peer relay aç.
+
+⚠️ **Emin değilim:** Peer Relay görece yeni bir özellik; kurulum adımlarını ve
+Tailscale sürüm gereksinimini doğrulayamadım. Tailscale'in resmî
+bağlanma sırasının **direct → peer relay → DERP** olduğu teyitli
+(`tailscale.com/docs/integrations/firewalls`), ama bu senaryoda ne kadar
+kazandıracağını **ölçmedim**. A veya B çalışıyorsa buna hiç girme.
+
+Bu en zahmetli seçenek. **Önce A'yı dene.**
+
+---
+
+## F3. Yapılmaması gerekenler (denendi, sonuç vermez)
+
+| Yapma | Neden |
+|---|---|
+| 41641'e firewall kuralı yazmak | Bağlantı 19216'dan geçiyor, kural devreye girmiyor |
+| `randomizeClientPort: true` | Portu **sadece açılışta** rastgeliyor, NAT timeout'unu çözmüyor (issue #18328) |
+| `keep_alive`'ı artırmak | Wiki: *"may result in **timeouts**"* — sorunu büyütür |
+| Her kopmada `tailscale ping` atmak | Palyatif. NAT deliğini elle açmak; birkaç dk sonra aynı yere gelirsin |
+| Windows firewall / "Private ağ" ayarları | Sorun Windows'ta değil, ISP NAT'ında. Paket çıkıyor, **geri dönemiyor** |
+| Tailscale'i kapat-aç | Geçici. Yeni delik açar, yine kapanır |
+
+---
+
+## F4. Özet
+
+**Teşhis:** Arkadaşın ISP'si UDP oturumlarına rastgele port veriyor ve zaman
+aşımına uğratıyor. Tailscale bu durumda endpoint'ini yenilemiyor (açık bug
+#12256) ve kalıcı olarak DERP'e düşüyor. DERP TCP olduğu için ses ölüyor,
+MC yaşıyor.
+
+**Bu sizin tarafınızdan ayarla düzeltilemez.**
+
+**Çözüm:** `voice_host` ile sesi Tailscale'in dışına çıkar. Modemde
+**24454/UDP** aç, `voice_host=<DDNS-adresin>:24454` yaz. Ses artık
+NAT traversal'a bağımlı olmaz, kopma sınıfı tamamen ortadan kalkar.
+
+**Süre:** 10 dakika. **Dokunulan yer:** modemde 1 kural + config'de 3 satır.
