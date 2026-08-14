@@ -763,3 +763,138 @@ sunucuda kayıt ✅
 Onu isteyen gün gelirse → **MineTogether değil, Essential Mod** (daha güncel),
 ama o zaman herkes kuracak.
 
+
+---
+---
+
+# EK BÖLÜM 4 — DÜZELTME: Essential orijinal hesap İSTİYOR
+
+> Kullanıcı uyarısı: **"Essential orijinal MC hesabı istiyor, yoksa
+> kullanamıyorsun."** → **DOĞRU. EK BÖLÜM 3'teki tavsiyem hatalıydı.**
+
+## 1) Hatanın kabulü
+
+EK BÖLÜM 3'te Essential Mod'u *"en güncel muadil"* diye önerdim ve yalnızca
+`⚠️ Essential hesabı gerekiyor` diye geçiştirdim. **Yanlış çerçeveleme.**
+Gerçek şu: Essential **Mojang/Microsoft oturumu doğrulanmazsa hiç çalışmaz.**
+Bu bir "hesap açma zahmeti" değil, **kapı kilidi.**
+
+### Kanıt
+Essential resmî wiki'sinde **"Essential Network Error"** sayfası var; özeti
+*"doğrulanmadıysan hiçbir şey çalışmaz"*. Mod, tekil oyunda bile arka planda
+Mojang sunucularına bağlanmaya çalışır. Cracked/offline oturumda alınan hata:
+`invalid session` / `connection refused`.
+
+Ayrıca arkadaş özelliklerinin dayandığı **P2P hosting da hesap doğrulaması
+istiyor** → hesap olmadan arkadaş listesi/DM zaten kullanılamaz.
+
+> Reddit'te resmî hesabı olanlar bile *"Something went wrong or your account
+> is not authenticated with Essential"* hatasında takılıyor. Yani hesap **olsa
+> bile** sorunsuz değil.
+
+**SONUÇ: Essential listeden TAMAMEN ÇIKARILDI.** Tavsiye geri alınmıştır.
+
+---
+
+## 2) Peki MineTogether? — Sürpriz: hesap ZORUNLU DEĞİL
+
+Bunu da doğruladım, çünkü aynı tuzağa iki kez düşmek istemedim.
+
+**minetogether.io ana sayfasından birebir alıntı:**
+> *"**Signing in is optional**, and enables a profile name, premium benefits,
+> and higher-limit Connect features."*
+
+**CurseForge sayfasından birebir alıntı:**
+> *"**Zero risk** — the mod is optional on both client and server"*
+> *"No data mining. Just **anonymised UUIDs** and **optional** email login
+> if you choose to create an account"*
+
+| | Essential | MineTogether |
+|---|---|---|
+| Mojang/Microsoft oturumu | 🔴 **ZORUNLU** | 🟢 Gerekmiyor |
+| Ayrı hesap açmak | 🔴 Zorunlu | 🟢 **Opsiyonel** |
+| Hesapsız chat/arkadaş | 🔴 Çalışmaz | 🟢 Anonim UUID ile çalışır |
+| Kaynak kodu | 🔴 Kapalı (ARR) | 🟢 İstemci **GPL-3 açık** |
+| Boyut | 52 MB | 4.8 MB |
+| Son güncelleme | 2026-07 | 2024-11 |
+
+### Tablo tersine döndü
+EK BÖLÜM 3'te *"Essential > MineTogether, çünkü daha güncel"* demiştim.
+**Senin şartın altında bu sıralama geçersiz.** MineTogether eski ama
+**çalışıyor**; Essential yeni ama **senin kurulumunda hiç açılmıyor.**
+
+Çalışmayan güncel mod, çalışan eski moddan iyi değildir.
+
+> ℹ️ MineTogether'ın ağı hâlâ ayakta — minetogether.io canlı sayaç gösteriyor
+> (yazım anında 1.051 online oyuncu, 7,3 milyon tekil oyuncu, MC 1.7.10→26.2
+> destekli). Yani mod güncellenmese de **arkasındaki servis ölmemiş.**
+
+---
+
+## 3) DEĞİŞMEYEN KISIM: asıl indirme listen
+
+İyi haber şu ki bu düzeltme **ana listeni hiç etkilemiyor.** EK BÖLÜM 3'teki
+4 mod zaten server-only ve **hiçbiri hesap istemiyor:**
+
+| # | Mod | Hesap ister mi? |
+|---|-----|-----------------|
+| 1 | Tab Info | 🟢 Hayır — vanilla scoreboard kullanıyor |
+| 2 | Player Last Seen | 🟢 Hayır |
+| 3 | Paradigm Essentials | 🟢 Hayır — kendi SQLite'ı |
+| 4 | Private Messages | 🟢 Hayır |
+
+**Bu 4 mod harici hiçbir servise bağlanmaz.** Ne Mojang doğrulaması, ne
+üçüncü taraf ağ, ne hesap. Tamamen senin sunucunda çalışır.
+
+---
+
+## 4) ⚠️ ÖNEMLİ SORU: sunucun offline mode mu?
+
+Mesajından anladığım kadarıyla **orijinal hesap kullanmıyor olabilirsiniz.**
+Eğer `server.properties` içinde `online-mode=false` ise **bunu bilmem gerekirdi**
+ve bir güvenlik açığın var:
+
+> Offline mode'da **isim doğrulanmaz.** Kim gelip `senin_ismin` yazarsa
+> senin karakterin olarak girer — eşyalarına, evine, OP yetkine erişir.
+> Tailscale seni dışarıdan koruyor ama **Tailscale ağındaki herkes** girebilir.
+
+### Çözüm: şifreli giriş modu (server-only, hesapsız)
+```
+https://modrinth.com/mod/auth        → "Auth" (RpXNx59A)
+environment: server_only ✅ | AGPL-3.0 | 1.21.1 ✅ | 59.680 indirme
+son güncelleme: 2025-12-10
+```
+`/register <şifre> <şifre>` ile kayıt, `/login <şifre>` ile giriş.
+Giriş yapmadan oyuncu hareket edemez/etkileşemez. **Client'a hiçbir şey kurulmaz.**
+
+> Sunucun `online-mode=true` ise bu modu **kurma**, gereksiz.
+
+### Alternatif (kurma, bilgi olsun)
+`Nedologin` (`fnP1u8PK`) daha güncel (2026-07) **ama `client_and_server`** →
+herkes kuracak. Senin şartına uymuyor. `Auth` server-only olduğu için tercih edildi.
+
+---
+
+## 5) NİHAİ LİSTE (v3 — hesap sorunu düzeltilmiş)
+
+```
+KESİN KUR (server-only, hesapsız, +4):
+  tab-info-*.jar
+  seen-0.1.0-neoforge-1.21.1.jar
+  Paradigm-neoforge-1.21.1-2.3.1b.jar
+  private_messages-2.1.0.jar          (opsiyonel)
+
+SADECE online-mode=false İSE (+1):
+  auth (RpXNx59A)                     → /register, /login
+
+GUI'li DM bir gün şart olursa:
+  MineTogether 6.3.3 + PolyLib        → hesap opsiyonel, herkes kurar
+
+KURMA:
+  Essential Mod                       → orijinal hesap ZORUNLU, çalışmaz
+```
+
+**Özür + ders:** Bir modun "hesap gerektirmesi" ile "hesap olmadan hiç
+çalışmaması" arasındaki farkı EK 3'te belirtmedim. Bundan sonra harici hesap
+isteyen her mod için **zorunlu mu, opsiyonel mu** ayrımı açıkça yazılacak.
+
