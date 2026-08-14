@@ -647,3 +647,119 @@ Tab'a basıyor. Riski yok.
 sohbet üçüncü taraf ağdan geçiyor ve **sunucun kaydetmiyor**. Sen "sunucuda
 kayıt tutsun" demiştin — o iş için **Paradigm** lazım (chat satırı olarak ama
 kalıcı kayıtlı). İkisi farklı ihtiyaç, ikisini birden kurabilirsin.
+
+---
+---
+
+# EK BÖLÜM 3 — NİHAİ KARAR: "Ne indireceğim?" + Mesajlaşma Muadilleri
+
+> Soru: **"Hangi modları yükleyeceğim, sadece sunucu olanları bırak.
+> Bir de mesajlaşma modunun güncel muadili yok mu, bir bu mod mu var?"**
+
+## 1) İNDİRME LİSTESİ — SADECE SUNUCU (kesin liste)
+
+Bu 4 dosya **yalnızca sunucunun `mods/` klasörüne** atılır.
+Sen ve arkadaşların **hiçbir şey indirmez**, modpack değişmez.
+
+| # | Mod | Dosya | Ne yapar |
+|---|-----|-------|----------|
+| 1 | **Tab Info** | `tab-info-*.jar` | Tab'da ölüm/kill/**süre**/**konum**/boyut |
+| 2 | **Player Last Seen** | `seen-0.1.0-neoforge-1.21.1.jar` | `/seen <isim>` → en son ne zaman girdi |
+| 3 | **Paradigm Essentials** | `Paradigm-neoforge-1.21.1-2.3.1b.jar` | `/msg` `/r` `@mention` + web panel + kayıt |
+| 4 | **Private Messages** *(opsiyonel)* | `private_messages-2.1.0.jar` | Offline oyuncuya mesaj bırakma |
+
+**Toplam +4 mod, hepsi server-only.** İstemcide sıfır değişiklik.
+
+> 4. madde opsiyonel: Paradigm zaten `/msg` veriyor. Private Messages'in
+> farkı **offline oyuncuya mesaj bırakıp o girince iletmesi**. İstemiyorsan atla → +3.
+
+### İndirme linkleri
+```
+https://modrinth.com/mod/tab-info            → NeoForge 1.21.1
+https://modrinth.com/mod/seen                → seen-0.1.0-neoforge-1.21.1.jar
+https://modrinth.com/mod/paradigm            → 2.3.1b (beta, SQLite fix'li)
+https://modrinth.com/mod/private-messages    → 2.1.0 (opsiyonel)
+```
+
+### Private Messages 2.1.0 — doğrulanmış künye
+```
+private_messages-2.1.0.jar | 37.715 B (37 KB!) | release | 2025-10-19
+environment: dedicated_server_only ✅ | bağımlılık YOK
+game_versions: 1.21 → 1.21.10 (1.21.1 ✅)
+sha1: f08dcc00877ca89a1dcaafa10c3327ff7b312d94
+```
+
+### KURULMAYACAKLAR (netleştirme)
+| Mod | Neden hayır |
+|-----|-------------|
+| MineTogether | **Client mod** — herkes kurmak zorunda |
+| PolyLib | Sadece MineTogether için gerekiyordu → gereksiz |
+| Essential Mod | **Client-only**, sunucuya atılamaz |
+| Dash / ForgeDash | Crafty Controller ile port çakışması |
+
+---
+
+## 2) "Bir tek MineTogether mi var?" — HAYIR, ama listesi kısa
+
+Modrinth API'de 1.21.1 + NeoForge filtresiyle **7 ayrı arama** yapıldı:
+`friends`, `whisper`, `party`, `mail`, `message`, `discord`, `chat`
+(+ `social` kategorisi, server-side facet ile).
+
+**GUI'li (tuşa bas → pencere açılsın) arkadaş listesi + DM yapan mod sayısı: 2.**
+
+| Mod | Güncel mi? | Ortam | Karar |
+|-----|-----------|-------|-------|
+| **Essential Mod** | ✅ **1.4.1.1 — 30 Tem 2026** | client_only | En güncel muadil |
+| MineTogether | ❌ Kasım 2024 (21 ay) | client+server | Bayat |
+
+**Yani muadili var ve MineTogether'dan çok daha canlı: Essential Mod.**
+Ama ikisi de client mod → sadece-sunucu listene giremiyor.
+
+### Essential Mod — künye
+```
+Essential_1-4-1-1_neoforge_1-21-1.jar | 51.895.049 B (~52 MB) | release
+2026-07-30 | 39.888.004 indirme | client_only | bağımlılık YOK
+sha1: 29818ac0483c2a6b92c776b3535a1491dd35fda7
+lisans: All Rights Reserved (kapalı kaynak)
+```
+1.4.0 / 1.4.1 changelog'unda **birebir doğrulanan** özellikler:
+- *"Online indicator — see which of your friends are online at a glance"*
+- *"Last online timestamp — see when your friends were last online"*
+- *"Appear offline — hide your online status from your friends"*
+- *"Game invites now live directly in your Essential chats"*
+- *"Added a Friends tab to the Essential settings"*
+
+⚠️ Kapalı kaynak · Essential hesabı gerekiyor · ~52 MB · kozmetik mağazası var.
+
+### Neden 2 tane? (teknik sebep)
+Sunucu, istemciye **pencere çizdiremez ve tuş atayamaz**. Vanilla protokolde
+öyle bir paket yok. GUI isteyen her mod zorunlu olarak client tarafına kurulur.
+Bu yüzden "server-only + GUI'li DM" **matematiksel olarak imkânsız** — bu iki
+mod dışında bir seçenek çıkmamasının sebebi de bu, arama eksikliği değil.
+
+### Diğer bulunanlar (neden eleme)
+| Mod | Ortam | Eleme sebebi |
+|-----|-------|--------------|
+| Localized Chat | server_only | Mesafeye göre chat, DM değil |
+| Beautified Chat [Server] | server_only | Sadece renk/stil |
+| Simple Discord Link | dedicated_server | MC↔Discord köprüsü, oyun içi DM değil |
+| pv-addon-groups | server_only | **Sesli** grup, yazılı değil |
+| Mailboxes / Mailbox | server_only | Blok yerleştirip **eşya** yollamak |
+| Watut | client+server | Kim yazıyor göstergesi |
+| Chat Heads / ChatUtility | client_only | Kozmetik |
+
+---
+
+## 3) SONUÇ
+
+**İNDİR (4 dosya, sadece sunucu):**
+`tab-info` + `seen` + `Paradigm 2.3.1b` + `private_messages 2.1.0` *(ops.)*
+
+**Bu paketle olacaklar:** Tab'da süre/konum/ölüm/kill ✅ · `/msg` `/r` özel
+mesaj ✅ · `@etiket` ✅ · offline'a mesaj ✅ · `/seen` ✅ · web paneli ✅ ·
+sunucuda kayıt ✅
+
+**Olmayacak tek şey:** tuşa basınca açılan Discord tarzı pencere.
+Onu isteyen gün gelirse → **MineTogether değil, Essential Mod** (daha güncel),
+ama o zaman herkes kuracak.
+
