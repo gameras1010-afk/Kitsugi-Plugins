@@ -258,3 +258,245 @@ Bunu söylersen LuckPerms ve Just Player Heads için kesin konuşurum.
 
 *Tüm sürüm/hash bilgileri Modrinth API'sinden doğrulandı — 14 Ağustos 2026.*
 *İndirme adresi olmayan modların `id`'sini `https://modrinth.com/mod/<id>` şeklinde açabilirsin.*
+
+---
+---
+
+# 📗 EK BÖLÜM — İkinci Tarama
+
+İlk taramada `management` ve `social` kategorilerine bakmıştım.
+Bu turda **`utility`, `optimization` ve `game-mechanics`** kategorilerini de taradım.
+
+**Şeffaf olayım — çıkanlar iki gruba ayrılıyor:**
+
+| | Mod | Durum |
+|---|---|---|
+| 🔁 | ServerCore, Alternate Current, AI Improvements, Get It Together Drops | **Bu repoda zaten analiz edilmişti** (`MOD-LISTESI.md` / `C2ME-PAKET.md`), sadece bu dosyaya taşınmamıştı. C2ME uyumları **kanıtlı** |
+| 🆕 | Leaves Be Gone, Double Doors, RightClickHarvest, Immersive Optimization, Skeleton AI Fix, Dynamic Lights | **Gerçekten yeni bulgular** |
+
+En değerlisi birinci gruptan çıktı 👇
+
+---
+
+## 🔥🔥 ServerCore — bu listenin en değerli modu
+
+İlk taramada bu listeye koymamışım, **özür.** 14 milyon indirme, sektörün en bilinen
+sunucu optimizasyon modu ve senin durumuna birebir oturuyor.
+
+> 📌 **Not:** ServerCore aslında bu repoda **zaten analiz edilmiş** —
+> `MOD-LISTESI.md` ve `UYUMLULUK-KANITI.md` içinde var. Sadece bu dosyaya
+> taşınmamış. Aşağıdaki C2ME bilgisi tahmin değil, **kanıta dayanıyor** 👇
+
+```
+https://cdn.modrinth.com/data/4WWQxlQP/versions/6N9hXiRa/servercore-neoforge-1.5.19+1.21.1.jar
+1.462.674 B | sha1 62ce692654e09271b5c55cbb3a1ef7606d067132
+```
+- **Bağımlılık:** yok · **Lisans:** MIT · **environment:** `server_only` · 🔑 Hesap gerekmez
+- **Haziran 2026'da güncellenmiş** — bakımı çok canlı
+
+**Ne yapıyor (hepsi config'den açılıp kapanıyor):**
+- ~~**Dinamik performans** — TPS düşünce view distance'ı otomatik kısar~~
+  🔴 **BUNU KAPATACAKSIN** — sebebi aşağıda
+- **Mob activation range** — uzaktaki mob'ları daha seyrek tick'liyor
+- **Mobcap yönetimi** — chunk başına mob sınırı
+- **Villager lobotomizasyonu** — 1x1'e sıkışmış köylülerin AI'sını kapatıyor
+  (köylü farmların varsa devasa kazanç)
+- **Async chunk pregeneration** — `/chunky` benzeri komut içeriyor
+
+### ✅ C2ME uyumu — TAHMİN DEĞİL, KANIT
+
+**(a)** C2ME'nin **resmî sayfası** uyumlu mod stack'ini sayarken
+ServerCore'u **isim vererek** listeliyor.
+
+**(b)** C2ME + ServerCore'un birlikte çalıştığı **gerçek sunucu logu** mevcut:
+```
+[main/WARN]: Force-disabling mixin 'alloc.chunk_ticking.ServerChunkManagerMixin'
+             as rule 'mixin.alloc.chunk_ticking' (added by mods [servercore])
+             disables it and children
+```
+ServerCore chunk ticking'e dokunmak istiyor, sistem çakışan mixin'i kapatıyor,
+**ikisi de çalışmaya devam ediyor. Crash yok.**
+
+Detay: `UYUMLULUK-KANITI.md` → "🟩 ServerCore — KANIT SEVİYESİ 1 + 2"
+
+### 🔴 AMA TEK BİR ŞART VAR — bunu atlarsan zarar edersin
+
+```toml
+# config/servercore.toml
+[dynamic]
+    enabled = false
+```
+
+**Neden kapatman gerekiyor:**
+
+1. **C2ME ile kavga eder.** Dinamik view/simulation distance, C2ME'nin
+   `noTickViewDistance` ayarıyla aynı işi yapıyor — ikisi birbirinin ayarını ezer.
+2. **Daha kötüsü:** 1.18'den beri view distance değişimi **client'ta chunk reload
+   tetikliyor.** Yani mesafe her oynadığında arkadaşlarının ekranı yeniden yükleniyor.
+   Lag'i önlemesi gereken sistem lag üretiyor.
+
+Yani yukarıda anlattığım "dinamik performans" özelliğini **kullanmıyorsun.**
+ServerCore'u **entity limitleri + mob AI throttle + villager fix + async login**
+için kuruyorsun. Chunk ve mesafe işini C2ME'ye bırakıyorsun.
+Bu haliyle bile listedeki en değerli mod.
+
+---
+
+## 🔥 Alternate Current — redstone motorunu değiştirir
+
+Vanilla redstone dust algoritması berbat. Bu onu baştan yazıyor:
+**%2-35 performans artışı**, üstelik "non-locational" — yani redstone davranışı
+blokların yerleştirilme sırasına göre değişmiyor, daha tahmin edilebilir.
+
+```
+https://cdn.modrinth.com/data/r0v8vy1s/versions/PCNyL6v4/alternate_current-mc1.21-1.9.0.jar
+50.425 B | sha1 1201c14362f2bad7062d315f8a9b26afbabd2c9c
+```
+- **Bağımlılık:** yok · **environment:** `server_only` · 🔑 Hesap gerekmez
+- ✅ **C2ME uyumu kanıtlı** — `UYUMLULUK-KANITI.md` satır 166: redstone katmanı,
+  chunk sistemine hiç dokunmuyor
+- Sadece 50 KB
+- 🤔 Büyük redstone devren yoksa fark etmezsin. Varsa gözle görülür
+
+---
+
+## 🔥 AI Improvements — mob AI'sını hafifletir
+
+12.4M indirme. Vanilla mob AI'sındaki gereksiz hesaplamaları kapatıyor,
+istemediğin davranışları (look AI, random look vb.) tamamen kapatabiliyorsun.
+
+- `ai-improvements` / `DSVgwcji` · `server_only` · 🔑 Hesap gerekmez
+- ✅ **C2ME uyumlu** — `C2ME-PAKET.md` tablosunda zaten var (pathfinding katmanı)
+- ⚠️ Lisans ARR (kaynak kapalı)
+- 🤔 Bu ServerCore'un mob activation range özelliğiyle **kısmen örtüşüyor.**
+  İkisini birden kurma — önce ServerCore'u dene, yetmezse bunu ekle
+
+---
+
+## ✅ Immersive Optimization — entity tick zamanlayıcı
+
+"TPS'ini ikiye katlar" iddiasında. Entity'leri oyuncuya uzaklığa göre
+daha seyrek tick'liyor.
+
+- `immersive-optimization` / `vNZgQmjg` · GPL-3.0 · `server_only` · 🔑 Hesap gerekmez
+- ⚠️ **ServerCore + AI Improvements + bu = üçü aynı işi yapıyor.** Birini seç.
+  Benim sıralamam: ServerCore > Immersive Optimization > AI Improvements
+
+---
+
+## ✅ Get It Together, Drops! — yerdeki itemleri birleştirir
+
+ItemClearLag itemleri **siliyor**, bu **birleştiriyor**. Farklı felsefe.
+1.6M indirme, MIT, bağımlılıksız.
+
+- `get-it-together-drops` / `T0OUgf8P` · `server_only` · 🔑 Hesap gerekmez
+- ✅ **C2ME uyumlu** — `C2ME-PAKET.md` uyumlu modlar tablosunda zaten var
+- 💡 **ItemClearLag ile birlikte kurulabilir** — biri birleştirir, diğeri kalanı temizler.
+  Çakışmazlar
+
+---
+
+## ✅ Leaves Be Gone — ağaç kesince yapraklar anında dökülür
+
+Ağaç kesip yaprakların 30 saniye orada durmasını beklemek yok.
+Aynı zamanda yaprak decay tick'lerini azalttığı için performans da kazandırıyor.
+
+```
+https://cdn.modrinth.com/data/AVq17PqV/versions/kAbmpvF3/LeavesBeGone-v21.1.1-1.21.1-NeoForge.jar
+55.937 B | sha1 1d8eec39ed44414af14d14c0dfb5abd097e77491
+```
+- ⚠️ **Bağımlılık VAR:** Puzzles Lib (`QAGBst4M`) — Fuzs'un tüm modları bunu ister
+- **Lisans:** MPL-2.0 · `server_only` · 🔑 Hesap gerekmez
+
+---
+
+## ✅ Double Doors — çift kapılar birlikte açılır
+
+Çift kapıya bir kere tıkla, ikisi de açılsın. Trapdoor ve çitler için de geçerli.
+8M indirme. Küçük ama her gün hissedeceğin bir konfor.
+
+- `double-doors` / `JrvR9OHr` · `server_only` · 🔑 Hesap gerekmez
+- ⚠️ Lisans ARR
+
+---
+
+## ✅ RightClickHarvest — sağ tıkla hasat
+
+Tarlada sağ tıklayınca ürün toplanıyor ve yeniden ekiliyor.
+11.3M indirme, MIT. Çiftçilik yapıyorsan bilek ağrısını bitirir.
+
+- `rightclickharvest` / `Cnejf5xM` · `server_only` · 🔑 Hesap gerekmez
+
+---
+
+## ✅ Skeleton AI Fix — iskeletlerin garip dans etmesi biter
+
+İskeletler sürekli sağa sola kaçmayı bırakıp odaklanıyor,
+yaklaştıkça daha hızlı ateş ediyor. Dövüşü hem daha adil hem daha akıcı yapıyor.
+
+- `skeleton-ai-fix` / `jn24bUJo` · MPL-2.0 · `server_only` · 🔑 Hesap gerekmez
+- ⚠️ Muhtemelen Puzzles Lib ister (aynı geliştirici — Fuzs)
+
+---
+
+## 🤔 Dynamic Lights — elindeki meşale etrafı aydınlatır
+
+**Server-side dinamik ışık.** Normalde bu client modudur (Optifine/Sodium özelliği),
+ama bu sürüm sunucu tarafında çalışıyor — arkadaşların hiçbir şey kurmadan
+meşale/lav kovası taşırken etrafın aydınlandığını görüyor.
+
+- `dynamic-lights` / `7YjclEGc` · `server_only` · 🔑 Hesap gerekmez
+- ⚠️ **Modrinth'teki NeoForge dosyası Fabric API (`P7dR8mSH`) bağımlılığı listeliyor** —
+  bu Görev 19'daki Tab Info tuzağının aynısı. NeoForge'da Fabric API yüklenmez.
+  **İndirmeden önce mod sayfasındaki NeoForge dosyasını iki kez kontrol et**,
+  yanlış dosyayı alırsan sunucu açılmaz
+- ⚠️ Gerçek ışık bloğu yerleştirip kaldırdığı için **chunk update yaratır** —
+  C2ME'li bir sunucuda ek yük demek. Riskli, en sona bırak
+
+---
+
+## ❌ EK ELEMELER
+
+| Mod | Neden |
+|---|---|
+| **Create: Threaded Trains** | Sadece Create modu varsa anlamlı. Yoksa hiçbir işe yaramaz |
+| **Lithostitched** | Kütüphane — kendi başına bir şey yapmaz, başka mod isterse kurulur |
+| **Almanac** | Kütüphane — sadece Let Me Despawn 1.5.0 için gerekir |
+| **Puzzles Lib** | Kütüphane — Leaves Be Gone / Skeleton AI Fix için gerekir |
+
+---
+
+# 🎯 GÜNCELLENMİŞ ÖNERİM
+
+İlk listedeki 6 modun üstüne **ServerCore'u koy** — o kadar.
+Diğerleri zevk meselesi, bu ise TPS'ine doğrudan dokunuyor.
+
+```
+ÇEKİRDEK (7 mod, ~2.9 MB)
+1. ServerCore        1.46 MB  → 🔥 mobcap, mob AI throttle, villager fix
+                                 ⚠️ [dynamic] enabled = false ŞART
+2. Skin Restorer      276 KB  → korsanda skin
+3. Ksyxis              27 KB  → açılış hızı
+4. CrashExploitFixer  695 KB  → güvenlik
+5. Advanced Backups   336 KB  → yedek
+6. ItemClearLag        38 KB  → C2ME uyumu teyitli
+7. Let Me Despawn      85 KB  → 1.3.2, bağımlılıksız
+
+KONFOR (istersen, hepsi bağımlılıksız)
++ Alternate Current    50 KB  → redstone hızı
++ Double Doors                → çift kapı
++ RightClickHarvest           → sağ tık hasat
++ Get It Together, Drops!     → item birleştirme
+```
+
+### ⚠️ ServerCore kurulum sırası — bu adımı atlama
+
+1. Sunucuyu kapat, `servercore-neoforge-1.5.19+1.21.1.jar` → `mods/`
+2. Sunucuyu **bir kez aç ve kapat** — config dosyası oluşsun
+3. `config/servercore.toml` aç → `[dynamic]` bölümünü bul → `enabled = false` yap
+4. Sunucuyu tekrar aç, konsoldaki `Force-disabling mixin ... servercore` satırı
+   **normaldir, korkma** — o C2ME ile düzgün anlaştığının işareti
+5. 15-20 dakika oyna, TPS'e bak
+6. Sorun yoksa diğer 6 modu topluca ekle
+
+3. adımı atlarsan arkadaşlarının ekranı sürekli yeniden yüklenir.
