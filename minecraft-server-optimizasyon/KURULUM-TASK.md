@@ -37,6 +37,15 @@ Private Messages o `/msg`'i taşıyor. **Sen komut görmüyorsun** — pencerede
 
 **Toplam 116 KB.** MineTogether tek başına 4.8 MB'tı.
 
+### 📮 Arkadaşlarına gidecek tek dosya
+**Sadece `chatscreen-neoforge-1.21.1-0.1.2.jar` (43 KB).** Başka hiçbir şey gönderme.
+
+- `private_messages-2.1.0.jar` → sunucu modu. Arkadaşın client'ında işi yok.
+- `tab-info-0.2.0.zip` → **datapack.** Datapack'ler sunucuya bağlanınca oyuncuya
+  **otomatik senkronlanır** — arkadaşın indirmesine, kurmasına gerek yok, hatta
+  `mods/` klasörüne atarsa **yanlış** olur (datapack `mods/`'a atılmaz, hiç yüklenmez).
+  Sen `world/datapacks/` içine koy, bitti; herkes Tab'da görür.
+
 ---
 
 # 🟩 GÖREV 1 — Private Messages (sunucu, 5 dk)
@@ -101,6 +110,8 @@ bağımlılık: YOK · client_only · MIT lisans
 - [ ] Sadece **`chatscreen-neoforge-1.21.1-0.1.2.jar`** gönder — tek dosya, 43 KB
 - [ ] "mods klasörüne at, C'ye bas" de, o kadar
 - [ ] Kurmayan da sunucuya girebilir — sadece pencereyi görmez, `/msg` ile yazar
+- [ ] ❌ **Tab Info zip'ini gönderme.** Datapack sunucudan otomatik gelir;
+      arkadaşın kurmasına gerek yok, `mods/`'a atarsa zaten çalışmaz.
 
 ### 2.5 Test
 - [ ] C → arkadaşını seç → yaz
@@ -114,6 +125,10 @@ bağımlılık: YOK · client_only · MIT lisans
 Tab'a basınca ölüm / kill / oynama süresi / konum.
 
 ⚠️ **`.jar` olanı İNDİRME** — Fabric API istiyor, NeoForge'da yüklenmez. **`.zip`** olan lazım.
+
+✅ **Bu tamamen senlik bir iş.** Datapack'i sadece sen sunucuya koyuyorsun.
+Arkadaşların hiçbir şey indirmiyor — sunucu bağlantı sırasında datapack içeriğini
+kendisi gönderiyor, Tab herkeste otomatik dolu geliyor.
 
 ### 3.1 İndir
 ```
