@@ -305,3 +305,181 @@ sürüm iddialarına güvenilmedi.
 | Private Chat (elendi) | CurseForge dosya listesi: 1 dosya, 1.20.6 Forge |
 | Plan (elendi) | CurseForge: Fabric/Bukkit, NeoForge yok |
 | Player Statistics (elendi) | CurseForge: Fabric 1.21.4 |
+
+---
+---
+
+# 🚨 EK BÖLÜM: "Tuşa basıp GUI'de sohbet / Tab'da son giriş görebilir miyim?"
+
+**Soru:** *"Ses modundaki gibi bir tuşla, ya da Tab'a basınca çıkan listede
+oyuncuya tıklayıp özel sayfada sohbet edebilecek miyim? Tab'a basınca online
+sunuculardaki gibi en son kim girdi, kaç saat oynadı, son konumu görebilecek
+miyim?"*
+
+## ❌ Kısa cevap: HAYIR — ikisi de olmayacak. Sebebi teknik, mod eksikliği değil.
+
+Yukarıda önerdiğim **Paradigm `dedicated_server_only`**. Bu ne demek?
+
+> **Sunucu-only bir mod, senin oyun ekranına HİÇBİR ŞEY çizemez.**
+> Tuş ataması yapamaz, pencere açamaz, buton koyamaz.
+
+Sunucu sadece **paket** gönderir. Client'ta o modun kodu yoksa, çizecek kimse
+yok. Simple Voice Chat'te `V` tuşuna basınca menü açılıyor çünkü **o mod
+senin bilgisayarında da kurulu**. Paradigm'de öyle bir şey yok.
+
+Yani Paradigm'de özel mesaj şöyle görünür — chat satırı olarak:
+
+```
+[Ben → Ahmet] selam naber
+[Ahmet → Ben] iyidir sen
+```
+
+**Ayrı bir sohbet penceresi/sekmesi YOK.** Normal sohbetin içinde, renkli
+satırlar olarak akar.
+
+## 📊 Tab tuşu meselesi — kritik sınır
+
+Tab listesi Minecraft'ın **vanilla** özelliği ve sunucu onu sınırlı biçimde
+doldurabiliyor. Sunucu-only bir mod Tab'da **şunları yapabilir**:
+
+| Yapılabilir ✅ | Yapılamaz ❌ |
+|---|---|
+| Üst/alt başlık (server adı, TPS, RAM, uptime, saat) | **Butona tıklamak** — Tab listesi tıklanabilir değil |
+| Oyuncu adının yanına yazı eklemek (rütbe, AFK, süre) | **Offline oyuncuyu göstermek** |
+| Sıralama (alfabetik / rütbeye göre) | **"En son ne zaman girdi" göstermek** |
+| Ping, boyut (Nether/End) | **Son konum (koordinat) göstermek** |
+
+### 🔴 En önemlisi: **Tab listesi sadece O AN ONLINE olanları gösterir.**
+
+Bu Minecraft protokolünün kendisi. `PlayerInfoUpdate` paketi sadece bağlı
+oyuncuları taşır. "En son kim girdi" Tab'da **hiçbir modla** gösterilemez —
+çünkü o oyuncu listede yok ki.
+
+Gördüğün büyük sunucularda Tab'da öyle bilgi varsa, o **online** oyuncuların
+bilgisidir (rütbe, süre, ping). Offline "son giriş" bilgisi orada da yoktur;
+o sunucularda `/seen` komutu veya web sitesi vardır.
+
+---
+
+# ✅ O ZAMAN GERÇEKTEN NE YAPABİLİRSİN — 3 yol
+
+## YOL 1 — Tab'ı zenginleştir (online oyuncular için)
+
+İki server-only mod, ikisi de arkadaşlarına hiçbir şey kurdurtmuyor:
+
+### PlayTimeStatistics
+```
+Modrinth: playtimestatistics  |  1.21.1 ✅  |  server_side: required
+15.009 indirme
+```
+👉 **Tab listesinde oyuncu adının yanında oynanış süresini gösterir.**
+Senin "kaç saat oynadı" isteğinin Tab'daki karşılığı bu.
+
+### Better TabList
+```
+Modrinth: better-tablist  |  1.21.1 ✅  |  server_only
+6.021 indirme  |  config/tablist.toml
+```
+Placeholder listesi (doğrulandı): `#TPS` `#CTPS` `#MSPT` `#PLAYERCOUNT`
+`#MAXPLAYERS` `#PLAYERNAME` `#PING` `#RANK` `#AFK` `#WORLD` `#MEMORY`
+`#UPTIME` `#DATE` `#TIME`
+
+Örnek config:
+```toml
+[appearance]
+server_name = "Kitsugi"
+header = ["#N   &l#SERVERNAME   #N&7Online: &e#PLAYERCOUNT&7/&e#MAXPLAYERS#N"]
+footer = ["&7TPS: #CTPS &7| RAM: &#AA55FF#MEMORY &7| Uptime: &#FFAA00#UPTIME"]
+display_name_format = "{name} &7#AFK"
+[afk]
+afk_enabled = true
+afk_timeout = 300
+```
+⚠️ `#RANK` için FTB Ranks gerekiyor (opsiyonel). Lisans: All Rights Reserved.
+
+**Sonuç Tab'da:** kim online, kaç saat oynamış, AFK mi, pingi kaç, hangi
+boyutta, sunucu TPS'i ne. **Ama tıklanamaz ve offline oyuncu görünmez.**
+
+**Offline "son giriş" için:** `/seen Ahmet` komutu (Player Last Seen) veya
+web paneli. Tab'da olmaz, olamaz.
+
+---
+
+## YOL 2 — GUI'li DM gerçekten şartsa: **Essential Mod**
+
+Tuşa basıp arkadaş listesinden seçip pencerede yazışmak istiyorsan, bunu
+yapan tek olgun şey bu:
+
+```
+Modrinth: essential  |  1.21.1 ✅ NeoForge
+client_side: required  |  server_side: UNSUPPORTED
+39.888.004 indirme
+```
+
+Tuşa basıyorsun → arkadaş listesi açılıyor → tıklıyorsun → **ayrı sohbet
+penceresi**. Tam tarif ettiğin şey.
+
+### 🚨 Ama büyük "ama"lar var
+
+| Sorun | Detay |
+|---|---|
+| **Client-side** | **Sen ve TÜM arkadaşların tek tek kurmak zorunda.** Sunucuya atmak işe yaramaz |
+| **Sunucudan bağımsız** | Essential'ın kendi ağı üzerinden çalışır. Sunucun kapalıyken de yazışırsınız — ama **sunucu bu sohbetleri kaydetmez** |
+| **Kayıt tutmaz** | Senin "sunucuda kayıt tutsun" isteğini karşılamaz |
+| **Üçüncü taraf hesap** | Essential hesabı açmak gerekiyor |
+| **Lisans** | All Rights Reserved, kapalı kaynak |
+| **Mod çakışması** | Client tarafında karışıklık çıkarabiliyor (bilinen bir durum) |
+
+**Dürüst değerlendirme:** 5 kişilik arkadaş sunucusunda GUI'li DM için
+Discord zaten daha iyi. Essential'ı sırf bunun için kurdurtma.
+
+---
+
+## YOL 3 — Web paneli (senin "özel sayfa" fikrine en yakın olan)
+
+Oyun içinde değil ama tarayıcıda gerçekten bir **sayfa** istiyorsan:
+
+| İstediğin | Paradigm paneli | Dash paneli |
+|---|---|---|
+| Kim online | ✅ | ✅ |
+| **Son giriş / oturum geçmişi** | ceza+audit geçmişi | ✅ **oyuncu profili + oturum geçmişi** |
+| **Oynanış süresi** | ⚠️ emin değilim | ✅ |
+| **Son konum** | `/near`, `/whois` var | ✅ (teleport/profil ekranında) |
+| Panelden sohbet | ✅ chat sayfası | ✅ konsol/chat |
+
+"Online sunuculardaki gibi oyuncu istatistik sayfası" tarifine **en yakın
+olan Dash'in oyuncu profili ekranı.** Ama Crafty ile çakışıyor (yukarıda
+anlattım).
+
+⚠️ **Emin değilim:** Panellerin oyuncu profili ekranlarının ekran
+görüntülerini inceleyemedim; hangi alanların tam olarak gösterildiğini
+özellik listesinden okudum, gözümle görmedim.
+
+---
+
+# 🎯 DÜRÜST TAVSİYE — beklentini gerçeğe oturtayım
+
+Hayalindeki şey (**Tab'a bas → oyuncuya tıkla → özel sohbet penceresi açılsın
+→ orada son giriş, süre, konum yazsın**) **1.21.1 NeoForge'da mevcut hiçbir
+modda yok.** Bunun için birinin client+server modu yazması lazım, yazan yok.
+
+Elindeki gerçekçi paket:
+
+```
+mods/ klasörüne (arkadaşların hiçbir şey kurmuyor):
+├── Paradigm-neoforge-1.21.1-2.3.1b.jar   → /msg, /r, /whois, web panel
+├── playtimestatistics                     → Tab'da oynanış süresi
+└── (opsiyonel) better-tablist             → Tab'da TPS/RAM/AFK/ping
+```
+
+**Sonuç:**
+- Tab'a bastığında: online oyuncular + süreleri + AFK + ping + sunucu durumu
+- `/seen Ahmet` → Ahmet en son ne zaman girdi
+- `/msg Ahmet selam` → özel mesaj (chat satırı olarak, ayrı pencere değil)
+- Tarayıcıdan panel → detaylı geçmiş
+
+**Mod artışı: +2 (veya +3).**
+
+Eğer "chat satırı yetmez, gerçekten ayrı pencere olsun" diyorsan — o zaman
+tek yol Discord. Kimse mod kurmaz, geçmiş kalıcı kalır, telefondan da açılır.
+Bunu sana mod satmamak için söylüyorum. 🍻
