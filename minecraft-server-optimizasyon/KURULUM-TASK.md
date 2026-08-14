@@ -1,54 +1,121 @@
-# ✅ KURULUM TASK — Tab Info + Private Messages
+# ✅ KURULUM TASK — Chat Screen + Private Messages + Tab Info
 
 > **MC 1.21.1 · NeoForge · offline-mode (korsan) sunucu**
-> İki dosya. İkisi de **sadece sunucuya**. Arkadaşların hiçbir şey kurmaz.
+> Aradığın şey: **tuşa bas → pencere açılsın → kişi seç → yazış.**
+> Bu üçlü onu veriyor. Hesap yok, harici sunucu yok, her şey sende.
 
 ---
 
-## 🔴 ÖNCE: MineTogether İPTAL
+## 🎯 MANTIK — neden 2 mod birden
 
-**Kurma. Sana yaramaz.**
+MineTogether tek modda hem pencereyi hem mesajlaşmayı yapıyordu.
+Ama mesajlaşma kısmı **CreeperHost'un sunucusundaydı** ve orası Mojang'a soruyordu → sende çalışmaz.
 
-Kaynak koduna baktım (`MTSessionProvider.java`, MineTogether 1.21 dalı):
+Biz o işi ikiye bölüyoruz, ikisi de **senin sunucunda:**
 
-```java
-beginAuth() → MojangUtils.joinServer(PI, U.getAccessToken());
+```
+      PENCERE (görünen kısım)          MESAJLAŞMA (arka plan)
+      Chat Screen                       Private Messages
+      client'ta, C tuşu                 sunucuda, /msg
+              └──────────┬──────────────────────┘
+                    ikisi birleşince
+              MineTogether hissi, hesapsız
 ```
 
-Mod açılışta **Mojang oturum sunucusuna** access token gönderip doğrulama istiyor.
-TLauncher / korsan launcher'da o token geçersiz → doğrulama başarısız → **sohbet ve arkadaş listesi hiç bağlanmaz.**
-
-Modun zaten tek işi arkadaş listesi + DM. O gidince elinde **4.8 MB boş jar** kalıyor.
-Üstelik senin + arkadaşlarının + sunucunun hepsine 3'er dosya kurdurtuyordu.
-
-**Karar: MineTogether, PolyLib, Architectury → hiçbirini indirme.**
-
-### Yerine ne geliyor?
-
-**Private Messages** — aynı işi yapar, hesap istemez, kimse bir şey kurmaz.
-
-| | MineTogether | Private Messages |
-|---|---|---|
-| Korsan hesapta çalışır mı | 🔴 **Hayır** | 🟢 Evet |
-| Kim kurar | Sunucu + sen + herkes | 🟢 **Sadece sunucu** |
-| Boyut | 4.8 MB + 2 bağımlılık | 🟢 37 KB, bağımlılık yok |
-| DM | GUI'li | Komutla (`/msg`) |
-| Offline mesaj | Yok | 🟢 **Var** |
-
-Tek kaybın: şık pencere yerine komut kullanacaksın. Karşılığında herkesin kurulum derdi bitiyor.
+Chat Screen sen pencereden yazınca arkada `/msg` gönderiyor.
+Private Messages o `/msg`'i taşıyor. **Sen komut görmüyorsun** — pencerede sohbet balonu görüyorsun.
 
 ---
 
-# 🟩 GÖREV 1 — Tab Info (5 dk)
+## 📦 3 DOSYA
 
-Tab'a basınca ölüm / kill / oynama süresi / konum / boyut gösterir.
+| Dosya | Nereye | Kim kurar | Boyut |
+|---|---|---|---|
+| `chatscreen-neoforge-1.21.1-0.1.2.jar` | `mods/` | 🔵 sen + arkadaşların | 43 KB |
+| `private_messages-2.1.0.jar` | `mods/` | 🟢 sadece sunucu | 37 KB |
+| `tab-info-0.2.0.zip` | `world/datapacks/` | 🟢 sadece sunucu | 36 KB |
+
+**Toplam 116 KB.** MineTogether tek başına 4.8 MB'tı.
+
+---
+
+# 🟩 GÖREV 1 — Private Messages (sunucu, 5 dk)
+
+> Önce bu. Chat Screen'in çalışması için `/msg` komutunun sunucuda **olması şart.**
 
 ### 1.1 İndir
+```
+https://cdn.modrinth.com/data/CHpe5Yyf/versions/iz6zg7kc/private_messages-2.1.0.jar
+```
+```
+37.715 B | sha1: f08dcc00877ca89a1dcaafa10c3327ff7b312d94
+bağımlılık: YOK · dedicated_server_only
+```
 
-⚠️ **`.jar` olanı İNDİRME** — o sürüm Fabric API istiyor, NeoForge'da yüklenmez.
-Aradığın **`.zip`** (datapack).
+### 1.2 Kur
+- [ ] Sunucuyu kapat
+- [ ] Jar'ı sunucunun **`mods/`** klasörüne at
+- [ ] Başlat:
+```bash
+grep -iE "error|conflict|incompatible|failed|exception|missing" logs/latest.log | head -30
+```
+- [ ] Temizse devam
 
-- [ ] Direkt link:
+### 1.3 Test — bu adımı atlama
+- [ ] Oyuna gir, `/msg <arkadaş> test` yaz
+- [ ] Gitti mi? **Gittiyse Chat Screen de çalışacak demektir.**
+
+> ⚠️ Gitmiyorsa Görev 2'ye geçme. Önce burayı çöz.
+
+---
+
+# 🟦 GÖREV 2 — Chat Screen (client, 10 dk)
+
+> İşte istediğin pencere bu.
+
+### 2.1 İndir
+```
+https://cdn.modrinth.com/data/byIp8S9t/versions/Cwfq7nzn/chatscreen-neoforge-1.21.1-0.1.2.jar
+```
+```
+43.189 B | sha1: b00f597e765d4a1f54775d8d689a0f3ee4393345
+bağımlılık: YOK · client_only · MIT lisans
+```
+
+> ℹ️ Sürüm `0.1.2` **beta** etiketli ve tek geliştirici yazmış.
+> Client-only olduğu için en kötü ihtimalde **senin oyunun** etkilenir, sunucu/dünya değil.
+> Sevmezsen jar'ı sil, hiçbir iz kalmaz.
+
+### 2.2 Kendine kur
+- [ ] Jar'ı **kendi** `mods/` klasörüne at *(sunucuya DEĞİL — client-only)*
+- [ ] Oyunu aç, sunucuya gir
+- [ ] **C tuşuna bas** → pencere açıldı mı?
+- [ ] Tuşu değiştirmek istersen: Ayarlar → Kontroller
+
+### 2.3 Pencerede ne var
+- [ ] **Server chat** sekmesi → normal genel sohbet
+- [ ] **Personal chat** → online oyuncu seç → 🎯 **özel yazışma, sohbet görünümünde**
+- [ ] **Team chat** → takımdaysan (`/teammsg`)
+
+### 2.4 Arkadaşlara dağıt
+- [ ] Sadece **`chatscreen-neoforge-1.21.1-0.1.2.jar`** gönder — tek dosya, 43 KB
+- [ ] "mods klasörüne at, C'ye bas" de, o kadar
+- [ ] Kurmayan da sunucuya girebilir — sadece pencereyi görmez, `/msg` ile yazar
+
+### 2.5 Test
+- [ ] C → arkadaşını seç → yaz
+- [ ] O sana pencereden cevap versin
+- [ ] İkinizde de sohbet akıyor mu?
+
+---
+
+# 🟨 GÖREV 3 — Tab Info (sunucu, 5 dk, opsiyonel)
+
+Tab'a basınca ölüm / kill / oynama süresi / konum.
+
+⚠️ **`.jar` olanı İNDİRME** — Fabric API istiyor, NeoForge'da yüklenmez. **`.zip`** olan lazım.
+
+### 3.1 İndir
 ```
 https://cdn.modrinth.com/data/DuHZti8U/versions/435KwhWd/tab-info-0.2.0.zip
 ```
@@ -56,7 +123,7 @@ https://cdn.modrinth.com/data/DuHZti8U/versions/435KwhWd/tab-info-0.2.0.zip
 36.421 B | sha1: 15932aeb42d1937916fbc4e6c3d5c18b71f9388f
 ```
 
-### 1.2 Kur
+### 3.2 Kur
 - [ ] Sunucuyu kapat
 - [ ] `.zip`'i **`world/datapacks/`** içine at — *`mods/` değil!*
 
@@ -64,74 +131,16 @@ https://cdn.modrinth.com/data/DuHZti8U/versions/435KwhWd/tab-info-0.2.0.zip
 sunucu/
 └── world/
     └── datapacks/
-        └── tab-info-0.2.0.zip   ← buraya
+        └── tab-info-0.2.0.zip
 ```
+> Dünya klasörün `world` değilse: `server.properties` → `level-name` neyse o.
 
-> Dünya klasörün `world` değilse: `server.properties` → `level-name` neyse o klasör.
+### 3.3 Test
+- [ ] `/datapack list` → `tab-info` var mı?
+- [ ] Tab'a bas
+- [ ] `/function tab_info:config` → istemediğini kapat
 
-### 1.3 Test
-- [ ] Sunucuyu aç
-- [ ] `/datapack list` → `tab-info` görünüyor mu?
-- [ ] Oyuna gir, **Tab'a bas** → bilgiler dönüyor mu? *(2 sn'de bir yenilenir, normal)*
-
-### 1.4 Ayarla
-- [ ] `/function tab_info:config` → istemediğin satırı tıklayarak kapat
-
-### ✅ Bitti
-Arkadaşlarına söylemene gerek yok, onlarda otomatik görünür.
-
-**Geri alma:** `.zip`'i sil + restart. Tab'da artık kalırsa:
-```
-/scoreboard objectives setdisplay list
-```
-
----
-
-# 🟦 GÖREV 2 — Private Messages (5 dk)
-
-Özel mesaj, cevaplama, offline mesaj, engelleme, kişisel not.
-
-### 2.1 İndir
-- [ ] Direkt link:
-```
-https://cdn.modrinth.com/data/CHpe5Yyf/versions/iz6zg7kc/private_messages-2.1.0.jar
-```
-```
-37.715 B | sha1: f08dcc00877ca89a1dcaafa10c3327ff7b312d94
-bağımlılık: YOK
-```
-
-### 2.2 Kur
-- [ ] Sunucuyu kapat
-- [ ] Jar'ı sunucunun **`mods/`** klasörüne at
-- [ ] Başlat, logu oku:
-
-```bash
-grep -iE "error|conflict|incompatible|failed|exception|missing" logs/latest.log | head -30
-```
-- [ ] Temizse devam
-
-### 2.3 Test
-- [ ] `/msg <arkadaş> selam` → gitti mi?
-- [ ] Karşı taraf **mesaja tıklasın** → cevap kutusu açılıyor mu?
-- [ ] `/r selam sana da`
-- [ ] Kendine mesaj at → nota kaydolur → `/pm notes`
-
-### 2.4 Arkadaşlara duyur
-
-Şunu at yeter, **kimse bir şey indirmeyecek:**
-
-```
-/msg <isim> <mesaj>   → özel mesaj
-/r <mesaj>            → son mesaja cevap
-/ignore <isim>        → o kişiden mesaj alma
-/pm notes             → kendine not
-```
-
-Offline birine mesaj atarsan **girdiğinde alır.**
-Kayıtlı veriler şifreli, sunucu sahibi bile okuyamıyor.
-
-### ✅ Bitti
+**Geri alma:** sil + restart. Tab'da artık kalırsa `/scoreboard objectives setdisplay list`
 
 ---
 
@@ -139,33 +148,49 @@ Kayıtlı veriler şifreli, sunucu sahibi bile okuyamıyor.
 
 | Belirti | Sebep | Çözüm |
 |---|---|---|
-| Tab boş | Datapack yüklenmemiş | `/datapack list`, `level-name` doğru mu |
+| C'ye basıyorum, pencere yok | Tuş çakışması | Kontroller'den başka tuş ata |
+| Pencere açılıyor, mesaj gitmiyor | Sunucuda `/msg` yok | Görev 1'i yap |
+| Pencere açılıyor, mesaj **gelmiyor** | Sunucu mesaj formatını değiştiriyor | `private-messages.json` → format satırlarını sadeleştir |
+| Arkadaşta pencere yok | Jar'ı kurmamış | 43 KB'lık dosyayı tekrar gönder |
+| Tab boş | Datapack yüklenmemiş | `/datapack list`, `level-name` kontrol |
 | Tab'ı `mods/`e attım | Yanlış klasör | `world/datapacks/`'a taşı |
-| `.jar` indirdim, yüklenmiyor | Fabric API istiyor | `.zip` sürümünü indir |
-| `/msg` komutu yok | Jar `mods/`de değil | Klasörü ve logu kontrol et |
-| Komut var ama gitmiyor | Karşı taraf `/ignore` yapmış | `/ignore` ile geri aç |
 
-**Her şeyi geri almak:** İki dosyayı sil, restart. Dünyaya kalıcı iz bırakmazlar.
+**Her şeyi geri almak:** 3 dosyayı sil, restart. Dünyaya kalıcı iz bırakmazlar.
 
 ---
 
-## 📋 ÖZET
+## ❌ KURMA — ve nedeni
 
-| Dosya | Nereye | Kim kurar |
-|---|---|---|
-| `tab-info-0.2.0.zip` | `world/datapacks/` | 🟢 sadece sunucu |
-| `private_messages-2.1.0.jar` | `mods/` | 🟢 sadece sunucu |
+| Mod | Neden |
+|---|---|
+| **MineTogether** | `MTSessionProvider.java` → `MojangUtils.joinServer(uuid, accessToken)`. Açılışta Mojang'a doğrulama yolluyor, korsanda patlıyor. Sohbet hiç bağlanmaz. |
+| **PolyLib / Architectury** | Sadece MineTogether için gerekiyordu, o gidince gereksiz |
+| **Essential Mod** | Mojang oturumu **zorunlu**, hiçbir özellik açılmaz |
+| **FriendMod** | "FriendMod services" = yine harici sunucu, aynı tuzak |
+| **MikasRevs Phone** | Telefon var ama ARR lisans, 1.4 MB, herkes kuracak — Chat Screen 43 KB ile aynı işi yapıyor |
 
-**Toplam 74 KB. Arkadaşların hiçbir şey yapmıyor. İkisi de 10 dakikada biter.**
+**Kural:** Mesajlaşması **başkasının sunucusundan** geçen hiçbir mod sende çalışmaz.
+Bu üçlünün hepsi senin makinende.
+
+---
+
+## 📋 KURULUM SIRASI
+
+```
+1. Private Messages  → sunucu mods/       → /msg test et
+2. Chat Screen       → sen + arkadaşlar   → C tuşu
+3. Tab Info          → world/datapacks/   → Tab tuşu
+```
+
+**Sıra önemli.** Önce 1 çalışmadan 2'yi kurma — pencere açılır ama mesaj gitmez, boşuna uğraşırsın.
 
 ---
 
 ## ⚠️ AYRI KONU — offline-mode güvenliği
 
-`online-mode=false` olduğu için Tailscale ağındaki **herkes senin isminle girebilir.**
-Girer, OP komutlarını kullanır, sandığını boşaltır.
+`online-mode=false` olduğu için Tailscale ağındaki **herkes senin isminle girebilir** — OP komutları, sandığın, hepsi.
 
-Çözüm: **Auth** modu (`https://modrinth.com/mod/auth`) — sadece sunucu, hesap istemez.
-Herkes `/register <şifre> <şifre>` yapar, sonra her girişte `/login <şifre>`.
+Çözüm: **Auth** modu → `https://modrinth.com/mod/auth`
+Sadece sunucu, hesap istemez. `/register <şifre> <şifre>` sonra her girişte `/login <şifre>`.
 
-Bu iki modla işin yok, ayrı bir iş. Ama ağa dışarıdan biri düşerse lazım olur.
+Bu üç modla ilgisi yok, ayrı iş. Ama ağa dışarıdan biri düşerse lazım.

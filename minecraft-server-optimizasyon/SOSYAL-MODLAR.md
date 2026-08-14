@@ -898,3 +898,85 @@ KURMA:
 çalışmaması" arasındaki farkı EK 3'te belirtmedim. Bundan sonra harici hesap
 isteyen her mod için **zorunlu mu, opsiyonel mu** ayrımı açıkça yazılacak.
 
+
+---
+
+# EK BÖLÜM 5 — SON DÜZELTME: MineTogether elendi, yerine Chat Screen
+
+> Bu ek, EK 2 / EK 3 / EK 4'teki **MineTogether önerisini iptal eder.**
+> Yukarıdaki bölümlerde MineTogether geçen her yer artık geçersizdir.
+
+## 1) Ne değişti
+
+EK 4'te "MineTogether'da hesap zorunlu değil 🟢" yazmıştım. **Yanlıştı.**
+Kaynak koda bakınca çıktı:
+
+```java
+// MTSessionProvider.java
+MojangUtils.joinServer(uuid, accessToken);
+```
+
+Bu satır MineTogether'ın sohbet oturumunu açarken **Mojang'ın oturum sunucusuna**
+gidiyor. Korsan launcher'da geçerli bir `accessToken` olmadığı için çağrı düşüyor,
+sohbet hiç bağlanmıyor. Mod açılıyor, menü geliyor — ama mesajlaşma ölü.
+
+Ayrıca mesaj trafiği **CreeperHost'un sunucusundan** geçiyor. Kendi sunucunda
+barındıramıyorsun. İki gerekçeyle birden elendi.
+
+## 2) Yerine ne geldi
+
+| İhtiyaç | Eski (iptal) | Yeni |
+|---|---|---|
+| Pencere / GUI | MineTogether | **Chat Screen** `byIp8S9t` |
+| Mesajın taşınması | CreeperHost sunucusu | **Private Messages** (senin sunucun) |
+| Bağımlılık | PolyLib + Architectury | **yok** |
+| Boyut | 4.8 MB + 2 kütüphane | **80 KB, ikisi toplam** |
+| Korsan hesap | 🔴 çalışmaz | 🟢 çalışır |
+
+**Chat Screen** — `C` tuşu, sekmeli pencere: Server chat / Team chat /
+**Personal chat**. Kişisel sekmede online oyuncuyu seçip yazıyorsun; mod arka
+planda `/msg` gönderiyor. Sen komut yazmıyorsun, sohbet penceresinde yazışıyorsun.
+
+- `client_only` → **sunucuya kurulmuyor**, isteyen oyuncu kendine kurar
+- `dependencies: []` → tek jar, başka hiçbir şey gerekmiyor
+- **MIT** lisans, kaynak açık: `github.com/whyvo1/Chat-Screen`
+- Mojang oturumuyla ilgili tek satır kod yok — client-only bir mod, ağa
+  sadece vanilla komut gönderiyor
+
+## 3) Bilinmesi gereken sınırlar
+
+- Sunucuda `/msg` **açık olmalı** → bu yüzden Private Messages önce kuruluyor
+- Sunucu özel bir chat formatı kullanıyorsa (CMI tarzı) pencere gelen mesajı
+  yakalayamayabilir → format sadeleştirilir
+- Sürüm `0.1.2` **beta**. Client-only olduğu için risk oyuncunun kendi
+  oyunuyla sınırlı; sunucu ve dünya etkilenmez, jar silinince iz kalmaz
+
+## 4) Nihai liste (v4)
+
+```
+SUNUCUYA (sadece sen):
+  private_messages-2.1.0.jar     37 KB   mods/          → /msg altyapısı
+  tab-info-0.2.0.zip             36 KB   world/datapacks/
+
+CLIENT'A (sen + isteyen arkadaşlar):
+  chatscreen-neoforge-1.21.1-0.1.2.jar   43 KB   mods/  → C tuşu, pencere
+
+offline-mode=false İSE:
+  auth (RpXNx59A)                        mods/          → /register, /login
+
+KURMA:
+  MineTogether + PolyLib + Architectury  → Mojang oturumu, korsanda ölü
+  Essential Mod                          → Mojang oturumu zorunlu
+  FriendMod                              → harici "FriendMod services"
+  MikasRevs Phone                        → ARR, 1.4 MB, aynı işi 43 KB yapıyor
+```
+
+Adım adım kurulum: **`KURULUM-TASK.md`**
+
+## 5) Ders
+
+EK 4'te MineTogether'ı "hesap opsiyonel" diye geçirmiştim; Modrinth açıklamasına
+güvenmiştim, koda bakmamıştım. Bir modun harici hesap isteyip istemediği
+**açıklamadan değil, kaynaktan** doğrulanmalı. Kaynağı kapalı olan modda bu
+kanıt üretilemiyor — o yüzden artık kapalı kaynak modlar bu listede tercih
+edilmiyor. Chat Screen MIT olduğu için bu sorun onda yok.
