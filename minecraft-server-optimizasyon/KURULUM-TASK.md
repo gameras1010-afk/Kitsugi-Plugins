@@ -1,38 +1,64 @@
-# ✅ KURULUM TASK — Tab Info + MineTogether
+# ✅ KURULUM TASK — Tab Info + Private Messages
 
-> Sadece bu iki mod. Sırayla git, kutuları işaretle.
-> **MC 1.21.1 · NeoForge**
-
----
-
-## ⚠️ İNDİRMEDEN ÖNCE — 2 TUZAK
-
-**1. Tab Info'nun `.jar`'ı NeoForge'da patlayabilir.**
-Modrinth `tab-info-0.2.0+mod.jar` için **Fabric API** zorunlu bağımlılık gösteriyor.
-NeoForge'da Fabric API yok → **`.zip` (datapack) sürümünü indir.** Bağımlılığı sıfır.
-
-**2. MineTogether iki değil ÜÇ dosya.**
-MineTogether → PolyLib ister → PolyLib de **Architectury API** ister. Zinciri kırma.
+> **MC 1.21.1 · NeoForge · offline-mode (korsan) sunucu**
+> İki dosya. İkisi de **sadece sunucuya**. Arkadaşların hiçbir şey kurmaz.
 
 ---
 
-# 🟩 GÖREV 1 — Tab Info (sadece sunucu, 5 dk)
+## 🔴 ÖNCE: MineTogether İPTAL
+
+**Kurma. Sana yaramaz.**
+
+Kaynak koduna baktım (`MTSessionProvider.java`, MineTogether 1.21 dalı):
+
+```java
+beginAuth() → MojangUtils.joinServer(PI, U.getAccessToken());
+```
+
+Mod açılışta **Mojang oturum sunucusuna** access token gönderip doğrulama istiyor.
+TLauncher / korsan launcher'da o token geçersiz → doğrulama başarısız → **sohbet ve arkadaş listesi hiç bağlanmaz.**
+
+Modun zaten tek işi arkadaş listesi + DM. O gidince elinde **4.8 MB boş jar** kalıyor.
+Üstelik senin + arkadaşlarının + sunucunun hepsine 3'er dosya kurdurtuyordu.
+
+**Karar: MineTogether, PolyLib, Architectury → hiçbirini indirme.**
+
+### Yerine ne geliyor?
+
+**Private Messages** — aynı işi yapar, hesap istemez, kimse bir şey kurmaz.
+
+| | MineTogether | Private Messages |
+|---|---|---|
+| Korsan hesapta çalışır mı | 🔴 **Hayır** | 🟢 Evet |
+| Kim kurar | Sunucu + sen + herkes | 🟢 **Sadece sunucu** |
+| Boyut | 4.8 MB + 2 bağımlılık | 🟢 37 KB, bağımlılık yok |
+| DM | GUI'li | Komutla (`/msg`) |
+| Offline mesaj | Yok | 🟢 **Var** |
+
+Tek kaybın: şık pencere yerine komut kullanacaksın. Karşılığında herkesin kurulum derdi bitiyor.
+
+---
+
+# 🟩 GÖREV 1 — Tab Info (5 dk)
+
+Tab'a basınca ölüm / kill / oynama süresi / konum / boyut gösterir.
 
 ### 1.1 İndir
-- [ ] https://modrinth.com/mod/tab-info → **Versions**
-- [ ] **`tab-info-0.2.0.zip`** indir ← *datapack, 36 KB*
 
-> ❗ `+mod.jar` olanı **indirme**. Aradığın `.zip`.
+⚠️ **`.jar` olanı İNDİRME** — o sürüm Fabric API istiyor, NeoForge'da yüklenmez.
+Aradığın **`.zip`** (datapack).
 
+- [ ] Direkt link:
 ```
-tab-info-0.2.0.zip
-36.421 B
-sha1: 15932aeb42d1937916fbc4e6c3d5c18b71f9388f
+https://cdn.modrinth.com/data/DuHZti8U/versions/435KwhWd/tab-info-0.2.0.zip
+```
+```
+36.421 B | sha1: 15932aeb42d1937916fbc4e6c3d5c18b71f9388f
 ```
 
 ### 1.2 Kur
 - [ ] Sunucuyu kapat
-- [ ] `.zip`'i **`world/datapacks/`** içine at *(mods değil!)*
+- [ ] `.zip`'i **`world/datapacks/`** içine at — *`mods/` değil!*
 
 ```
 sunucu/
@@ -41,82 +67,71 @@ sunucu/
         └── tab-info-0.2.0.zip   ← buraya
 ```
 
-> Dünya klasörün `world` değilse (`server.properties` → `level-name`) o klasörü kullan.
+> Dünya klasörün `world` değilse: `server.properties` → `level-name` neyse o klasör.
 
-### 1.3 Başlat ve test
+### 1.3 Test
 - [ ] Sunucuyu aç
-- [ ] `/datapack list` → listede `tab-info` görünüyor mu?
-- [ ] Oyuna gir, **Tab'a bas** → ölüm/kill/süre/konum dönüyor mu?
+- [ ] `/datapack list` → `tab-info` görünüyor mu?
+- [ ] Oyuna gir, **Tab'a bas** → bilgiler dönüyor mu? *(2 sn'de bir yenilenir, normal)*
 
 ### 1.4 Ayarla
-- [ ] `/function tab_info:config` → tıklayarak istemediğini kapat
-- [ ] Bilgiler 2 sn'de bir döner, normal
+- [ ] `/function tab_info:config` → istemediğin satırı tıklayarak kapat
 
-### ✅ Görev 1 bitti
-- [ ] Arkadaşlarına **hiçbir şey söylemene gerek yok** — onlarda otomatik görünür
+### ✅ Bitti
+Arkadaşlarına söylemene gerek yok, onlarda otomatik görünür.
 
-**Sorun çıkarsa:** `.zip`'i sil, sunucuyu yeniden başlat. Tab'da boşluk kalırsa:
+**Geri alma:** `.zip`'i sil + restart. Tab'da artık kalırsa:
 ```
 /scoreboard objectives setdisplay list
 ```
 
 ---
 
-# 🟦 GÖREV 2 — MineTogether (sunucu + HERKES, 20 dk)
+# 🟦 GÖREV 2 — Private Messages (5 dk)
 
-> ⚠️ Buradan sonrası **sende, arkadaşlarında ve sunucuda** aynı anda olmalı.
-> Biri eksik kalırsa o kişi giremez.
+Özel mesaj, cevaplama, offline mesaj, engelleme, kişisel not.
 
-### 2.1 Üç dosyayı indir
-- [ ] **Architectury API** → https://modrinth.com/mod/architectury-api
-      → 1.21.1 + **NeoForge** sürümü
-- [ ] **PolyLib** → https://modrinth.com/mod/polylib
-      → `polylib-2100.0.3-build.160-neoforge.jar`
-- [ ] **MineTogether** → https://modrinth.com/mod/creeperhost-minetogether
-      → `minetogether-neoforge-1.21-6.3.3.jar`
-
+### 2.1 İndir
+- [ ] Direkt link:
 ```
-polylib-2100.0.3-build.160-neoforge.jar
-1.296.954 B | sha1: 960ae5cf4b797a7e530f89bdc190f0051c668183
-
-minetogether-neoforge-1.21-6.3.3.jar
-4.882.766 B | sha1: 320cf996f8cafe85398ebcdbf34a7fed6298c6a4
+https://cdn.modrinth.com/data/CHpe5Yyf/versions/iz6zg7kc/private_messages-2.1.0.jar
+```
+```
+37.715 B | sha1: f08dcc00877ca89a1dcaafa10c3327ff7b312d94
+bağımlılık: YOK
 ```
 
-> Architectury'yi zaten kullanıyor olabilirsin — `mods/` klasörüne bak,
-> varsa **tekrar indirme**, iki kopya çakışma yapar.
-
-### 2.2 Sunucuya kur
+### 2.2 Kur
 - [ ] Sunucuyu kapat
-- [ ] 3 dosyayı da sunucunun **`mods/`** klasörüne at
+- [ ] Jar'ı sunucunun **`mods/`** klasörüne at
 - [ ] Başlat, logu oku:
 
 ```bash
 grep -iE "error|conflict|incompatible|failed|exception|missing" logs/latest.log | head -30
 ```
-- [ ] Çıktı temizse devam
+- [ ] Temizse devam
 
-### 2.3 Kendine kur
-- [ ] Aynı 3 dosyayı **kendi** `mods/` klasörüne at
-- [ ] Oyunu aç → çökmüyor mu?
-- [ ] **Tuş ata:** Ayarlar → Kontroller → `MineTogether` ara
-      → Chat / Friends tuşlarını seç *(mesela `O` ve `P`)*
-- [ ] Tuşa bas → pencere açıldı mı?
+### 2.3 Test
+- [ ] `/msg <arkadaş> selam` → gitti mi?
+- [ ] Karşı taraf **mesaja tıklasın** → cevap kutusu açılıyor mu?
+- [ ] `/r selam sana da`
+- [ ] Kendine mesaj at → nota kaydolur → `/pm notes`
 
-### 2.4 Arkadaşlara dağıt
-- [ ] 3 dosyayı bir klasöre koy, zip'le, gönder
-- [ ] Not düş: *"mods klasörüne atın, Architectury varsa üzerine yazmayın"*
-- [ ] Herkes girdi mi kontrol et
+### 2.4 Arkadaşlara duyur
 
-### 2.5 Test
-- [ ] Arkadaşını **arkadaş listesine ekle**
-- [ ] **DM at**, geliyor mu?
-- [ ] Grup sohbeti dene
+Şunu at yeter, **kimse bir şey indirmeyecek:**
 
-### ✅ Görev 2 bitti
+```
+/msg <isim> <mesaj>   → özel mesaj
+/r <mesaj>            → son mesaja cevap
+/ignore <isim>        → o kişiden mesaj alma
+/pm notes             → kendine not
+```
 
-**Hesap:** MineTogether'da giriş **opsiyonel**. Anonim UUID ile çalışır.
-Hesap sadece profil adı + premium için. **Girmene gerek yok.**
+Offline birine mesaj atarsan **girdiğinde alır.**
+Kayıtlı veriler şifreli, sunucu sahibi bile okuyamıyor.
+
+### ✅ Bitti
 
 ---
 
@@ -124,23 +139,33 @@ Hesap sadece profil adı + premium için. **Girmene gerek yok.**
 
 | Belirti | Sebep | Çözüm |
 |---|---|---|
-| Sunucu açılmıyor | Architectury eksik/çift | `mods/` kontrol, tek kopya bırak |
-| "Missing dependency polylib" | PolyLib atlanmış | PolyLib'i ekle |
-| Arkadaş giremiyor | Onda mod eksik | 3 dosyayı da attığını doğrula |
-| Tab boş | Datapack yüklenmemiş | `/datapack list`, klasörü kontrol |
-| MineTogether pencere açmıyor | Tuş atanmamış | Kontroller'den tuş ata |
+| Tab boş | Datapack yüklenmemiş | `/datapack list`, `level-name` doğru mu |
+| Tab'ı `mods/`e attım | Yanlış klasör | `world/datapacks/`'a taşı |
+| `.jar` indirdim, yüklenmiyor | Fabric API istiyor | `.zip` sürümünü indir |
+| `/msg` komutu yok | Jar `mods/`de değil | Klasörü ve logu kontrol et |
+| Komut var ama gitmiyor | Karşı taraf `/ignore` yapmış | `/ignore` ile geri aç |
 
-**Her şeyi geri almak:** Attığın dosyaları sil, yeniden başlat. İkisi de dünyaya kalıcı iz bırakmaz.
+**Her şeyi geri almak:** İki dosyayı sil, restart. Dünyaya kalıcı iz bırakmazlar.
 
 ---
 
 ## 📋 ÖZET
 
-| | Nereye | Kim kurar |
+| Dosya | Nereye | Kim kurar |
 |---|---|---|
 | `tab-info-0.2.0.zip` | `world/datapacks/` | 🟢 sadece sunucu |
-| Architectury API | `mods/` | 🔴 herkes |
-| `polylib-*.jar` | `mods/` | 🔴 herkes |
-| `minetogether-*.jar` | `mods/` | 🔴 herkes |
+| `private_messages-2.1.0.jar` | `mods/` | 🟢 sadece sunucu |
 
-**Görev 1'i tek başına yapabilirsin. Görev 2 için arkadaşların müsait olduğu bir akşam seç.**
+**Toplam 74 KB. Arkadaşların hiçbir şey yapmıyor. İkisi de 10 dakikada biter.**
+
+---
+
+## ⚠️ AYRI KONU — offline-mode güvenliği
+
+`online-mode=false` olduğu için Tailscale ağındaki **herkes senin isminle girebilir.**
+Girer, OP komutlarını kullanır, sandığını boşaltır.
+
+Çözüm: **Auth** modu (`https://modrinth.com/mod/auth`) — sadece sunucu, hesap istemez.
+Herkes `/register <şifre> <şifre>` yapar, sonra her girişte `/login <şifre>`.
+
+Bu iki modla işin yok, ayrı bir iş. Ama ağa dışarıdan biri düşerse lazım olur.
