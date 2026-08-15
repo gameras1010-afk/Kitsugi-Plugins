@@ -491,6 +491,8 @@ KONFOR (istersen, hepsi bağımlılıksız)
 
 ### ⚠️ ServerCore kurulum sırası — bu adımı atlama
 
+
+
 1. Sunucuyu kapat, `servercore-neoforge-1.5.19+1.21.1.jar` → `mods/`
 2. Sunucuyu **bir kez aç ve kapat** — config dosyası oluşsun
 3. `config/servercore.toml` aç → `[dynamic]` bölümünü bul → `enabled = false` yap
@@ -500,3 +502,99 @@ KONFOR (istersen, hepsi bağımlılıksız)
 6. Sorun yoksa diğer 6 modu topluca ekle
 
 3. adımı atlarsan arkadaşlarının ekranı sürekli yeniden yüklenir.
+
+---
+---
+
+# 📕 EK 2 — SEN BULDUN, BEN BULAMADIM
+
+## Unloaded Activity ✅ (kurulu, çalışıyor)
+
+```
+https://cdn.modrinth.com/data/Oo4rJCDP/versions/lrpwT74F/unloadedactivity-v0.6.7+1.21-1.21.1.jar
+326.940 B | sha1 4285140313e85ffa2745f398f1f8c7034970b1f4
+```
+- `unloaded-activity` / `Oo4rJCDP` · **LGPL-3.0** · `server_only` · 🔑 Hesap gerekmez
+- **Bağımlılık:** yok · 291K indirme · Haziran 2026'da güncellenmiş
+
+**Ne yapıyor:** Chunk yüklü değilken geçen süreyi kaydediyor, chunk tekrar
+yüklendiğinde "hiç durmamış gibi" ileri sarıyor. Yani **sonsuz simulation distance**
+etkisi — ekinler, fırınlar, ağaçlar sen uzaktayken de büyümüş oluyor.
+
+### 🔴 ÖNEMLİ: Lithium uyarısı — bunu bilmen lazım
+
+Kurduğun **v0.6.7'nin changelog'unda tek satır var:**
+
+> *"Fixed **Lithium** incompatibility on **NeoForge** that caused furnaces to
+> smelt stuff instantly."*
+
+**Senin sunucunda Lithium var** (`MOD-LISTESI.md` satır 27). Yani:
+- ✅ **Doğru sürümü kurmuşsun** — v0.6.7 bu bug'ı düzelten sürüm
+- ⚠️ Eğer bir gün v0.6.4'e düşersen **fırınlar anında pişirmeye başlar**
+- 🔍 Kontrol et: bir fırına kömür + hammadde koy, anında pişiyorsa sorun var
+
+### 🟡 C2ME ile durum — dürüst olayım
+`versionType: beta` (release değil). C2ME ile birlikte test edildiğine dair
+kanıt bulamadım. İkisi de chunk yaşam döngüsüne dokunuyor.
+Sunucu açıldığına göre **crash yok** — ama birkaç gün ekinleri/fırınları gözle.
+
+### 💡 Bu mod bir modu gereksizleştirdi
+**TT20**'yi (`YS3ZignI`) listemde "semptom örtücü" diye ikinci sınıfa koymuştum.
+Unloaded Activity varken TT20'ye hiç gerek yok — aynı problemi doğru yerden çözüyor.
+**TT20'yi listeden çıkarıyorum.**
+
+---
+
+## 🔍 NEDEN BULAMADIM — yöntem hatam
+
+Aramalarımı hep **`index=downloads`** (en çok indirilen) ile yaptım.
+Unloaded Activity'nin 291K indirmesi var — YUNG's, Terralith gibi 20 milyonluk
+devlerin yanında **ilk sayfalara hiç çıkmıyor.** Kategorisi de `utility`,
+yani tam da taradığım yerdeydi. Sadece sıralamanın dibinde kaldı.
+
+**Düzelttim:** `index=follows` (takipçi sayısı) ile yeniden taradım.
+Bu, "çok indirilen" yerine "insanların gerçekten sunucusunda tutmak istediği"
+modları öne çıkarıyor. Aşağıdakiler o taramadan çıktı 👇
+
+---
+
+## 🆕 follows sıralamasıyla çıkan yeni modlar
+
+### ✅ Infinite Trading — köylü ticareti hiç kilitlenmez
+- `infinite-trading` / `U3eoZT3o` · Serilum · `server_only` · 🔑 Hesap gerekmez
+- 2.3M indirme, 1315 takipçi
+- Köylülerin "stok bitti" durumu ortadan kalkıyor, sürekli ticaret
+- 🤔 Ekonomiyi kolaylaştırır — zor oyun istiyorsan kurma
+
+### ✅ Inventory Totem — totem envanterde çalışır
+- `inventory-totem` / `yQj7xqEM` · Serilum · `server_only` · 🔑 Hesap gerekmez
+- 2.9M indirme. Totem'i elde tutma zorunluluğu bitiyor
+- Ölüm anında envanterin herhangi bir yerindeki totem devreye giriyor
+
+### 🤔 Geyser — Bedrock'tan (telefon/konsol) bağlanma
+- `geyser` / `wKkoqHrH` · MIT · `server_only`
+- 🔴 **Ama sana uymaz:** Geyser normalde **Floodgate** ile birlikte kurulur ve
+  Floodgate Xbox Live hesabı doğrulaması yapar. Sen offline/cracked'sın.
+  Ayrıca C2ME'li bir sunucuya ek protokol katmanı yük demek. **Kurma.**
+
+---
+
+## 📌 GÜNCELLENMİŞ ÇEKİRDEK LİSTE
+
+```
+KURULU ✅
++ Unloaded Activity  327 KB  → ekinler/fırınlar uzaktayken de ilerler
+                                ⚠️ v0.6.7'de kal (Lithium fix'i bu sürümde)
+
+ÖNERİLEN (henüz kurmadın)
+1. ServerCore       1.46 MB  → ⚠️ [dynamic] enabled = false ŞART
+2. Skin Restorer     276 KB  → korsanda skin
+3. Ksyxis             27 KB  → açılış hızı
+4. CrashExploitFixer  695 KB → güvenlik
+5. Advanced Backups   336 KB → yedek
+6. ItemClearLag        38 KB → C2ME uyumu teyitli
+7. Let Me Despawn      85 KB → 1.3.2, bağımlılıksız
+
+❌ ÇIKARILDI
+- TT20 → Unloaded Activity aynı işi doğru yapıyor
+```
