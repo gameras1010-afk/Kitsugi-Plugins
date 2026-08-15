@@ -598,3 +598,181 @@ KURULU ✅
 ❌ ÇIKARILDI
 - TT20 → Unloaded Activity aynı işi doğru yapıyor
 ```
+
+---
+---
+
+# 📘 EK 3 — FARKINDA OLMADIĞIN BOŞLUKLAR
+
+Bu bölüm "şu mod güzelmiş" listesi değil. **Senin sunucunun somut
+durumundan doğan, daha önce hiç konuşmadığımız 3 boşluk** var.
+Hepsi `client_side: unsupported` → arkadaşların hiçbir şey kurmaz.
+Hiçbiri Mojang hesabı istemez.
+
+---
+
+## 🔴 1. EasyLogin — EN ÖNEMLİSİ, bu bir güvenlik açığı
+
+### Önce problemi anlat
+
+Sunucun `online-mode=false` (korsan launcher kullandığın için başka
+şansın yok). Bunun anlamı şu:
+
+> **Minecraft, bağlanan kişinin kim olduğunu HİÇ doğrulamıyor.**
+> Sadece yazdığı isme bakıyor.
+
+Yani biri launcher'ına senin nickini yazıp Tailscale IP'nden bağlanırsa
+**sunucu onu sen sanır.** Senin envanterin, senin evin, senin OP yetkin.
+Şifre yok, kontrol yok. Bu bir "risk" değil, **tasarım gereği açık kapı.**
+
+Tailscale seni dış dünyadan koruyor ✅ ama ağına aldığın herkes
+(arkadaşların, onların cihazları) bu kapıdan girebilir.
+
+### Çözüm
+
+```
+EasyLogin  ·  1.21.1 NeoForge  ·  162 KB  ·  MIT  ·  🔑 hesap gerekmez
+easylogin-neoforge-1.21.1-1.0.1.jar
+modrinth.com/mod/easylogin
+```
+
+**Doğrulandı:** `game_versions: ["1.21.1"]`, `loaders: ["neoforge"]`,
+`environment: dedicated_server_only`, **bağımlılık YOK** (`dependencies: []`).
+
+Nasıl çalışır:
+- Oyuncu girer → **limbo**'ya alınır, hareket/sohbet/etkileşim kilitli
+- `/register <şifre> <şifre>` ile kaydolur
+- Sonraki girişlerde `/login <şifre>`
+- Şifreler **BCrypt** ile hash'lenir (düz metin değil)
+- Brute-force koruması var (IP + UUID bazlı kilitleme)
+
+Admin: `/easylogin forcelogin <oyuncu>`, `/easylogin resetpassword <oyuncu>`,
+`/easylogin reload`
+
+### ⚠️ Dürüst uyarılar
+
+| Konu | Durum |
+|---|---|
+| İndirme | 3.944 — **düşük.** Ama kaynak kodu açık: `github.com/pedro-dalben/easyLogin` |
+| Yaş | 2026-02'de yayınlandı, 2026-05'te güncellendi — yeni proje |
+| `issues_url` | Yok → hata bildirimi Modrinth thread'inden |
+| Komut kullanımı | 🔴 `/login` komut tabanlı. Görev 22'de komutları reddetmiştin — **ama bu farklı:** burada GUI alternatifi yok, çünkü GUI'li login modu client kurulumu ister. Bu tek seferlik bir şifre girme, günlük kullanım değil. |
+
+### Alternatifler (aynı işi yapanlar)
+
+| Mod | Durum |
+|---|---|
+| **Auth** (`RpXNx59A`, 59K indirme, AGPL) | Daha popüler, 1.21.1 var. `client_side: optional` — yani client'a da kurulabiliyor ama şart değil. **EasyLogin'e göre daha oturmuş.** Eğer indirme sayısı seni tedirgin ettiyse bunu tercih et. |
+| **Login System** (`S4Tu3Hn2`, 6K) | `dedicated_server_only`, MIT. Daha az özellik. |
+| **Login** (`kxs8saks`) | Datapack. Açıklaması birebir: *"Especially important in servers with online_mode=false"*. Mod bile gerekmez — `world/datapacks/` içine atarsın, arkadaşlara otomatik senkronlanır. **En hafif seçenek.** |
+
+**Benim tavsiyem:** Önce **Auth**'u dene (daha çok kullanılmış), olmazsa EasyLogin.
+
+---
+
+## 🟡 2. Your Items Are Safe — ölünce eşyan kaybolmasın
+
+### Neden bu senin sorunun
+
+Sende **C2ME + TPS derdi** var. Lag'li sunucuda ölmek demek:
+- Eşyalar yere düşer → 5 dakika sayacı başlar
+- Lag varsa geri dönemeden **despawn** olur
+- Lav/void'e düştüyse zaten gitti
+
+Üstelik sende **ItemClearLag** öneriliyor — o mod yerdeki itemleri
+temizliyor. Yani öldüğünde eşyaların **iki taraftan** tehdit altında.
+
+### Çözüm
+
+```
+Your Items Are Safe  ·  1.21.1  ·  68 KB  ·  🔑 hesap gerekmez
+youritemsaresafe-1.21.1-4.7.jar
+modrinth.com/mod/your-items-are-safe
+```
+
+**Doğrulandı:** `environment: "server_only"`, `client_side: unsupported`,
+`loaders: [fabric, forge, neoforge, quilt]`, `game_versions: ["1.21", "1.21.1"]`.
+
+Öldüğün yere **sandık + zırh standı** koyar. Eşyaların içinde durur,
+despawn olmaz, ItemClearLag dokunmaz. Mezar taşı modlarının aynısı ama
+özel blok yerine **vanilla sandık** kullanıyor → hiçbir şeyle çakışmaz.
+
+### ⚠️ İki uyarı
+
+1. **Bağımlılığı var:** `e0M1UDsY` = **Collective** (Serilum'un kütüphanesi).
+   Onu da kurman şart. `modrinth.com/mod/collective`
+2. **Lisansı All-Rights-Reserved** — kullanabilirsin, dağıtamazsın. Senin
+   için sorun değil.
+
+### Alternatif
+
+**Graves** (`kieAM9Us`, `ly-graves`, AGPL, 123K indirme) — gerçek mezar taşı,
+daha çok ayar, daha popüler. Ama `client_side: optional` ve özel blok
+kullanıyor. Vanilla sandık daha güvenli, o yüzden ilk sırada Your Items Are Safe.
+
+---
+
+## 🟢 3. Auto Restart — sızıntıyı gece temizler
+
+### Neden
+
+Uzun süre açık kalan modlu sunucularda RAM sızıntısı ve TPS erimesi
+normaldir. Sende **AllTheLeaks** var (sızıntı yamalıyor) ama o her şeyi
+yakalamaz. C2ME + 6 thread + `simulation-distance=6` ile çalışan bir
+sunucuda 3-4 günlük uptime'dan sonra TPS'in yavaş yavaş düştüğünü
+fark edersen sebebi budur.
+
+```
+Auto Restart  ·  1.21.1 NeoForge  ·  🔑 hesap gerekmez
+modrinth.com/mod/auto-restart
+```
+
+`client_side: unsupported`, `dedicated_server_only`. Belirlediğin saatte
+(mesela sabah 05:00) oyunculara sayaç gösterir, uyarır, düzgün kapatır.
+
+### ⚠️ Kritik şart
+
+Bu mod sunucuyu **kapatır**, geri açmaz. `start.sh` / `start.bat`
+dosyanda döngü olmalı:
+
+```bash
+while true; do
+  java @user_jvm_args.txt ... nogui
+  echo "Sunucu kapandi, 5 sn sonra yeniden aciliyor..."
+  sleep 5
+done
+```
+
+Bu döngü yoksa sunucu sabah 05:00'te kapanır ve **kapalı kalır.**
+Kurmadan önce `start.sh`'ı düzelt.
+
+Lisans: All-Rights-Reserved. İndirme 8.031.
+
+---
+
+## 📋 EK 3 ÖZET
+
+| # | Mod | Boyut | Bağımlılık | Aciliyet |
+|---|---|---|---|---|
+| 1 | **Auth** veya **EasyLogin** | ~160 KB | Yok | 🔴 **Yüksek** — güvenlik açığı |
+| 2 | **Your Items Are Safe** + Collective | ~68 KB + lib | ⚠️ Collective | 🟡 Orta |
+| 3 | **Auto Restart** | küçük | ⚠️ `start.sh` döngüsü | 🟢 Düşük |
+
+### Kurulum sırası
+1. Önce **sadece Auth/EasyLogin** kur, tek başına test et — login akışı
+   çalışıyor mu, arkadaşların girebiliyor mu?
+2. Çalışıyorsa Your Items Are Safe + Collective ekle
+3. En son Auto Restart — ama `start.sh` döngüsünü **önce** yaz
+
+---
+
+## ❌ EK 3'te elenenler
+
+| Mod | Neden |
+|---|---|
+| **Detect AFK Players** (`OZdgwUpA`) | 1.21.1 var ama tek başına hiçbir şey yapmaz — kütüphane. Add-on'ları da 1.21.8'de kalmış |
+| **DynPlay** (`3OhV3TrM`) | CPU yüküne göre max oyuncu sayısını kısıyor. 538 indirme, CC-BY-NC. **Senin 3-5 kişilik sunucunda anlamsız** |
+| **Login Shield** (`vpjnuUWT`) | Girişte hasar korumasi. EasyLogin'in "invincibility period" özelliği zaten bunu yapıyor |
+| **Early Bedtime / Sleep Sooner** | Uyku saati ayarı — sorun değil, ihtiyaç yok |
+| **Server World Resets** | Her restart'ta dünyayı sıfırlıyor. **Senin dünyanı siler.** Kesinlikle kurma |
+| **Gravestone x Curios Compat** | Curios API + Gravestone modu varsa anlamlı. Sende yok |
