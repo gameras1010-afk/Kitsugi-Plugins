@@ -144,3 +144,65 @@ Sistem **sağlam**: 37 başlıkta tek bir yanlış eşleşme yok. Kalan iki iyil
 (öncelik sırasıyla): (1) umbrella wiki (kdrama vb.), (2) slugify-probe fallback'i
 (Pan's Labyrinth vakası). İkisi de "kaçırma"yı azaltır — "yanlış eşleşme" riski taşımaz,
 çünkü her ikisi de K3 doğrulamasından geçmek zorundadır.
+
+---
+
+# TUR 3 — "Hiç Bilinmeyenler" Dip Testi (15 başlık, 2026-08-28)
+**Kapsam:** 1974 çöp animeleri, tek sezonluk iptal dizileri, kültün kültü OVA'lar, yabancı dil yapımlar.
+Kümülatif test: **52 başlık**.
+
+## Test edilenler ve sonuçlar
+
+### ✅ Aramadan doğru çözülen dip-niş (3)
+| Başlık | Slug | Not |
+|---|---|---|
+| Haibane Renmei (2002, ABe kültü) | `haibanerenmei` | Tek sonuç, 10 sayfalık wiki bile |
+| Patlabor (1989 mecha) | `patlabor` | Tek sonuç |
+| Kaamelott (FR dizi) | `kaamelott` (fr) | ⚠️ **lang=en'de 0, lang=fr'de bulundu** → yeni bulgu ↓ |
+
+### 🥇 YENİ BULGU #1: Çok dilli arama gerekliliği (Kaamelott vakası)
+unified-search `lang` parametresi **yapımın kaynak diliyle** sorgulanmalı: Kaamelott
+`lang=en` ile görünmez, `lang=fr` ile ilk sonuç. **Öneri (v2.4):** yapımın ülke/dil
+metadata'sı (AniList countryOfOrigin / TMDB original_language) biliniyorsa arama
+`lang=en` + `lang={orijinal_dil}` olarak İKİ kez atılmalı. Fransız/Alman/İspanyol
+yapımlarının wiki'leri çoğunlukla kendi dillerinde.
+
+### 🥇 YENİ BULGU #2: Slugify-probe artık kanıtlı gereklilik (2 yeni vaka, toplam 4)
+| Başlık | Arama | Wikidata | Gerçek |
+|---|---|---|---|
+| **Chargeman Ken!** (1974) | 0 sonuç | QID yok | Wiki VAR: `chargeman-ken` (32 makale, aktif!) |
+| **Gankutsuou** (2004) | 0 sonuç | — | Wiki VAR: `gankutsuou` (29 makale; dikkat: wikiid'si `duo` — eski slug mirası) |
+| Sonny Boy (Tur 1) | 0 | ✓ kurtardı | `sonny-boy` |
+| Pan's Labyrinth (Tur 2) | 0 | boş | `pans-labyrinth` |
+
+Dört vakada da doğru slug = başlığın basit slugify'ı (`chargeman-ken`, `gankutsuou`,
+`pans-labyrinth`, `sonny-boy`). **Slugify-probe fallback'i artık "öneri" değil,
+"gerekli özellik" statüsünde** — dip-niş segmentte arama indeksinin kör noktası sistematik.
+
+### 🔴 Doğru redler — jenerik gürültüye rağmen sıfır yanlış pozitif (9)
+| Başlık | Aramanın döndürdüğü çöp | Neden elenir |
+|---|---|---|
+| Oruchuban Ebichu | 0 sonuç | temiz red |
+| Kuuchuu Buranko (Trapeze) | Taro Okamoto, PJSK fanon | isim skoru ~0 |
+| NieA_7 | Plim Plim (çocuk TV), HUstudios | isim skoru ~0 |
+| Windy Tales | Tales of Wind (2 OYUN wiki'si) | hub:games cezası + isim ters |
+| Cat Soup (Nekojiru-sou) | Plant Cats, Planet Yarnball | isim skoru ~0 |
+| Jinrui wa Suitai Shimashita | Vietnamca roman wiki'si (!) | isim skoru ~0; `jintai` slug probu da boş |
+| Terriers (2010 FX) | Secret Life of Pets (!) | isim/tür uyumsuz |
+| Lodge 49 | 0 sonuç | temiz red |
+| The Man from Earth | **Warhammer 40k + One-Punch Man** (!) | isim skoru ~0 — eski sistem burada W40k'dan terim çekebilirdi! |
+| Kingdom Hospital | 0; slug probu da boş | temiz red |
+
+## Kümülatif Skor (52 başlık, 3 tur)
+| Metrik | Değer |
+|---|---|
+| **Yanlış eşleşme** | **0/52 (%0)** — üç turda da sıfır |
+| Wiki'si olanlarda isabet | 26/30 (%87) — kaçan 4'ün hepsi slugify-probe ile kapanır → potansiyel %100 |
+| Wiki'si olmayanlarda doğru red | 22/22 (%100) |
+| Kanıtlı arama indeks boşluğu | 4 (Sonny Boy, Pan's Labyrinth, Chargeman Ken, Gankutsuou) |
+| K3 veto kurtarışı | 1 (Ping Pong) + The Man from Earth'te W40k tuzağı isim skoruyla engellendi |
+
+## Güncellenmiş yol haritası (öncelik sırası değişti!)
+1. **[YÜKSEK — yükseltildi]** Slugify-probe fallback (4 kanıtlı vaka; dip-niş segmentin anahtarı)
+2. **[ORTA]** Çok dilli arama (`lang=en` + orijinal dil) — Kaamelott vakası
+3. **[ORTA]** Umbrella wiki whitelist (kdrama vb.)
