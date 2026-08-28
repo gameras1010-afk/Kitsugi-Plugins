@@ -208,3 +208,57 @@ Her aday için sırayla; herhangi bir **veto** adayı direkt eler:
 ## 6. Referans İmplementasyon
 Yan dosya: [`fandom_resolver_v2.py`](./fandom_resolver_v2.py) — yukarıdaki 4 katmanın çalışır iskeleti
 (stdlib-only, kendi uygulamana kopyala-uyarla).
+
+---
+
+## 7. EK — İkinci Tur Testler: Son Bulgular ve Kalan Riskler
+*(2026-08-28, ikinci doğrulama turu; testler #16–#23)*
+
+### 7.1 Yeni canlı test bulguları
+
+| # | Test | Sonuç | Çıkarım |
+|---|------|-------|---------|
+| 16 | `prop=extracts` (TextExtracts) Fandom'da | ❌ **YOK** — "Unrecognized value for parameter prop: extracts" | Terim tanımı/özet çekmek için MW extracts KULLANILAMAZ. Alternatif ↓ |
+| 17 | Nirvana v1: `/api/v1/Articles/Details?titles=Godou Kusanagi&abstract=200` | ✅ Temiz düz-metin özet döndü: *"...male protagonist of Campione!. Upon his encounter and defeat of Verethragna..."* + thumbnail | **Çeviri bağlamı için altın:** her terimin 1-2 cümlelik tanımını AI çeviri prompt'una bağlam olarak verebilirsin. Toplu da çalışır (`titles=A,B,C`). |
+| 18 | `prop=redirects` (sayfa başına alias hasadı) | ✅ Godou Kusanagi → **7 alias**: `Kusanagi Godo`, `Godou`, `Kusanagi Godou`, `Kusanago Godou` (yazım hatası dahil!) | Alias'ları K4'te sadece "çözüp atmak" israf: **hepsini sözlüğe alias olarak kaydet.** Altyazıda "Godou" tek başına geçer; alias tablosu olmadan eşleşmez. |
+| 19 | Tek çağrıda tür etiketi: `generator=categorymembers&prop=categories` | ✅ Her terim kendi TÜM kategorileriyle döndü (Athena → God, Female, Greek, Heretic God) | Sözlüğe **terim tipi** (karakter/tanrı/örgüt/eşya) tek çağrıda eklenir. Çeviri tutarlılığı için tip bilgisi (ör. kılıç adı çevrilmez, unvan çevrilir) kritik. |
+| 20 | Alt-kategori kontrolü: `cmtype=subcat` | ✅ Campione'de boş; ama büyük wiki'lerde `Characters` altında `Male Characters` vb. iç içe olur | Kategori taramasına **sınırlı derinlikli (max 2) subcat recursion** ekle; yoksa büyük wiki'lerde terimlerin yarısı kaçar. |
+| 21 | Nirvana v1 `Articles/List?category=Characters` | ⚠️ Çalışıyor ama offset'inde Template sızıntısı görüldü | MW `categorymembers` (filtreli) birincil kalsın; v1 List sadece yedek. |
+| 22 | `list=recentchanges&rclimit=1` | ✅ Son düzenleme zamanı tek çağrıda | **Akıllı cache tazeleme:** TTL yerine "son edit timestamp'i değişti mi?" kontrolü — değişmediyse indirme yok, kota yok. |
+| 23 | `prop=langlinks` (makale bazında) | ✅ Frieren sayfası `ru: Фрирен` langlink'i döndü | Karakterin hedef dildeki resmî yazılışını **makale langlink'inden** alabilirsin — çeviri sözlüğü için interwikimap'ten daha ince taneli ikinci yol. |
+
+### 7.2 Değinilmesi gereken kalan konular (kod dışı ama kritik)
+
+1. **wiki.gg göçü / Fandom'u terk eden wiki'ler.** Son yıllarda birçok büyük topluluk Fandom'dan
+   `wiki.gg`'ye veya bağımsız sitelere taşındı ve **Fandom'daki kopya bayat/donuk kaldı**
+   (ör. Terraria, Calamity, Yu-Gi-Oh!). Wikidata bazen hâlâ eski Fandom slug'ını gösterir.
+   Anime tarafında nadir ama oyun-uyarlaması yapımlarda gerçek risk. Pratik önlem:
+   `recentchanges` son edit tarihi 1+ yıl eskiyse "bayat wiki" bayrağı koy; Indie Wiki Buddy'nin
+   açık kaynak yönlendirme veritabanı (fandom→bağımsız wiki eşleşmeleri) blocklist/redirect
+   kaynağı olarak kullanılabilir.
+2. **Rate limit / nezaket politikası.** Wikidata SPARQL için UA zorunlu (koyduk); `haswbstatement`
+   araması ucuz, SPARQL pahalı — traversal sonuçlarını mutlaka cache'le. unified-search resmî
+   dokümante olmadığı için: istekler arası ≥300ms, 429/5xx'te üstel backoff, günde seri başına
+   1 çözümleme (zaten cache'li). MediaWiki API'de `maxlag=5` parametresi eklemek iyi vatandaşlıktır.
+3. **Sezon/parça ID tuzağı.** `haswbstatement` bazı ID'lerde **sezon item'ine** düşer
+   (Frieren → Q130377145 "season 1"). Traversal'daki `P179` bunu ana esere bağlıyor (çözüldü),
+   ama cache anahtarında dikkat: aynı serinin S1/S2'si farklı AniList ID'dir → **franchise-level
+   ikinci cache anahtarı** (ör. AniDB id veya Wikidata ana eser QID'si) tut ki S2 başladığında
+   S1'in sözlüğü sıfırdan çözülmesin.
+4. **Karakter kaynağı zinciri netleşti:** AniList GraphQL (POST, sandbox'ta engelliydi ama üretimde ana yol)
+   → Jikan (test sırasında 504 verdi, tek kaynak yapma) → Kitsu (`?include=character` şart, yoksa boş stub döner).
+5. **Terim sayfası olmayan wiki'ler:** 10-50 sayfalık minik wiki'lerde (unified-search'te `pageCount:10`)
+   kategori hiç olmayabilir → `list=allpages&apfilterredir=nonredirects` fallback'i kullan,
+   ama `/` alt sayfa ve `Administrators` gibi meta sayfaları yine filtrele (Test #14/16'daki filtreler geçerli).
+
+### 7.3 Nihai kontrol listesi (uygulamaya geçirirken)
+
+- [ ] K1: animeapi.my.id → yedek ARM (⚠️ `include=wikidata` asla)
+- [ ] K1: `haswbstatement` sırası P8729 → P4086 → P4983/P4947 → P345; TMDB varsa `external_ids` kestirmesi
+- [ ] K2: Wikidata traversal + unified-search (synonym başına sorgu) + AI sadece son çare
+- [ ] K3: crossover blocklist → sitename fuzzy → karakter problaması (ad-soyad ters varyantlı) → nadir terim → hub uyumu → eşik 0.75, geçemeyen = "eşleşme yok"
+- [ ] K4: `cmnamespace=0&cmtype=page` + subcat recursion (max 2) + alt sayfa/çöp filtresi
+- [ ] K4: redirect canonicalization + `prop=redirects` ile alias hasadı + normalize dedupe
+- [ ] K4: `prop=categories` ile terim tipi etiketi; `Articles/Details?abstract=` ile çeviri bağlamı
+- [ ] Cache: ID anahtarlı + franchise anahtarı + negatif TTL + `recentchanges` tazelik kontrolü + overrides.json
+- [ ] Nezaket: UA, 300ms aralık, backoff, maxlag=5, bayat-wiki bayrağı
