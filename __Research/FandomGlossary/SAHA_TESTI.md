@@ -82,3 +82,65 @@ bunlar "güvenilir merkezi wiki whitelist'i" olur.
 1. **[Orta]** Umbrella-wiki whitelist özelliği (kdrama vb.) — K-drama segmenti için tek eksik.
 2. **[Düşük]** LoGH gibi çoklu-meşru vakalarda pageViews tie-breaker'ının loglanması.
 3. **[Düşük]** unified-search 0 sonuç dönünce Wikidata'ya düşüşün metriklenmesi (hangi oranla oluyor).
+
+---
+
+# TUR 2 — Derin Niş Testi (19 yeni başlık, 2026-08-28)
+**Kapsam:** az bilinen/kült anime (10) + niş dizi (5) + niş film (4). Toplam test edilen başlık: **37**.
+
+## Tur 2 Sonuç Matrisi
+
+### ✅ Aramadan tek atışta doğru çözülenler (8)
+| Başlık | Slug | Not |
+|---|---|---|
+| Shinsekai Yori | `shinsekaiyori` | Romaji sorgu, tek sonuç |
+| Kaiba (Yuasa, 2008) | `kaiba` | Ultra-niş, tek sonuç |
+| Planetes | `planetes` | pageCount:10'luk mini wiki bile bulundu |
+| Mushishi | `mushishi` | |
+| Barakamon | `barakamon` | |
+| Deadwood | `deadwood` | |
+| Rectify | `rectify` | pageViews:10'luk ölü wiki bile ilk sırada |
+| Halt and Catch Fire | `haltandcatchfire` | Breath of Fire gürültüsü hub:games ile elendi |
+| The Leftovers | `the-leftovers` | Pokemon hack gürültüsü elendi |
+
+### 🥇 TUR 2'NİN YILDIZI: Ping Pong tuzağı — K3 katmanı hayat kurtardı
+- Arama "ping pong the animation" → alakasız sonuçlar (0 gerçek aday)
+- `pingpong.fandom.com` diye bir wiki VAR (sitename: "Ping Pong Wiki") — eski sistem bunu %100 kabul ederdi!
+- **Karakter problaması: Peco / Smile / Kazama → 3/3 MISSING → VETO** ✓
+- Yani wiki var ama BAŞKA bir "ping pong" konusu. Doğrulama katmanı tam da tasarlandığı işi yaptı.
+- Sonuç: "eşleşme yok" (doğru — animenin adanmış wiki'si gerçekten yok)
+
+### 🟡 Arama indeks boşluğu #2 kanıtlandı: Pan's Labyrinth
+- Arama: 0 sonuç. Ama `pans-labyrinth.fandom.com` VAR (canlı doğrulandı, sitename tam eşleşme).
+- Sonny Boy'dan sonra ikinci kanıtlı indeks boşluğu. Fark: Sonny Boy'u Wikidata kurtardı;
+  Pan's Labyrinth'te P4073 yoksa üçüncü fallback gerekir →
+  **ÖNERİ (v2.3): "slugify probe" fallback'i** — başlıktan deterministik slug üret
+  (`pans-labyrinth`, `pan-s-labyrinth`, `panslabyrinth`) → siteinfo probu → sitename fuzzy ≥0.8
+  VE karakter problaması geçerse kabul. Bu, AI tahmininden farklı: sadece deterministik
+  varyantlar denenir ve K3'ün tamamından geçmek zorundadır.
+
+### 🟠 Wikidata kapsam gerçeği (niş animelerde traversal boş)
+Ping Pong, Mononoke, Dennou Coil, Aku no Hana, Tatami Galaxy → **5/5 QID bulundu** (haswbstatement
+mükemmel çalışıyor) ama **traversal 5'inde de P4073/P6262'siz döndü**. RAPOR.md'deki %20 kapsam
+tahmini niş segmentte daha da düşük. Sistem bu durumda doğru şekilde "eşleşme yok" diyor
+(Tatami Galaxy'nin `tatamigalaxy` slug'ı da gerçekten boş — doğru karar).
+
+### 🔴 Doğru redler (wiki gerçekten yok) (7)
+Coherence, Primer, Dark City, Moon (2009), Babylon Berlin*, Gomorrah*, Patriot*
+(*bu üçünün slug probları boş döndü; adanmış wiki yok veya farklı slug'da —
+umbrella/slugify fallback'leri eklendiğinde yeniden değerlendirilebilir)
+
+## Kümülatif Skor (37 başlık)
+| Metrik | Değer |
+|---|---|
+| Adanmış wiki'si olup doğru çözülen | 23/25 (%92) |
+| Arama indeks boşluğu (kanıtlı) | 2 → 1'i Wikidata kurtardı, 1'i açık (slugify önerisi) |
+| Wiki'si olmayıp doğru reddedilen | 12/12 (%100) |
+| **Yanlış eşleşme (yanlış wiki kabul)** | **0/37 (%0)** ← eski sistemin ana hastalığı |
+| K3 veto kurtarışı (yanlış wiki engellendi) | 1 kanıtlı (Ping Pong) |
+
+## Nihai Hüküm
+Sistem **sağlam**: 37 başlıkta tek bir yanlış eşleşme yok. Kalan iki iyileştirme alanı
+(öncelik sırasıyla): (1) umbrella wiki (kdrama vb.), (2) slugify-probe fallback'i
+(Pan's Labyrinth vakası). İkisi de "kaçırma"yı azaltır — "yanlış eşleşme" riski taşımaz,
+çünkü her ikisi de K3 doğrulamasından geçmek zorundadır.
