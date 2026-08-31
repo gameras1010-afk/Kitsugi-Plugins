@@ -54,11 +54,22 @@ except ImportError:
     _OFFLINE_DB_OK = False
 
 # ── Sabitler ─────────────────────────────────────────────────────────────────
-# Glossary dosyası: her zaman fandom_glossary.py ile aynı dizinde (Python kodları/) kalır.
-# os.getcwd() KULLANILMAZ — script farklı klasörden (Sadece Çeviri/) çalışabilir.
+# [FIX] Glossary dosyası: ng_config.py (PARENT_DIR/series_glossary.json) ile aynı yolu kullan.
+# Python kodları/ iki üst dizini = Altyazi_Ceviri_Paneli/ → ng_config ile tutarlı.
 def _glossary_path() -> str:
+    # Python kodları/ → üst dizin = Altyazi_Ceviri_Paneli/
     base = os.path.dirname(os.path.abspath(__file__))
-    return os.path.join(base, "series_glossary.json")
+    parent = os.path.dirname(base)  # Altyazi_Ceviri_Paneli/
+    path = os.path.join(parent, "series_glossary.json")
+    # Fallback: eski konum (Python kodları/series_glossary.json) varsa geçiş yap
+    legacy = os.path.join(base, "series_glossary.json")
+    if not os.path.exists(path) and os.path.exists(legacy):
+        try:
+            import shutil
+            shutil.move(legacy, path)
+        except Exception:
+            return legacy  # Taşınamazsa eski yolu kullan
+    return path
 
 REQUEST_TIMEOUT  = 4     # saniye (düşürüldü: 8→4, paralel isteklerde yeterli)
 MAX_TERMS_PER_CAT = 200  # kategori başına maks. terim

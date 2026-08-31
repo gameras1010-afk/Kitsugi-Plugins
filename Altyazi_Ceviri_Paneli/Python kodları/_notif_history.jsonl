@@ -1,0 +1,6 @@
+{"msg": "Analiz tamam: 5 satir, 5 cevirilecek", "type": "info", "timeout": 4000, "ts": 1788196665.3199575}
+{"msg": "Batch modu: max 2000B / 20 satır — 5 satir kuyrukta", "type": "info", "timeout": 4000, "ts": 1788196665.3233907}
+{"msg": "✅ Kaydedildi: test_anime_out.ass", "type": "positive", "timeout": 4000, "ts": 1788196665.3358986}
+{"msg": "Analiz tamam: 2 satir, 2 cevirilecek", "type": "info", "timeout": 4000, "ts": 1788196741.3588676}
+{"msg": "Batch modu: max 2000B / 20 satır — 2 satir kuyrukta", "type": "info", "timeout": 4000, "ts": 1788196741.359899}
+{"msg": "✅ Kaydedildi: mini_out.ass", "type": "positive", "timeout": 4000, "ts": 1788196741.3681557}

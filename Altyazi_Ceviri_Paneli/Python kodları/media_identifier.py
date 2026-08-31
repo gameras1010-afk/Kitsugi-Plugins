@@ -152,108 +152,199 @@ def _cache_set(title: str, metadata: dict):
 
 # ──────────────────────────────────────────────────────────────
 # BÖLÜM 4: DOSYA ADI AYRIŞTIRICISI
+# ──────────────────────────────────────────────────────────────
+
+# Torrent kalıntısı olarak kalan etiketler — başlıktan agresif temizle
+_TORRENT_TAG_RE = re.compile(
+    r'\b(?:'
+    r'\d{3,4}p'                         # 1080p, 720p, 2160p
+    r'|x26[45]|h\.?26[45]|hevc|xvid|divx|mpeg2'  # codec
+    r'|bluray|blu-ray|bdrip|bdremux|brrip'  # kaynak  [FIX: brrip eklendi]
+    r'|web-?dl|webrip|web'              # web kaynak
+    r'|hdtv|pdtv|dvdrip|dvdscr'        # yayın
+    r'|aac|ac3|aac2|mp3|dts|flac|opus|eac3|dd5\.?1|truehd|atmos|avc'  # ses [FIX: aac2, avc]
+    r'|hdr|hdr10\+?|dolby|dv|sdr'      # video kalite
+    r'|10bit|8bit|hi10p'               # bit depth
+    r'|remux|proper|repack|extended|complete'  # sürüm  [FIX: complete buraya taşındı]
+    r'|imax|theatrical|unrated'        # sürüm tipi
+    r'|nf|amzn|dsnp|hmax|pcok|cr|bili|vostfr|subfrench|msubs|msub'  # platform/dil [FIX]
+    r'|sub|subs|dubbed|dual.?audio|multi.?sub|multisub|multi' # ses/altyazı [FIX: multi]
+    r'|internal|retail'                # çeşitli
+    r'|sparks|rarbg|ntb|yts|ettv|ion10|psig|eztv|edith|varyg|senpai|msd|afg|skyanime'  # grup [FIX]
+    r'|tri.?audio|zho|cmn|spa|pt.?eng'  # dil kodları [FIX]
+    r')\b',
+    re.IGNORECASE
+)
+
+# Parantez içini temizle — kalite/codec/hash içeriyorsa tamamını sil
+_BRACKET_JUNK_RE = re.compile(
+    r'\([^)]*(?:\d{3,4}p|x26[45]|hevc|aac|flac|bluray|web|multi|sub|dub|bd|hash|[0-9a-f]{6,8}|CA|WEBRip|WEB-DL|CR)[^)]*\)',
+    re.IGNORECASE
+)
+_SQBRACKET_JUNK_RE = re.compile(
+    r'\[[^\]]*(?:\d{3,4}p|x26[45]|hevc|aac|flac|bluray|web|multi|sub|dub|bd|[0-9a-f]{6,8}|baha|cr|bili)[^\]]*\]',
+    re.IGNORECASE
+)
+
+# "2nd Season", "3rd Season", "Nth Season" → parse et, başlıktan temizle
+_NTH_SEASON_RE = re.compile(
+    r'\b(\d+)(?:st|nd|rd|th)\s+season\b'
+    r'|\bseason\s+(\d+)\b'
+    r'|\bpart\s+(\d+)\b(?!\s+\d)',
+    re.IGNORECASE
+)
+
+
 def _clean_title(title: str) -> str:
     """
-    Baslik metninden kose parantez, dosya uzantisi, sezon/bolum bilgisi,
-    yil ve yayin etiketlerini agresif ve akilli sekilde temizler.
+    Torrent dosya adından saf seri başlığını çıkarır.
+    [Group] prefix, codec/kalite etiketleri, sezon/bölüm numaraları,
+    hash'ler ve sürüm etiketleri temizlenir.
     """
     if not title:
         return title
-        
-    # 0. Strip common video extensions
-    title_clean = re.sub(r'\.(mkv|mp4|avi|ts|m4v|flv|wmv|srt|ass)$', '', title, flags=re.I)
-    
-    # 1. Truncate at SxxExx or Sxx (Season / Episode indicators)
-    # Western series are normally structured as Show.Name.S01E02...
-    m_season = re.search(r'\b[Ss]\d{1,2}[Ee]\d{1,3}\b', title_clean)
-    if m_season:
-        title_clean = title_clean[:m_season.start()]
-    else:
-        m_s = re.search(r'\b[Ss]eason\s*\d+\b|\b[Ss]\d{1,2}\b', title_clean, flags=re.I)
-        if m_s and m_s.start() > 2:
-            title_clean = title_clean[:m_s.start()]
-            
-    # 2. Truncate at Year if followed by quality/codec tags (Movies)
-    m_year = re.search(r'\b((?:19|20)\d{2})\b', title_clean)
-    if m_year:
-        after_text = title_clean[m_year.end():].lower()
-        if re.search(r'\b(1080p|720p|2160p|4k|bluray|web|dvd|extended|imax|x264|x265|hevc|h264|h265|dd5|dts|aac|ac3|nf|amazon|netflix|apple|disney|sparks|rarbg|wiki)\b', after_text):
-            title_clean = title_clean[:m_year.start()]
-            
-    # 3. Replace dots and underscores with spaces
-    t = title_clean.replace('.', ' ').replace('_', ' ')
-    
-    # 4. Kose parantez temizleme (fansub gruplari vb.)
-    _m = re.match(r'^\[([^\]]+)\]\s*((?:Season|Part|Cour)\s*\d+.*)', t, re.I)
-    if _m:
-        t = (_m.group(1) + ' ' + _m.group(2)).strip()
-    else:
-        _m2 = re.match(r'^\[([^\]]+)\]\s*$', t)
-        if _m2:
-            t = _m2.group(1).strip()
-        else:
-            t = re.sub(r'^\s*\[[^\]]+\]\s*', '', t)
-            t = re.sub(r'\s*\[[^\]]+\]\s*$', '', t)
-            
-    t = re.sub(r'\s*\(TV\)\s*$', '', t, flags=re.I)
-    t = re.sub(r'\s*\(ONA\)\s*$', '', t, flags=re.I)
-    t = re.sub(r'\s*\(OVA\)\s*$', '', t, flags=re.I)
-    
-    # 5. Strip common torrent tags
-    t = re.sub(r'\b(s\d+e\d+|s\d+|e\d+|\d+p|x264|x265|hevc|h264|h265|bluray|webrip|hdtv|imax|extended|dd5\.?1|dts|aac|ac3|hdr|10bit|dual[\s-]*audio|multi[\s-]*audio)\b', '', t, flags=re.I)
-    
-    # Remove year hints
-    t = re.sub(r'\b(19|20)\d{2}\b', '', t)
-    
-    # Strip trailing release groups like -MeGusta, -WDYM, -NTb
-    t = re.sub(r'\s*-\s*[A-Za-z0-9]+$', '', t)
-    t = re.sub(r'\s*-\s*$', '', t)
-    
-    # Strip any empty brackets/parentheses left from tag removal
-    t = re.sub(r'\[\s*\]', '', t)
-    t = re.sub(r'\(\s*\)', '', t)
-    
-    # Strip trailing episode numbers from anime titles (e.g. - 03 or - 01v2)
-    t = re.sub(r'\s*-\s*\d{1,3}(?:[vV]\d)?\s*$', '', t)
-    
-    return ' '.join(t.split()).strip()
+
+    # 0. Uzantıyı soy
+    t = re.sub(r'\.(mkv|mp4|avi|ts|m4v|flv|wmv|srt|ass|ssa|vtt)$', '', title, flags=re.I)
+
+    # 1. SxxExx veya S01E01v2 → bu noktadan kes
+    m = re.search(r'\b[Ss]\d{1,2}[Ee]\d{1,3}[vV]?\d?\b', t)
+    if m:
+        t = t[:m.start()]
+
+    # 1b. "S01 COMPLETE" / "S01 TRi-AUDiO" gibi → Sxx'ten kes, sezon numarasını sakla
+    m_s_only = re.search(r'\b([Ss](\d{1,2}))\s+(?!eason)', t)
+    if m_s_only and not m:
+        t = t[:m_s_only.start()]
+
+    # 2. Başındaki [FansubGrubu] köşeli parantezi soy
+    t = re.sub(r'^\s*\[[^\]]{1,40}\]\s*', '', t)
+
+    # 3. Sondaki hash köşeli parantezleri: [7A1BD58F]
+    t = re.sub(r'\s*\[[0-9A-Fa-f]{6,10}\]\s*$', '', t)
+
+    # 4. İçerik/kalite parantezlerini temizle
+    t = _BRACKET_JUNK_RE.sub(' ', t)
+    t = _SQBRACKET_JUNK_RE.sub(' ', t)
+    # 4b. Geriye kalan tüm köşeli parantezleri temizle
+    t = re.sub(r'\s*\[[^\]]{1,60}\]\s*', ' ', t)
+    # 4c. "(CA)", "(1961)" gibi ülke/yıl kısa parantezleri temizle
+    t = re.sub(r'\s*\(\s*[A-Z]{2,3}\s*\)\s*', ' ', t)  # (CA), (US), (JP)
+    t = re.sub(r'\s*\(\s*\d{4}\s*\)\s*', ' ', t)        # (1961), (2022)
+
+    # 5. Nokta/alt çizgiyi boşluğa çevir
+    t = t.replace('.', ' ').replace('_', ' ')
+
+    # 6. Yıl + kalite kombinasyonu → yıldan kes
+    m_yr = re.search(r'\b((?:19|20)\d{2})\b', t)
+    if m_yr:
+        after = t[m_yr.end():].lower()
+        if _TORRENT_TAG_RE.search(after):
+            t = t[:m_yr.start()]
+
+    # 7. Torrent etiketlerini temizle
+    t = _TORRENT_TAG_RE.sub(' ', t)
+
+    # 8. "- NN" sonda kalan anime bölüm numarası
+    t = re.sub(r'\s*[-–]\s*\d{1,4}(?:[vV]\d)?\s*$', '', t)
+
+    # 9. "2nd Season", "Season 3" → soy
+    t = re.sub(r'\s+\d+(?:st|nd|rd|th)\s+season\b.*$', '', t, flags=re.I)
+    t = re.sub(r'\s+season\s+\d+\b.*$', '', t, flags=re.I)
+
+    # 10. Kalan boş parantez
+    t = re.sub(r'\[\s*\]|\(\s*\)', '', t)
+
+    # 11. Sondaki release group (CamelCase veya ALL CAPS, tire ile ayrılmış)
+    t = re.sub(r'\s*[-–]\s*[A-Z][a-zA-Z0-9]{3,14}\s*$', '', t)
+    t = re.sub(r'\s*[-–]\s*$', '', t)
+
+    # 12. TV/OVA/ONA etiketleri
+    t = re.sub(r'\s*\((?:TV|OVA|ONA|OAD|Movie|Film)\)\s*$', '', t, flags=re.I)
+
+    # 13. 400+ bölüm numarası başlıkta kaldıysa temizle (One Piece 1114)
+    t = re.sub(r'\s+(\d{3,4})\s*$',
+               lambda m2: '' if int(m2.group(1)) > 400 else m2.group(), t)
+
+    # 14. Çoklu boşluk → tek, strip
+    t = ' '.join(t.split()).strip()
+
+    return t
+
 
 def parse_episode_info(filepath: str) -> dict:
     """
-    Dosya adından sezon, bölüm ve film sıra numarasını çıkarır.
-
-    Örnekler:
-      "OSHI.NO.KO.S03E03.mkv"              → {'season': 3, 'episode': 3, 'part': None}
-      "[CrappySubs] Oshi No Ko - S03E01v2" → {'season': 3, 'episode': 1, 'part': None}
-      "[SubsPlease] Frieren - 05 (1080p)"  → {'season': 1, 'episode': 5, 'part': None}
-      "Dragon.Ball.Super.Movie.2.mkv"      → {'season': None, 'episode': None, 'part': 2}
+    Dosya adından sezon, bölüm numarası ve film sırasını çıkarır.
     """
     filename = os.path.splitext(os.path.basename(filepath))[0]
+    fn_norm = filename.replace('.', ' ').replace('_', ' ')
     result = {'season': None, 'episode': None, 'part': None}
 
-    # S01E01 / S01E01v2 formatı — en güvenilir
-    m = re.search(r'[Ss](\d{1,2})[Ee](\d{2,3})', filename)
+    # 1. SxxExx (en güvenilir)
+    m = re.search(r'[Ss](\d{1,2})[Ee](\d{2,3})[vV]?\d?', fn_norm)
     if m:
-        result['season'] = int(m.group(1))
+        result['season']  = int(m.group(1))
         result['episode'] = int(m.group(2))
         return result
 
-    # Anime tarzı: "- 05 -", "- 12v2 (", " 05 [" — sezon belirtilmemiş → S1
-    m = re.search(r'[-\s](\d{2,3})(?:[vV]\d)?[-\s\(\[]', filename)
-    if m:
-        ep_num = int(m.group(1))
-        if 1 <= ep_num < 500:  # Makul bölüm aralığı (yıl değil)
-            result['season'] = 1
+    # 1b. "S01 COMPLETE" / "S02" tek başına → sadece sezon
+    m_s = re.search(r'\b[Ss](\d{1,2})\b(?!\s*[Ee]\d)', fn_norm)
+
+    # 2. "3rd Season", "Season 3" → sezon bilgisi
+    _season_from_title = None
+    ms = re.search(r'\b(\d+)(?:st|nd|rd|th)\s+season\b', fn_norm, re.I)
+    if not ms:
+        ms = re.search(r'\bseason\s+(\d+)\b', fn_norm, re.I)
+    if ms:
+        _season_from_title = int(ms.group(1))
+    elif m_s:
+        _season_from_title = int(m_s.group(1))
+
+    # 3. "Part N - EP" kombinasyonu (Spy x Family Part 2 - 12)
+    m_part_ep = re.search(
+        r'\bpart\s+\d+\s*[-–]\s*(\d{1,4})(?:[vV]\d)?\s*(?:[\[(]|$)',
+        fn_norm, re.I
+    )
+    if m_part_ep:
+        ep_num = int(m_part_ep.group(1))
+        if not (1900 <= ep_num <= 2030):
+            result['season']  = _season_from_title or 1
             result['episode'] = ep_num
             return result
 
-    # Film sekansı: "Movie 2", "Part II", "Part 3"
-    m = re.search(r'(?:Movie|Part|Film)[\s._-]*(\d+|II|III|IV|V)\b', filename, re.IGNORECASE)
-    if m:
+    # 4. Standart "- NN" veya "- NNvN" — SONDAKI eşleşmeyi bul (ilk değil)
+    #    "One Punch Man Season 2 - 12" → "2 -" değil "- 12" yakalanmalı
+    all_ep_matches = list(re.finditer(
+        r'[-–\s](\d{1,4})(?:[vV]\d)?'
+        r'\s*(?:[-–\s([\r\n]|$)',
+        fn_norm
+    ))
+    # Sondan başa tara — ilk geçerli bölüm numarasını al
+    for m in reversed(all_ep_matches):
+        ep_num = int(m.group(1))
+        if 1900 <= ep_num <= 2030:
+            continue  # yıl
+        if ep_num < 1:
+            continue
+        result['season']  = _season_from_title or 1
+        result['episode'] = ep_num
+        return result
+
+    # 5. Film sekansı
+    m_film = re.search(r'(?:Movie|Film)[\s._-]*(\d+|II|III|IV|V)\b', fn_norm, re.I)
+    if not m_film:
+        m_part2 = re.search(r'\bpart\s+(\d+|II|III|IV|V)\b', fn_norm, re.I)
+        if m_part2 and not re.search(r'[-–]\s*\d+\s*(?:[\[(]|$)', fn_norm):
+            m_film = m_part2
+    if m_film:
         roman_map = {'II': 2, 'III': 3, 'IV': 4, 'V': 5}
-        val = m.group(1)
+        val = m_film.group(1)
         result['part'] = int(val) if val.isdigit() else roman_map.get(val.upper())
         return result
+
+    # 6. Sezon bilgisi varsa yaz
+    if _season_from_title:
+        result['season'] = _season_from_title
 
     return result
 
@@ -1434,60 +1525,84 @@ def _ai_query_direct(prompt: str, max_tokens: int = 180, temperature: float = 0.
 
 def _ai_classify_media(filename: str):
     """
-    Dosya adi AI'ya gonderilir: title + alt_title + search_hint + media_type + season doner.
-    3 katmanli arama icin gerekli.
+    Dosya adini AI'ya gonderir, temiz baslik + tur + sezon bilgisi alir.
+    AI yalnizca ham JSON dondurur — hicbir aciklama, markdown veya metin OLMAZ.
     """
     fn = os.path.splitext(os.path.basename(filename))[0]
     if fn in _AI_CLASSIFY_CACHE:
         return _AI_CLASSIFY_CACHE[fn]
 
+    # ── PROMPT: Siki ve kisa — AI'ya sadece JSON uret dedirtir ──────────────
+    # "Return ONLY" yetersiz. AI'yi JSON modu'na kilitlemek icin:
+    # 1. system mesaji ile JSON-only modu
+    # 2. Ornekler ile format kilitleme
+    # 3. max_tokens dusuk (200 token JSON icin fazlasiyla yeterli)
     prompt = (
-        "Analyze this video/subtitle filename and identify the media.\n"
-        f"Filename: {fn}\n\n"
-        "Return ONLY a JSON object (no markdown, no extra text):\n"
-        '{\n'
-        '  "title": "Title as recognized / Romaji if anime (e.g. Oshi no Ko)",\n'
-        '  "alt_title": "Official English title if meaningfully different, else null",\n'
-        '  "search_hint": "Best search query for MAL/AniList/TMDB",\n'
-        '  "media_type": "anime OR series OR movie",\n'
-        '  "season": 3,\n'
-        '  "season_title": "Official title for THIS season only (e.g. Sword Art Online: Alicization for S3) or null",\n'
-        '  "part": null\n'
-        '}\n\n'
-        "Rules:\n"
-        "- title: Recognized title (Romaji for anime is fine).\n"
-        "- alt_title: English ONLY if meaningfully different. null otherwise.\n"
-        "  Example: 'Kimetsu no Yaiba' -> alt_title: 'Demon Slayer'\n"
-        "  Example: 'Oshi no Ko' -> alt_title: null\n"
-        "- search_hint: Form most likely to match on MAL/AniList/TMDB.\n"
-        "  Abbreviated: 'TenSura' -> search_hint: 'Tensei shitara Slime Datta Ken'\n"
-        "- media_type: anime=Japanese animation (including anime movies/films), series=live-action TV, movie=live-action film\n"
-        "- season: integer or null (S03 -> 3)\n"
-        "- season_title: Official title for this specific season if it differs from base title.\n"
-        "  Examples: SAO S3 -> 'Sword Art Online: Alicization' | AoT S4 -> 'Attack on Titan: The Final Season'\n"
-        "  If title doesn't change between seasons, set null.\n"
-        "- part: integer or null (Movie 2 -> 2)\n"
-        "- If unsure, write UNKNOWN\n"
-        "JSON:"
+        'OUTPUT RULE: Respond with ONLY a raw JSON object. '
+        'No explanation, no markdown, no code block, no text before or after. '
+        'Start your response with { and end with }.\n\n'
+        f'FILENAME: {fn}\n\n'
+        'TASK: Identify the anime/series/movie from this filename.\n\n'
+        'JSON SCHEMA (fill every field):\n'
+        '{"title":"<clean title, Romaji if anime>","alt_title":<"English title" or null>,'
+        '"search_hint":"<best MAL/TMDB search query>","media_type":"<anime|series|movie>",'
+        '"season":<int or null>,"season_title":<"season-specific title" or null>,"part":<int or null>}\n\n'
+        'RULES:\n'
+        '- media_type: anime=Japanese animation, series=live-action TV, movie=live-action film\n'
+        '- alt_title: only if English title differs significantly (e.g. "Kimetsu no Yaiba"->alt:"Demon Slayer"); else null\n'
+        '- season_title: official name for THIS season if different (e.g. SAO S3->"Sword Art Online: Alicization"); else null\n'
+        '- If completely unknown, set title to "UNKNOWN"\n\n'
+        'EXAMPLES:\n'
+        '[SubsPlease] Oshi no Ko - S03E01v2 (1080p).ass\n'
+        '{"title":"Oshi no Ko","alt_title":null,"search_hint":"Oshi no Ko","media_type":"anime","season":3,"season_title":null,"part":null}\n\n'
+        '[Erai-raws] Kimetsu no Yaiba - Mugen Ressha-hen - 07 [1080p].mkv\n'
+        '{"title":"Kimetsu no Yaiba - Mugen Ressha-hen","alt_title":"Demon Slayer: Mugen Train Arc","search_hint":"Kimetsu no Yaiba Mugen Train","media_type":"anime","season":2,"season_title":"Kimetsu no Yaiba: Mugen Ressha-hen","part":null}\n\n'
+        'Sword.Art.Online.Alicization.S03E23.1080p.mkv\n'
+        '{"title":"Sword Art Online: Alicization","alt_title":null,"search_hint":"Sword Art Online Alicization","media_type":"anime","season":3,"season_title":"Sword Art Online: Alicization","part":null}\n\n'
+        'Breaking.Bad.S05E16.mkv\n'
+        '{"title":"Breaking Bad","alt_title":null,"search_hint":"Breaking Bad","media_type":"series","season":5,"season_title":null,"part":null}\n\n'
+        'Suzume.no.Tojimari.2022.BluRay.1080p.mkv\n'
+        '{"title":"Suzume no Tojimari","alt_title":"Suzume","search_hint":"Suzume no Tojimari","media_type":"anime","season":null,"season_title":null,"part":null}\n\n'
+        f'NOW CLASSIFY:\n{fn}\n'
     )
 
-    _text = _ai_query_direct(prompt, max_tokens=180, temperature=0)
+    _text = _ai_query_direct(prompt, max_tokens=200, temperature=0)
     if not _text:
         return None
 
-    # 4. Yanıtı Parse Et
+    # ── PARSE: Cok katmanli temizleme — AI ne yaparsa yapsin yakala ──────────
     try:
-        if "```" in _text:
-            _text = _text.split("\n", 1)[-1].rsplit("```", 1)[0]
-        _text = _text.strip()
+        raw = _text.strip()
 
-        _r = json.loads(_text)
+        # 1. Markdown kod blogu soy: ```json ... ``` veya ``` ... ```
+        raw = re.sub(r'^```[a-z]*\s*', '', raw, flags=re.IGNORECASE)
+        raw = re.sub(r'\s*```$', '', raw)
+        raw = raw.strip()
+
+        # 2. JSON'dan once gelen her turlu aciklama metni sil
+        #    "Here is the JSON:" / "Sure!" / "Based on..." gibi prefix'ler
+        brace_start = raw.find('{')
+        if brace_start > 0:
+            raw = raw[brace_start:]
+
+        # 3. JSON'dan sonraki aciklama metni sil
+        #    Son } karakterinden sonrasini at
+        brace_end = raw.rfind('}')
+        if brace_end >= 0 and brace_end < len(raw) - 1:
+            raw = raw[:brace_end + 1]
+
+        if not raw.startswith('{'):
+            print(f"[MediaID] AI yaniti JSON degil: {_text[:80]}")
+            return None
+
+        _r = json.loads(raw)
+
         _title = (_r.get("title") or "").strip().strip('"').strip("'")
         _alt   = (_r.get("alt_title") or "").strip().strip('"').strip("'") or None
         _hint  = (_r.get("search_hint") or "").strip().strip('"').strip("'") or None
         _mtype = (_r.get("media_type") or "").strip().lower()
         _season       = _r.get("season")
-        _season_title = (_r.get("season_title") or "").strip().strip(chr(34)).strip(chr(39)) or None
+        _season_title = (_r.get("season_title") or "").strip().strip('"').strip("'") or None
         _part         = _r.get("part")
 
         if not _title or "UNKNOWN" in _title.upper():
@@ -1508,9 +1623,16 @@ def _ai_classify_media(filename: str):
             "season_title": _season_title, "part": _part
         }
         _AI_CLASSIFY_CACHE[fn] = _out
+        print(f"{Fore.GREEN}   [AI] {_mtype.upper()} | '{_title}'"
+              f"{f' S{_season}' if _season else ''}"
+              f"{f' | EN: {_alt}' if _alt else ''}"
+              f"{f' | hint: {_hint}' if _hint else ''}{Style.RESET_ALL}")
         return _out
+
+    except json.JSONDecodeError as e:
+        print(f"{Fore.YELLOW}[MediaID] AI JSON parse hatasi ({e}): {_text[:120]}{Style.RESET_ALL}")
     except Exception as e:
-        print(f"[MediaID] Yanit ayristirma hatasi: {e}")
+        print(f"{Fore.YELLOW}[MediaID] AI yanit isleme hatasi: {e}{Style.RESET_ALL}")
     return None
 
 
@@ -1518,21 +1640,24 @@ def _ai_identify_title(raw_filename: str, translator=None) -> str | None:
     """Yapay zekaya dosya adindan medya basligini tespit ettirir."""
     try:
         prompt = (
-            f"What anime, movie or TV series is this subtitle/video filename from?\n"
-            f"Filename: {raw_filename}\n\n"
-            "Rules:\n"
-            "- Return ONLY the exact title (nothing else)\n"
-            "- If anime: return the official English title\n"
-            "- If you cannot determine it, return: UNKNOWN\n"
-            "Title:"
+            "OUTPUT RULE: Respond with ONLY the title. No explanation, no punctuation, no extra text.\n"
+            f"FILENAME: {raw_filename}\n"
+            "What is the anime, movie or TV series title in this filename?\n"
+            "- If unknown: respond exactly: UNKNOWN\n"
+            "TITLE:"
         )
         if translator is not None:
             result = translator.translate_single_line(prompt)
         else:
-            result = _ai_query_direct(prompt, max_tokens=100)
+            result = _ai_query_direct(prompt, max_tokens=60)
 
-        if result and "UNKNOWN" not in result.upper() and len(result.strip()) < 100:
-            return result.strip().strip('"').strip("'")
+        if not result:
+            return None
+        result = result.strip().strip('"').strip("'")
+        # "Title: Oshi no Ko" gibi prefix soy
+        result = re.sub(r'^(?:title|answer|result)\s*:\s*', '', result, flags=re.I).strip()
+        if result and "UNKNOWN" not in result.upper() and len(result) < 100:
+            return result
     except Exception:
         pass
     return None
@@ -1553,10 +1678,14 @@ def _ai_fill_gaps(metadata: dict, translator=None) -> dict:
         return metadata
 
     try:
-        prompt = f'For the anime/series: "{title}"\nProvide ONLY the following:\n'
+        prompt = (
+            "OUTPUT RULE: Respond with ONLY the numbered answers below. No explanation, no extra text.\n"
+            f'MEDIA: "{title}"\n'
+            "PROVIDE:\n"
+        )
         for i, m in enumerate(missing, 1):
             prompt += f"{i}. {m}\n"
-        prompt += "\nRespond in this exact format:\n"
+        prompt += "\nFORMAT (fill exactly):\n"
         for i, m in enumerate(missing, 1):
             prompt += f"{i}. [answer]\n"
 
