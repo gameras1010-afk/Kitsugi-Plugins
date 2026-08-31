@@ -114,6 +114,7 @@ class AssSkipLearner:
             if cls._instance is None:
                 cls._instance = super().__new__(cls)
                 cls._instance._loaded = False
+                cls._instance._dirty = False  # [FIX] _ensure_loaded() öncesi erişime karşı
             return cls._instance
 
     def _ensure_loaded(self):
