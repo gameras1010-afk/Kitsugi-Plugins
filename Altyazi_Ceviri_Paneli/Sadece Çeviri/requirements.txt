@@ -1,0 +1,25 @@
+# ══════════════════════════════════════════════════════════
+#  Manuel Çeviri + NiceGUI Arayüzü — Gerekli Python Paketleri
+#  Kurulum: pip install -r requirements.txt
+# ══════════════════════════════════════════════════════════
+
+# ── Arayüz (NiceGUI) ──────────────────────────────────────
+nicegui>=1.4.0
+fastapi>=0.104.0
+uvicorn>=0.24.0
+httpx>=0.25.0
+
+# ── API & Ağ İstekleri ─────────────────────────────────────
+requests>=2.31.0
+
+# ── Terminal Renklendirme ──────────────────────────────────
+colorama>=0.4.6
+
+# ── İlerleme Çubuğu (subtitle_processor) ─────────────────
+tqdm>=4.66.0
+
+# ── Altyazı Dosya İşleme ─────────────────────────────────
+pysubs2>=1.6.0
+
+# ── (Opsiyonel) Eski CTk GUI için ─────────────────────────
+# customtkinter>=5.2.0

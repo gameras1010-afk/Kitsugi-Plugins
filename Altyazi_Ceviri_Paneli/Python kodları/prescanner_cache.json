@@ -1,0 +1,556 @@
+{
+  "Zom 100: Bucket List of the Dead|S1|ae31fc23f872": {
+    "scanned_at": "2026-08-26T09:22:16.567085+00:00",
+    "title": "Zom 100: Bucket List of the Dead",
+    "season_num": 1,
+    "file_count": 15,
+    "corpus_size": 3306,
+    "total_terms": 16,
+    "active_count": 4,
+    "terms": {
+      "characters": [
+        "Akira Tendou",
+        "Gonzou Kosugi",
+        "Naoki Atenbou",
+        "Zombie"
+      ]
+    }
+  },
+  "Zom 100: Bucket List of the Dead|S1|520b492117b6": {
+    "scanned_at": "2026-08-26T10:07:02.369921+00:00",
+    "title": "Zom 100: Bucket List of the Dead",
+    "season_num": 1,
+    "file_count": 27,
+    "corpus_size": 5731,
+    "total_terms": 16,
+    "active_count": 5,
+    "terms": {
+      "characters": [
+        "Akira Tendou",
+        "Gonzou Kosugi",
+        "Naoki Atenbou",
+        "Shizuka Mikazuki",
+        "Zombie"
+      ]
+    }
+  },
+  "Zom 100: Bucket List of the Dead|S1|4780b4209b9e": {
+    "scanned_at": "2026-08-26T14:52:42.945464+00:00",
+    "title": "Zom 100: Bucket List of the Dead",
+    "season_num": 1,
+    "file_count": 47,
+    "corpus_size": 9298,
+    "total_terms": 16,
+    "active_count": 10,
+    "terms": {
+      "characters": [
+        "Akiko Tendou",
+        "Akira Tendou",
+        "Beatrix Amerhauser",
+        "Gonzou Kosugi",
+        "Kanta Higurashi",
+        "Masaru Kumano",
+        "Naoki Atenbou",
+        "Shizuka Mikazuki",
+        "Teruo Tendou",
+        "Zombie"
+      ]
+    }
+  },
+  "Higehiro: After Being Rejected, I Shaved and Took in a High School Runaway|S1|2bfde1bacdb7": {
+    "scanned_at": "2026-08-26T15:20:04.258082+00:00",
+    "title": "Higehiro: After Being Rejected, I Shaved and Took in a High School Runaway",
+    "season_num": 1,
+    "file_count": 9,
+    "corpus_size": 3168,
+    "total_terms": 20,
+    "active_count": 17,
+    "terms": {
+      "characters": [
+        "Yoshida",
+        "Sayu Ogiwara",
+        "Airi Gotou",
+        "Asami Yuuki",
+        "Yuzuha Mishima",
+        "Hashimoto",
+        "Flynn the Human Being"
+      ],
+      "locations": [
+        "IT Company",
+        "Convenience Store",
+        "Yoshida's Apartment",
+        "Asahikawa Dairoku High School"
+      ],
+      "items": [
+        "The Federation of Monks' Dyke Technology College and Mablethorpe Tennyson High School",
+        "Digital Wellbeing Essentials for Senior High Students: An EduWiki Philippines Initiative",
+        "Harvey Milk High School"
+      ],
+      "organizations": [
+        "The Federation of Monks' Dyke Technology College and Mablethorpe Tennyson High School",
+        "Digital Wellbeing Essentials for Senior High Students: An EduWiki Philippines Initiative",
+        "Harvey Milk High School"
+      ]
+    }
+  },
+  "A Sister's All You Need|S1|17816b54831b": {
+    "scanned_at": "2026-08-26T16:59:39.570556+00:00",
+    "title": "A Sister's All You Need",
+    "season_num": 1,
+    "file_count": 3,
+    "corpus_size": 833,
+    "total_terms": 19,
+    "active_count": 6,
+    "terms": {
+      "characters": [
+        "Itsuki Hashima",
+        "Chihiro Hashima",
+        "Nayuta Kani",
+        "Haruto Fuwa",
+        "Miyako Shirakawa",
+        "Kenjirou Toki"
+      ]
+    }
+  },
+  "Higehiro: After Being Rejected, I Shaved and Took in a High School Runaway|S1|6b11d403383f": {
+    "scanned_at": "2026-08-26T17:02:17.429203+00:00",
+    "title": "Higehiro: After Being Rejected, I Shaved and Took in a High School Runaway",
+    "season_num": 1,
+    "file_count": 11,
+    "corpus_size": 3582,
+    "total_terms": 20,
+    "active_count": 19,
+    "terms": {
+      "characters": [
+        "Yoshida",
+        "Sayu Ogiwara",
+        "Airi Gotou",
+        "Asami Yuuki",
+        "Issa Ogiwara",
+        "Kyouya Yaguchi",
+        "Yuzuha Mishima",
+        "Hashimoto",
+        "Flynn the Human Being"
+      ],
+      "locations": [
+        "IT Company",
+        "Convenience Store",
+        "Yoshida's Apartment",
+        "Asahikawa Dairoku High School"
+      ],
+      "items": [
+        "Digital Wellbeing Essentials for Senior High Students: An EduWiki Philippines Initiative",
+        "The Federation of Monks' Dyke Technology College and Mablethorpe Tennyson High School",
+        "Harvey Milk High School"
+      ],
+      "organizations": [
+        "Digital Wellbeing Essentials for Senior High Students: An EduWiki Philippines Initiative",
+        "The Federation of Monks' Dyke Technology College and Mablethorpe Tennyson High School",
+        "Harvey Milk High School"
+      ]
+    }
+  },
+  "Sankarea OVA|S1|3bbf34286f85": {
+    "scanned_at": "2026-08-26T18:01:39.513014+00:00",
+    "title": "Sankarea OVA",
+    "season_num": 1,
+    "file_count": 16,
+    "corpus_size": 1346,
+    "total_terms": 15,
+    "active_count": 5,
+    "terms": {
+      "characters": [
+        "Aria Sanka",
+        "Chihiro Furuya",
+        "Mero Furuya",
+        "Rea Sanka",
+        "Big Ben Donovan"
+      ]
+    }
+  },
+  "May I Ask for One Final Thing?|S1|ded69b281d92": {
+    "scanned_at": "2026-08-26T20:16:35.516621+00:00",
+    "title": "May I Ask for One Final Thing?",
+    "season_num": 1,
+    "file_count": 22,
+    "corpus_size": 8490,
+    "total_terms": 24,
+    "active_count": 8,
+    "terms": {
+      "characters": [
+        "Scarlet El Vandimion",
+        "Julius Von Pallistan",
+        "Leonardo El Vandimion",
+        "Sigurd Forgrave",
+        "Terenezza Hopkins",
+        "Godwin Bene Carmine",
+        "Kyle Von Pallistan",
+        "Envi"
+      ]
+    }
+  },
+  "Mashle: Magic and Muscles|S1|cc7787cdbeff": {
+    "scanned_at": "2026-08-27T05:23:27.920468+00:00",
+    "title": "Mashle: Magic and Muscles",
+    "season_num": 1,
+    "file_count": 13,
+    "corpus_size": 3200,
+    "total_terms": 88,
+    "active_count": 61,
+    "terms": {
+      "characters": [
+        "Mash Burnedead",
+        "Regro Burnedead",
+        "Finn Ames",
+        "Brad Coleman",
+        "Lemon Irvine",
+        "Wahlberg",
+        "Tom Knowles",
+        "Lance Crown",
+        "Dot Barrett",
+        "Rayne Ames",
+        "Abel Walker",
+        "Abyss Razor",
+        "Silva Iron",
+        "Wirth Madl",
+        "Milo Genius",
+        "Love Gute",
+        "Olore Andrew",
+        "Anser Shinri",
+        "Cell War",
+        "Innocent Zero",
+        "Orter Madl",
+        "Max Land",
+        "Anna Crown"
+      ],
+      "organizations": [
+        "Magia Lupus",
+        "Bureau of Magic",
+        "Innocent Zero (Group)"
+      ],
+      "skills": [
+        "Sea",
+        "Acid",
+        "Iron",
+        "Carbo",
+        "Magic",
+        "Levios",
+        "Lights",
+        "Sounds"
+      ],
+      "locations": [
+        "Hecatrice",
+        "Saint Ars",
+        "The Forest",
+        "Magic Realm",
+        "Magic School",
+        "School Store",
+        "Easton Magic Academy",
+        "Walkis Magic Academy"
+      ],
+      "items": [
+        "Coins",
+        "Wands",
+        "Doll Wand",
+        "Iron Wand",
+        "Magic Broom",
+        "Crystal Ball",
+        "Master Canes",
+        "Demonic Heart",
+        "Magical Chainsaw",
+        "Playing Cards Wand",
+        "Wand of Beginnings",
+        "Wind-up Key of Life"
+      ],
+      "terminology": [
+        "Duelo",
+        "Magic",
+        "Terms",
+        "Magic Mark",
+        "Basic Magic",
+        "Muscles Magic",
+        "Dot Barret's Handsomeness Degree"
+      ]
+    }
+  },
+  "Mashle: Magic and Muscles - The Divine Visionary Candidate Exam Arc|S2|d2005f3cb5dc": {
+    "scanned_at": "2026-08-27T07:43:08.450467+00:00",
+    "title": "Mashle: Magic and Muscles - The Divine Visionary Candidate Exam Arc",
+    "season_num": 2,
+    "file_count": 12,
+    "corpus_size": 3042,
+    "total_terms": 80,
+    "active_count": 62,
+    "terms": {
+      "characters": [
+        "Abel Walker",
+        "Abyss Razor",
+        "Anna Crown",
+        "Aorio Morris",
+        "Carpaccio Luo-Yang",
+        "Cell War",
+        "Dot Barrett",
+        "Finn Ames",
+        "Innocent Zero",
+        "Kaldo Gehenna",
+        "Lance Crown",
+        "Love Cute",
+        "Margarette Macaron",
+        "Mash Burnedead",
+        "Max Land",
+        "Orter Mádl",
+        "Regro Burnedead",
+        "Renatus Revol",
+        "Ryoh Grantz",
+        "Sophina Biblia",
+        "Tom Knowles",
+        "Wahlberg Baigan"
+      ],
+      "organizations": [
+        "Magia Lupus",
+        "Bureau of Magic",
+        "Innocent Zero (Group)"
+      ],
+      "skills": [
+        "Ice",
+        "Iron",
+        "Roks",
+        "Carbo",
+        "Magic",
+        "Timez",
+        "Nalcos",
+        "Sounds",
+        "Spaces",
+        "Summon",
+        "Thirds",
+        "Wulfes"
+      ],
+      "locations": [
+        "The Forest",
+        "Magic Realm",
+        "Magic School",
+        "School Store",
+        "Easton Magic Academy",
+        "Walkis Magic Academy"
+      ],
+      "items": [
+        "Coins",
+        "Wands",
+        "Doll Wand",
+        "Iron Wand",
+        "Newspaper",
+        "Magic Broom",
+        "Crystal Ball",
+        "Master Canes",
+        "Demonic Heart",
+        "Magical Chainsaw",
+        "Playing Cards Wand",
+        "Rafflesian Mirrors",
+        "Wand of Beginnings",
+        "Wind-up Key of Life"
+      ],
+      "terminology": [
+        "Magic",
+        "Magic Mark",
+        "Basic Magic",
+        "Muscles Magic",
+        "Dot Barret's Handsomeness Degree"
+      ]
+    }
+  },
+  "Rascal Does Not Dream of a Dreaming Girl|S0|c90d90f3daed": {
+    "scanned_at": "2026-08-27T20:05:10.362617+00:00",
+    "title": "Rascal Does Not Dream of a Dreaming Girl",
+    "season_num": null,
+    "file_count": 4,
+    "corpus_size": 1227,
+    "total_terms": 34,
+    "active_count": 14,
+    "terms": {
+      "characters": [
+        "Kaede Azusagawa",
+        "Mai Sakurajima",
+        "Mai's mother",
+        "Mr. Azusagawa",
+        "Mrs. Azusagawa",
+        "Nodoka Toyohama",
+        "Nodoka's mother",
+        "Rio Futaba",
+        "Sakuta Azusagawa",
+        "Shoko Makinohara",
+        "Tomoe Koga"
+      ],
+      "locations": [
+        "Minegahara High School"
+      ],
+      "terminology": [
+        "Dreaming (trend)",
+        "Adolescence Syndrome"
+      ]
+    }
+  },
+  "Rascal Does Not Dream of a Sister Venturing Out|S0|79f53e80a1eb": {
+    "scanned_at": "2026-08-27T20:32:54.248265+00:00",
+    "title": "Rascal Does Not Dream of a Sister Venturing Out",
+    "season_num": null,
+    "file_count": 8,
+    "corpus_size": 3967,
+    "total_terms": 34,
+    "active_count": 16,
+    "terms": {
+      "characters": [
+        "Kaede Azusagawa",
+        "Mai Sakurajima",
+        "Mai's mother",
+        "Mr. Azusagawa",
+        "Mrs. Azusagawa",
+        "Nodoka Toyohama",
+        "Nodoka's mother",
+        "Rio Futaba",
+        "Saki Kamisato",
+        "Sakuta Azusagawa",
+        "Shoko Makinohara",
+        "Sweet Bullet",
+        "Tomoe Koga"
+      ],
+      "locations": [
+        "Minegahara High School"
+      ],
+      "terminology": [
+        "Dreaming (trend)",
+        "Adolescence Syndrome"
+      ]
+    }
+  },
+  "Campione!|S1|00656f8cb6cf": {
+    "scanned_at": "2026-08-28T05:00:13.931906+00:00",
+    "title": "Campione!",
+    "season_num": 1,
+    "file_count": 3,
+    "corpus_size": 816,
+    "total_terms": 4,
+    "active_count": 2,
+    "terms": {
+      "characters": [
+        "Godou Kusanagi",
+        "Erica Blandelli"
+      ]
+    }
+  },
+  "Rascal Does Not Dream of a Knapsack Kid|S0|3517a46c3079": {
+    "scanned_at": "2026-08-28T16:21:32.880678+00:00",
+    "title": "Rascal Does Not Dream of a Knapsack Kid",
+    "season_num": null,
+    "file_count": 10,
+    "corpus_size": 5729,
+    "total_terms": 8,
+    "active_count": 1,
+    "terms": {
+      "characters": [
+        "Snotty Boy"
+      ]
+    }
+  },
+  "Rascal Does Not Dream of Santa Claus|S2|0a4c212d0b5f": {
+    "scanned_at": "2026-08-29T06:00:43.115409+00:00",
+    "title": "Rascal Does Not Dream of Santa Claus",
+    "season_num": 2,
+    "file_count": 4,
+    "corpus_size": 1563,
+    "total_terms": 26,
+    "active_count": 17,
+    "terms": {
+      "characters": [
+        "Ikumi Akagi",
+        "Juri Yoshiwa",
+        "Kaede Azusagawa",
+        "Kento Yamada",
+        "Mai Sakurajima",
+        "Nodoka Toyohama",
+        "Rio Futaba",
+        "Sakuta Azusagawa",
+        "Sara Himeji",
+        "Takumi Fukuyama",
+        "Tomoe Koga",
+        "Yuuma Kunimi"
+      ],
+      "locations": [
+        "Minegahara High School"
+      ],
+      "terminology": [
+        "Syndrome",
+        "Dreaming (trend)",
+        "Puberty Syndrome",
+        "Adolescence Syndrome"
+      ]
+    }
+  },
+  "Rascal Does Not Dream of Santa Claus|S3|0a4c212d0b5f": {
+    "scanned_at": "2026-08-29T06:26:49.335973+00:00",
+    "title": "Rascal Does Not Dream of Santa Claus",
+    "season_num": 3,
+    "file_count": 4,
+    "corpus_size": 1563,
+    "total_terms": 26,
+    "active_count": 17,
+    "terms": {
+      "characters": [
+        "Ikumi Akagi",
+        "Juri Yoshiwa",
+        "Kaede Azusagawa",
+        "Kento Yamada",
+        "Mai Sakurajima",
+        "Nodoka Toyohama",
+        "Rio Futaba",
+        "Sakuta Azusagawa",
+        "Sara Himeji",
+        "Takumi Fukuyama",
+        "Tomoe Koga",
+        "Yuuma Kunimi"
+      ],
+      "locations": [
+        "Minegahara High School"
+      ],
+      "terminology": [
+        "Syndrome",
+        "Dreaming (trend)",
+        "Puberty Syndrome",
+        "Adolescence Syndrome"
+      ]
+    }
+  },
+  "Rascal Does Not Dream of Santa Claus|S1|0a4c212d0b5f": {
+    "scanned_at": "2026-08-29T06:35:53.296622+00:00",
+    "title": "Rascal Does Not Dream of Santa Claus",
+    "season_num": 1,
+    "file_count": 4,
+    "corpus_size": 1563,
+    "total_terms": 26,
+    "active_count": 17,
+    "terms": {
+      "characters": [
+        "Ikumi Akagi",
+        "Juri Yoshiwa",
+        "Kaede Azusagawa",
+        "Kento Yamada",
+        "Mai Sakurajima",
+        "Nodoka Toyohama",
+        "Rio Futaba",
+        "Sakuta Azusagawa",
+        "Sara Himeji",
+        "Takumi Fukuyama",
+        "Tomoe Koga",
+        "Yuuma Kunimi"
+      ],
+      "locations": [
+        "Minegahara High School"
+      ],
+      "terminology": [
+        "Syndrome",
+        "Dreaming (trend)",
+        "Puberty Syndrome",
+        "Adolescence Syndrome"
+      ]
+    }
+  }
+}

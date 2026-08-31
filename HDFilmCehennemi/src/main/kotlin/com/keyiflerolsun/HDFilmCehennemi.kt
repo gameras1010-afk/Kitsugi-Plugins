@@ -310,10 +310,19 @@ class HDFilmCehennemi : MainAPI() {
     }
 
     private suspend fun invokeLocalSource(source: String, url: String, subtitleCallback: (SubtitleFile) -> Unit, callback: (ExtractorLink) -> Unit ) {
-        val script    = app.get(url, referer = "${mainUrl}/", interceptor = interceptor).document.select("script").find { it.data().contains("sources:") }?.data() ?: return
+        val doc = app.get(url, referer = "${mainUrl}/", interceptor = interceptor).document
+        val script = doc.select("script").find { it.data().contains("sources:") }?.data()
+        if (script == null) {
+            Log.w("HDCH", "No script containing 'sources:' found in page: $url")
+            return
+        }
         Log.d("HDCH", "script » $script")
         val unpackedScript = getAndUnpack(script)
-        val decryptedUrl = decryptLocalUrl(unpackedScript) ?: return
+        val decryptedUrl = decryptLocalUrl(unpackedScript)
+        if (decryptedUrl == null) {
+            Log.w("HDCH", "Failed to decrypt local URL from unpacked script: $unpackedScript")
+            return
+        }
         val lastUrl = decryptedUrl.substringAfter("https").let { "https$it" }
         val subData   = script.substringAfter("tracks: [").substringBefore("]")
         Log.d("HDCH", "subData » $subData")
@@ -369,9 +378,16 @@ override suspend fun loadLinks(
                 ),
                 referer = data
             ).text
-            Log.d("HDCH", "Found videoID: $videoID")
-            var iframe = Regex("""data-src=\\"([^"]+)""").find(apiGet)?.groupValues?.get(1)!!.replace("\\", "")
-            Log.d("HDCH", "$iframe » $iframe")
+            val rawIframe = Regex("""data-src=\\"([^"]+)""").find(apiGet)?.groupValues?.get(1)
+                ?: Regex("""src=\\"([^"]+)""").find(apiGet)?.groupValues?.get(1)
+                ?: Regex("""iframe.*?src=["']([^"']+)["']""").find(apiGet)?.groupValues?.get(1)
+            
+            if (rawIframe == null) {
+                Log.w("HDCH", "Failed to extract iframe from apiGet: $apiGet")
+                return@forEach
+            }
+            var iframe = rawIframe.replace("\\", "")
+            Log.d("HDCH", "Extracted iframe URL: $iframe")
             if (iframe.contains("rapidrame")) {
                 iframe = "${mainUrl}/rplayer/" + iframe.substringAfter("?rapidrame_id=")
             } else if (iframe.contains("mobi")) {

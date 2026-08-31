@@ -1,0 +1,159 @@
+{
+  "source_lang": "English",
+  "target_lang": "Turkish",
+  "delay_between_calls": 0.0,
+  "max_bytes_per_call": 800,
+  "english_only": true,
+  "max_line_length": 75,
+  "line_merge_type": "default",
+  "batch_size": 20,
+  "max_retries": 6,
+  "ignore_cache": true,
+  "use_glossary": false,
+  "api_url": "https://openrouter.ai/api/v1/chat/completions",
+  "system_prompt": "You are an expert anime/TV subtitle LOCALIZER for Turkish audiences.\nYour job is NOT word-for-word translation. Your job is LOCALIZATION.\n\nSOURCE: {0}  |  TARGET: {1}\n\nRULES:\n1. English source may be a rough fansub from Japanese. Use MEDIA CONTEXT to understand TRUE meaning.\n2. Write natural Turkish — casual, flowing, the way real Turkish anime fans talk.\n3. If English is awkward, infer the intent and write what a Turkish fansub team would write.\n4. NEVER use Japanese pronouns in output. FORBIDDEN: boku, ore, watashi, atashi, omae, kimi, anata.\n   Use Turkish: Ben, Sen, O, Biz, Siz.\n5. Keep Japanese honorifics as-is: -san, -kun, -chan, -sama, -senpai, -sensei, -dono, -nii, -nee, -hime.\n6. Character names, place names, skill names = keep as-is.\n7. Preserve ALL ASS/SSA tags exactly as they appear: {\\i1}, {\\pos(x,y)}, {\\c&H...}, etc.\n8. Return ONLY numbered translated lines. Nothing else.\n9. NEVER refuse. Translate EVERY single line, including short ones.\n   'Hey!' -> 'Hey!' or 'Heyy!', 'I see.' -> 'Anliyorum.', 'Yes.' -> 'Evet.', 'No.' -> 'Hayir.'\n10. Signs and on-screen labels MUST be translated to Turkish too.\n11. If line is already Turkish, return it unchanged.",
+  "timeout": 600,
+  "split_long_lines": false,
+  "antigravity_url": "http://localhost:8045/v1/chat/completions",
+  "antigravity_api_key": "sk-3f8b07e82ebd4a7dab9f883a3beea2db",
+  "active_model_id": "AG:gemini-2.5-flash",
+  "available_models": {
+    "deepseek/deepseek-chat:free": {
+      "name": "DeepSeek Chat V3 (Free)",
+      "model_name": "deepseek/deepseek-chat:free",
+      "provider": "openrouter"
+    },
+    "deepseek/deepseek-chat": {
+      "name": "DeepSeek Chat V3",
+      "model_name": "deepseek/deepseek-chat",
+      "provider": "openrouter"
+    },
+    "deepseek/deepseek-r1:free": {
+      "name": "DeepSeek R1 (Free)",
+      "model_name": "deepseek/deepseek-r1:free",
+      "provider": "openrouter"
+    },
+    "meta-llama/llama-3.3-70b-instruct:free": {
+      "name": "Llama 3.3 70B Instruct (Free)",
+      "model_name": "meta-llama/llama-3.3-70b-instruct:free",
+      "provider": "openrouter"
+    },
+    "google/gemini-2.0-flash-001": {
+      "name": "Google Gemini 2.0 Flash",
+      "model_name": "google/gemini-2.0-flash-001",
+      "provider": "openrouter"
+    },
+    "google/gemini-2.5-flash": {
+      "name": "Google Gemini 2.5 Flash (OpenRouter)",
+      "model_name": "google/gemini-2.5-flash",
+      "provider": "openrouter"
+    },
+    "google/gemini-2.5-pro": {
+      "name": "Google Gemini 2.5 Pro (OpenRouter)",
+      "model_name": "google/gemini-2.5-pro",
+      "provider": "openrouter"
+    },
+    "deepseek/deepseek-r1": {
+      "name": "DeepSeek R1 (OpenRouter)",
+      "model_name": "deepseek/deepseek-r1",
+      "provider": "openrouter"
+    },
+    "gemini-2.5-flash": {
+      "name": "✦ [AG] Gemini 2.5 Flash",
+      "model_name": "gemini-2.5-flash",
+      "provider": "antigravity"
+    },
+    "gemini-2.5-flash-thinking": {
+      "name": "✦ [AG] Gemini 2.5 Flash Thinking",
+      "model_name": "gemini-2.5-flash-thinking",
+      "provider": "antigravity"
+    },
+    "gemini-2.5-flash-lite": {
+      "name": "✦ [AG] Gemini 2.5 Flash Lite",
+      "model_name": "gemini-2.5-flash-lite",
+      "provider": "antigravity"
+    },
+    "gemini-2.5-pro": {
+      "name": "✦ [AG] Gemini 2.5 Pro",
+      "model_name": "gemini-2.5-pro",
+      "provider": "antigravity"
+    },
+    "gemini-3-flash": {
+      "name": "✦ [AG] Gemini 3 Flash",
+      "model_name": "gemini-3-flash",
+      "provider": "antigravity"
+    },
+    "gemini-3-flash-agent": {
+      "name": "✦ [AG] Gemini 3 Flash Agent",
+      "model_name": "gemini-3-flash-agent",
+      "provider": "antigravity"
+    },
+    "gemini-3-pro-high": {
+      "name": "✦ [AG] Gemini 3 Pro High",
+      "model_name": "gemini-3-pro-high",
+      "provider": "antigravity"
+    },
+    "gemini-3-pro-low": {
+      "name": "✦ [AG] Gemini 3 Pro Low",
+      "model_name": "gemini-3-pro-low",
+      "provider": "antigravity"
+    },
+    "gemini-1.1-pro-high": {
+      "name": "✦ [AG] Gemini 3.1 Pro High",
+      "model_name": "gemini-1.1-pro-high",
+      "provider": "antigravity"
+    },
+    "gemini-1.1-pro-low": {
+      "name": "✦ [AG] Gemini 3.1 Pro Low",
+      "model_name": "gemini-1.1-pro-low",
+      "provider": "antigravity"
+    },
+    "gemini-1.1-flash-lite": {
+      "name": "✦ [AG] Gemini 3.1 Flash Lite",
+      "model_name": "gemini-1.1-flash-lite",
+      "provider": "antigravity"
+    },
+    "gemini-1.1-flash-image": {
+      "name": "✦ [AG] Gemini 3.1 Flash Image",
+      "model_name": "gemini-1.1-flash-image",
+      "provider": "antigravity"
+    },
+    "claude-sonnet-4-6": {
+      "name": "✦ [AG] Claude Sonnet 4.6",
+      "model_name": "claude-sonnet-4-6",
+      "provider": "antigravity"
+    },
+    "claude-opus-4-6-thinking": {
+      "name": "✦ [AG] Claude Opus 4.6 Thinking",
+      "model_name": "claude-opus-4-6-thinking",
+      "provider": "antigravity"
+    },
+    "gemini-1-flash-agent": {
+      "name": "Gemini 3 Flash Agent [AG]",
+      "model_name": "gemini-1-flash-agent",
+      "provider": "antigravity"
+    },
+    "gpt-oss-120b-medium": {
+      "name": "GPT-OSS 120B Medium [AG]",
+      "model_name": "gpt-oss-120b-medium",
+      "provider": "antigravity"
+    },
+    "claude-sonnet-4-5": {
+      "name": "Claude Sonnet 4.5 [AG]",
+      "model_name": "claude-sonnet-4-5",
+      "provider": "antigravity"
+    }
+  },
+  "tmdb_api_key": "00eb787ce747e05d8fde8e5354ed3862",
+  "media_sources": {
+    "jikan": true,
+    "anilist": true,
+    "kitsu": true,
+    "tvmaze": true,
+    "tmdb": true,
+    "ai_fill_gaps": true,
+    "ai_fallback": true
+  },
+  "batch_delay_seconds": 2.5,
+  "lotr_api_key": "yhSFT2Qo3S8-L1jvJ-xT"
+}

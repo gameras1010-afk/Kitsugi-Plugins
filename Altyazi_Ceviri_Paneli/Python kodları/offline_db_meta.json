@@ -1,0 +1,46 @@
+{
+  "anidb": {
+    "updated_at": "2026-08-25T09:29:23.107535",
+    "version": "54548_entries"
+  },
+  "manami": {
+    "updated_at": "2026-08-25T09:30:38.757439",
+    "version": "154165_entries"
+  },
+  "tmdb_movies": {
+    "updated_at": "2026-08-31T09:28:39.057746",
+    "version": "891725_entries"
+  },
+  "tmdb_tv": {
+    "updated_at": "2026-08-31T09:28:27.887883",
+    "version": "145704_entries"
+  },
+  "imdb_basics": {
+    "updated_at": "2026-08-25T09:29:33.548900",
+    "version": "2004263_entries"
+  },
+  "imdb_akas": {
+    "updated_at": "2026-08-25T09:31:37.241915",
+    "version": "1668830_entries"
+  },
+  "wiki_chars": {
+    "updated_at": "2026-08-25T09:28:45.338116",
+    "version": "9613_chars"
+  },
+  "word_freq_en": {
+    "updated_at": "2026-08-25T09:28:14.029169",
+    "version": "hermitdave_50k"
+  },
+  "word_freq_tr": {
+    "updated_at": "2026-08-25T09:28:14.030171",
+    "version": "hermitdave_50k"
+  },
+  "anime_names": {
+    "updated_at": "2026-08-25T09:28:16.814145",
+    "version": "8740_names"
+  },
+  "wiki_entities": {
+    "updated_at": "2026-08-25T09:33:34.875177",
+    "version": "8398_entities"
+  }
+}
