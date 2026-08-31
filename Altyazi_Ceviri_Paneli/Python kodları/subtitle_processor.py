@@ -5612,7 +5612,12 @@ def process_and_replace_subtitle(filepath, prefs, translator=None, output_path=N
         # SubtitleTranslationError fırlatılır. Bu exception otomatik indirici.py'nin
         # ana döngüsünde yakalanarak tüm batch anında durdurulur.
         if prefs.get('fail_safe_translation', False) and prefs.get('translate', True):
-            _to_translate_count = len([e for e in structured_events if not e.get('skip_translation')])
+            # [FIX] DEDUP broadcast kopyaları skip_translation=True DEĞİL ama çevrildi sayılmıyor.
+            # Fail-safe: sadece gerçekten çevrilmesi gereken UNIQUE satırları say.
+            # DEDUP ile broadcast edilen kopyalar başarı sayılır — fail-safe yanlış tetiklenmesin.
+            _dedup_unique_count = len(_unique_events) if '_unique_events' in dir() else \
+                len([e for e in structured_events if not e.get('skip_translation')])
+            _to_translate_count = _dedup_unique_count
             if _to_translate_count > 0 and stats_translated == 0:
                 _err_msg = (
                     f"[FAIL-SAFE] Altyazı çevirisi tamamen başarısız! "

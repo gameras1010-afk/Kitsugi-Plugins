@@ -177,8 +177,7 @@ class KeyManager:
     def _utc_daily_reset_ts(self) -> float:
         """Bugünkü UTC gece yarısının Unix timestamp'ini döndür."""
         import datetime
-        # [FIX] utcnow() deprecated Python 3.12+; timezone-aware kullan
-        now_utc = datetime.datetime.now(datetime.timezone.utc)
+        now_utc = datetime.datetime.utcnow()
         midnight = now_utc.replace(hour=0, minute=0, second=0, microsecond=0)
         return midnight.timestamp()
 
@@ -740,12 +739,12 @@ class SubtitleTranslator:
         self.config = {
             "source_lang": "English",
             "target_lang": "Turkish",
-            "delay_between_calls": 0.5,
+            "delay_between_calls": 0.5,  # Yarım saniye gecikme (rate limit için)
             "english_only": True,
-            "natural_dialogue": True,
-            "use_glossary": True,
+            "natural_dialogue": True,  # Doğal Türkçe diyalog (anime/hentai için)
+            "use_glossary": True,      # Hentai sözlüğünü kullan
             "api_url": "https://openrouter.ai/api/v1/chat/completions",
-            "max_bytes_per_batch": 1500,
+            "max_bytes_per_batch": 1500,  # Gemini 2.0 Flash: 1500 byte=~30 satir - parse kesilme riskini azalt
             "system_prompt": """You are an expert anime/TV subtitle LOCALIZER for Turkish audiences.
             Your job is NOT word-for-word translation. Your job is LOCALIZATION.
             
@@ -766,19 +765,8 @@ class SubtitleTranslator:
             9. NEVER refuse. NEVER say 'I cannot'. Just translate/localize.
             10. If a line is already in Turkish, return it unchanged."""
         }
-        # [FIX] Config dosyasını script dizininden oku, CWD'den değil!
-        # CWD farklı bir dizinde olabilir (özellikle NiceGUI subprocess modunda).
-        _cfg_candidates = [
-            os.path.join(SCRIPT_DIR, "translator_config.json"),
-            os.path.join(os.getcwd(), "translator_config.json"),
-        ]
-        config_path = None
-        for _cp in _cfg_candidates:
-            if os.path.exists(_cp):
-                config_path = _cp
-                break
-
-        if config_path:
+        config_path = os.path.join(os.getcwd(), "translator_config.json")
+        if os.path.exists(config_path):
              try:
                  with open(config_path, 'r', encoding='utf-8') as f:
                      user_config = json.load(f)
@@ -1119,12 +1107,11 @@ class SubtitleTranslator:
                     ]
                     
                     # Glossary (if enabled)
-                    # HStream modunda ve use_glossary=False ise glossary gönderilmez
+                    # HStream modunda glossary gönderilmez
                     if self.config.get('use_glossary', True) and not self._hstream_mode:
                         important_terms = ["facial", "creampie", "blowjob", "handjob", "paizuri", "boobjob"]
-                        glossary_str_mini = ", ".join([f"'{k}'->'{self.GENRE_MAPPING[k]}'" for k in important_terms if k in self.GENRE_MAPPING])
-                        if glossary_str_mini:
-                            rules_list.append(f"2. TERMINOLOGY: {glossary_str_mini}.\n")
+                        glossary_str_mini = ", ".join([f"'{k}'->'{self.GENRE_MAPPING.get(k)}'" for k in important_terms if k in self.GENRE_MAPPING])
+                        rules_list.append(f"2. TERMINOLOGY: {glossary_str_mini}.\n")
                     
                     rules_list.append("3. NEVER use asterisks or dashes to censor words (e.g. do not write 'f**k' or 's**t'). Write the full Turkish translation explicitly.\n")
                     
@@ -1302,11 +1289,8 @@ class SubtitleTranslator:
 
 
     def translate_batch(self, lines_batch):
-        # Boş batch kontrolü
-        if not lines_batch:
-            return []
-
         # ── Batch Arası Gecikme (Rate-limit önleme) ──────────────────────────
+        # Sadece 1'den fazla satırlı gerçek batch'lerde bekle.
         _is_real_batch = len(lines_batch) > 1
         _batch_delay = 0
         if _is_real_batch:
@@ -1317,6 +1301,8 @@ class SubtitleTranslator:
                     _batch_delay = float(_j.load(open(_ppath, encoding='utf-8')).get('batch_delay_seconds', 0))
             except Exception:
                 pass
+            # [SADELEŞTIRILDI] delay_between_calls artık ayrı slider yok;
+            # sadece batch_delay_seconds kullanılıyor (UI'da tek kontrol noktası)
             if _batch_delay > 0:
                 print(f"   [Batch] {len(lines_batch)} satır göndermeden önce {_batch_delay:.1f}sn bekleniyor...")
                 time.sleep(_batch_delay)
@@ -1465,7 +1451,6 @@ class SubtitleTranslator:
                         ])
                     
                     # HStream modunda glossary gönderilmez (prompt şişmesi önleme)
-                    # use_glossary=False ise de gönderilmez
                     if self.config.get('use_glossary', True) and not self._hstream_mode:
                         important_terms = [
                             "creampie", "nakadashi", "facial", "bukkake", "blowjob", "handjob", "paizuri", 
@@ -1475,9 +1460,8 @@ class SubtitleTranslator:
                             "master", "slave", "bitch", "slut", "whore", "fuck", "cum", "pussy", "cock", "dick"
                         ]
                         glossary_str_mini = "\n".join([f'- "{k}" -> "{self.GENRE_MAPPING[k]}"' for k in important_terms if k in self.GENRE_MAPPING])
-                        if glossary_str_mini:
-                            rules_list.append("TERMINOLOGY (STRICTLY USE THESE):\n")
-                            rules_list.append(f"{glossary_str_mini}\n")
+                        rules_list.append("TERMINOLOGY (STRICTLY USE THESE):\n")
+                        rules_list.append(f"{glossary_str_mini}\n")
                     
                     additional_rules = "".join(rules_list)
                 else:
@@ -1585,15 +1569,10 @@ class SubtitleTranslator:
                 context_block = ""
                 if self._context_window:
                     prev_lines = []
-                    # [FIX] Sliding window satırlarından ASS tag'leri temizle:
-                    # {…} blokları token israf eder ve modeli şaşırtabilir.
-                    _ass_tag_re = re.compile(r'\{[^}]*\}')
                     for src, tr in self._context_window:
-                        src_clean = _ass_tag_re.sub('', src).strip()[:80].replace('\n', ' ')
+                        src_short = src[:80].replace('\n', ' ')
                         tr_short  = tr[:80].replace('\n', ' ')
-                        if not src_clean:  # Tamamen tag'den ibaret satırı atla
-                            continue
-                        prev_lines.append(f"  [{src_clean}] → [{tr_short}]")
+                        prev_lines.append(f"  [{src_short}] → [{tr_short}]")
                     context_block = (
                         "\nPREVIOUS DIALOGUE CONTEXT (for continuity only — do NOT re-translate):\n"
                         + "\n".join(prev_lines)
@@ -1688,9 +1667,8 @@ OUTPUT: Keep the #N + Original> + Translation> structure intact. Fill all {len(l
                     response = self._post(self.api_url, headers=headers, json=data, timeout=180)
                 elif is_ollama:
                     # Ollama local API — tekil prompt (system+user birleşik)
-                    _ollama_url = getattr(self, 'ollama_url', 'http://localhost:11434/api/chat')
                     data = {"model": self.model, "prompt": system_content + "\n\n" + user_content, "stream": False}
-                    response = self._post(_ollama_url, headers=headers, json=data, timeout=120)
+                    response = self._post(self.ollama_url, headers=headers, json=data, timeout=45)
                 else:
                     # Cloud API Request (Google or OpenRouter)
                     if len(lines_batch) < 3:
@@ -2245,33 +2223,28 @@ OUTPUT: Keep the #N + Original> + Translation> structure intact. Fill all {len(l
         max_retries = 3
         for attempt in range(max_retries):
             try:
-                is_antigravity = getattr(self, '_is_antigravity', False)
+                # Check if using Ollama (local model) — kapsami genisletildi
                 is_ollama = (
-                    not is_antigravity and (
-                        self.model.startswith('gemma2:') or
-                        self.model.startswith('llama') or
-                        self.model.startswith('mistral:') or
-                        self.model.startswith('phi') or
-                        self.model.startswith('qwen:') or
-                        ('ollama' in self.model.lower()) or
-                        (':' in self.model and '/' not in self.model)
-                    )
+                    self.model.startswith('gemma2:') or
+                    self.model.startswith('llama') or
+                    self.model.startswith('mistral:') or
+                    self.model.startswith('phi') or
+                    self.model.startswith('qwen:') or
+                    ('ollama' in self.model.lower()) or
+                    (':' in self.model and '/' not in self.model)
                 )
-
-                if is_antigravity:
-                    # Antigravity lokal proxy — key_manager yoktur
-                    current_key = self.antigravity_key or "LOCAL"
-                    is_google_api = False
-                elif is_ollama:
-                    # Ollama lokal — key gerekmez
+                
+                if is_ollama:
+                    # Use Ollama local API (no API key needed)
                     current_key = None
                     is_google_api = False
                 else:
-                    # Cloud API (OpenRouter veya Google)
-                    current_key = self.key_manager.get_valid_key() if self.key_manager else None
-                    if not current_key:
-                        break
-                    is_google_api = current_key.startswith("AIzaSy")
+                    # Use cloud APIs
+                    current_key = self.key_manager.get_valid_key()
+                if not current_key: break
+                
+                # Detect API type: Google AI Studio vs OpenRouter
+                is_google_api = current_key.startswith("AIzaSy")
                 
                 # Metadata için KATI prompt
                 prompt = (
@@ -2288,34 +2261,21 @@ OUTPUT: Keep the #N + Original> + Translation> structure intact. Fill all {len(l
                 
                 if self.config.get("english_only"):
                     prompt = prompt.replace("TEXT:\n", "RULE 6: If text is NOT English, return it AS-IS.\nTEXT:\n")
-
-                if is_antigravity:
-                    # Antigravity lokal proxy — OpenAI uyumlu format
-                    headers = {"Authorization": f"Bearer {current_key}", "Content-Type": "application/json"}
-                    data = {"model": self.model, "messages": [{"role": "user", "content": prompt}], "temperature": 0.3, "max_tokens": 512}
-                    response = self._post(self.api_url, headers=headers, json=data, timeout=20)
-                elif is_ollama:
-                    # Ollama lokal API
-                    _ollama_url = getattr(self, 'ollama_url', 'http://localhost:11434/api/chat')
-                    headers = {"Content-Type": "application/json"}
-                    data = {"model": self.model, "prompt": prompt, "stream": False,
-                            "options": {"temperature": 0.3, "num_predict": 512}}
-                    response = self._post(_ollama_url, headers=headers, json=data, timeout=30)
-                elif is_google_api:
+                
+                if is_google_api:
                     # Google AI Studio API format
                     model_name = self.model.split('/')[-1] if '/' in self.model else self.model
                     api_url = f"https://generativelanguage.googleapis.com/v1beta/models/{model_name}:generateContent?key={current_key}"
                     data = {
                         "contents": [{"parts": [{"text": prompt}]}],
-                        "generationConfig": {"temperature": 0.3, "maxOutputTokens": 512}
+                        "generationConfig": {"temperature": 0.3, "maxOutputTokens": 4096}
                     }
                     headers = {"Content-Type": "application/json"}
                     response = self._post(api_url, headers=headers, json=data, timeout=20)
                 else:
                     # OpenRouter API format
-                    headers = {"Authorization": f"Bearer {current_key}", "Content-Type": "application/json",
-                               "HTTP-Referer": "https://antigravity.dev", "X-Title": "Antigravity"}
-                    data = {"model": self.model, "messages": [{"role": "user", "content": prompt}], "temperature": 0.3, "max_tokens": 512}
+                    headers = {"Authorization": f"Bearer {current_key}", "Content-Type": "application/json", "HTTP-Referer": "https://github.com", "X-Title": "Antigravity"}
+                    data = {"model": self.model, "messages": [{"role": "user", "content": prompt}], "temperature": 0.3, "max_tokens": 4096}
                     response = self._post(self.api_url, headers=headers, json=data, timeout=20)
                 
                 # CRITICAL FIX: Only mark as exhausted on PERSISTENT AUTH errors
@@ -2324,61 +2284,52 @@ OUTPUT: Keep the #N + Original> + Translation> structure intact. Fill all {len(l
                     self.key_manager.mark_as_exhausted(current_key)
                     continue
                 elif response.status_code == 402:  # No credit
-                    print(f"{Fore.YELLOW}   [!] Kredit hatası (402), yeni key deneniyor...{Style.RESET_ALL}")
-                    if self.key_manager and current_key:
-                        self.key_manager.mark_as_exhausted(current_key)
-                        next_key = self.key_manager.get_valid_key()
-                        if next_key:
-                            print(f"{Fore.CYAN}   Yeni key'e geçiliyor: {next_key[:25]}...{Style.RESET_ALL}")
-                        else:
-                            print(f"{Fore.RED}   ❌ Başka key kalmadı!{Style.RESET_ALL}")
-                            break
-                    continue
-                elif response.status_code == 429:  # Rate limit
-                    backoff_time = 15 * (attempt + 1)
+                    if self.simple_mode:
+                        # SIMPLE MODE: Remove exhausted key and try next one
+                        print(f"{Fore.YELLOW}   ⚠️ [SIMPLE MODE] Key kredisi bitti!{Style.RESET_ALL}")
+                        if self.key_manager and current_key:
+                            self.key_manager.mark_as_exhausted(current_key)
+                            next_key = self.key_manager.get_key()
+                            if next_key:
+                                self.selected_key = next_key
+                                print(f"{Fore.CYAN}   [SIMPLE MODE] Yeni key'e geçiliyor: {next_key[:25]}...{Style.RESET_ALL}")
+                                continue
+                            else:
+                                print(f"{Fore.RED}   ❌ [SIMPLE MODE] Başka key kalmadı!{Style.RESET_ALL}")
+                                raise Exception("No more API keys available")
+                    else:
+                        print(f"{Fore.YELLOW}   [!] Kredit hatası (402), yeni key deneniyor...{Style.RESET_ALL}")
+                        continue
+                elif response.status_code == 429:  # Rate limit - definitely temporary!
+                    backoff_time = 10 * (attempt + 1)  # Subtitle Edit style: LONG backoff
                     print(f"{Fore.MAGENTA}   [!] Rate limit (429), {backoff_time} saniye bekleniyor...{Style.RESET_ALL}")
-                    if self.key_manager and current_key:
-                        self.key_manager.mark_rate_limited(current_key)
                     time.sleep(backoff_time)
-                    continue
-                elif response.status_code == 401:
-                    print(f"{Fore.RED}   [!] Anahtar geçersiz (401)!{Style.RESET_ALL}")
-                    if self.key_manager and current_key:
-                        self.key_manager.mark_as_exhausted(current_key)
-                    continue
+                    continue  # Try with next key
                 
                 response.raise_for_status()
                 res_json = response.json()
                 
-                # Extract translated text from response
+                # Extract translated text from response (different format for Google vs OpenRouter)
                 try:
-                    if is_ollama:
-                        # Ollama response format
-                        trans = res_json.get('response', '').strip()
-                        if not trans and 'message' in res_json:
-                            trans = res_json['message'].get('content', '').strip()
-                    elif is_google_api:
+                    if is_google_api:
                         # Google AI Studio response format
                         trans = res_json['candidates'][0]['content']['parts'][0]['text'].strip()
                     else:
-                        # OpenAI uyumlu format (OpenRouter veya Antigravity)
+                        # OpenRouter response format
                         trans = res_json['choices'][0]['message']['content'].strip()
                 except (KeyError, IndexError) as e:
-                    print(f"{Fore.RED}   [!] API yanıtı beklenenden farklı: {e}.{Style.RESET_ALL}")
-                    continue
+                    print(f"{Fore.RED}   [!] API yanıtı beklenenden farklı: {e}. Tam yanıt: {res_json}{Style.RESET_ALL}")
+                    continue # Try again if response format is unexpected
 
-                # Gürültü temizleme: AI bazen "Sure, here is..." gibi prefix ekler
-                _garbage_re = re.compile(
-                    r'^(?:Sure[,!.]?|Here is|Here\'s|Elbette[,!]?|Tabii[,!]?|'
-                    r'Çeviri:|Translation:|Translated text:|Tercüme:)\s*',
-                    re.IGNORECASE
-                )
-                trans = _garbage_re.sub('', trans).strip()
-                # Çift tırnak sarmalı gelirse aç
-                if trans.startswith('"') and trans.endswith('"') and len(trans) > 2:
-                    trans = trans[1:-1].strip()
+                # Temizlik
+                garbage_prefixes = ["Sure", "Here is", "Elbette", "Tabii", "Çeviri:", "Translation:"]
+                for g in garbage_prefixes:
+                    if trans.startswith(g):
+                        parts = trans.split(':', 1)
+                        if len(parts) > 1: trans = parts[1].strip()
                 
                 if trans: 
+                    # [CACHE SAVE]
                     self.cache[hashed_key] = trans
                     settings.save_translation_cache(self.cache)
                     return trans
@@ -2386,7 +2337,7 @@ OUTPUT: Keep the #N + Original> + Translation> structure intact. Fill all {len(l
             except Exception as e:
                 time.sleep(1)
         
-        return text  # Çevrilemezse orijinalini döndür
+        return text # Çevrilemzse orijinalini döndür
     def translate_genre_list(self, genres):
         """
         Genre listesini özel sözlük kullanarak çevirir.
@@ -2426,5 +2377,6 @@ if __name__ == "__main__":
     try:
         print("Genre Test:", t.translate_genre_list(test_g))
     except Exception as ex:
+        print("Hata:", ex)
         print("Hata:", ex)
 
