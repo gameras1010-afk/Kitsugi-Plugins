@@ -197,7 +197,16 @@ def _ffprobe_subtitle_meta(video_path: str) -> dict:
     try:
         import subprocess
         # FFprobe'u sisteme göre bul
-        ffprobe_candidates = [
+        # Portable mod: tools/ klasörüne bak
+        _nexus_root = os.environ.get('NEXUS_USER_DIR', '')
+        _portable_ffprobe = []
+        if _nexus_root:
+            _pr = os.path.abspath(os.path.join(_nexus_root, '..'))
+            _portable_ffprobe = [
+                os.path.join(_pr, 'tools', 'ffprobe.exe'),
+                os.path.join(_pr, 'ffprobe.exe'),
+            ]
+        ffprobe_candidates = _portable_ffprobe + [
             'ffprobe',
             r'C:\Program Files\FFMPEG\bin\ffprobe.exe',
             r'C:\ffmpeg\bin\ffprobe.exe',
