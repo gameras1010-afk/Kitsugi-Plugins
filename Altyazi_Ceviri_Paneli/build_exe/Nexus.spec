@@ -131,7 +131,7 @@ a = Analysis(
     hiddenimports=hidden,
     hookspath=[],
     hooksconfig={},
-    runtime_hooks=[],
+    runtime_hooks=['../build_exe/hook_portable.py'],  # Portable mod desteği
     excludes=['matplotlib', 'numpy', 'pandas', 'scipy', 'PIL', 'cv2',
               'tensorflow', 'torch', 'sklearn', 'pytest'],
     noarchive=False,
