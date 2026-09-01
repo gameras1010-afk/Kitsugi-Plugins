@@ -67,6 +67,7 @@ def _play_tone(tone_type: str):
 def _find_ff_tool(name):
     """
     ffmpeg veya ffprobe'u bulur:
+      0. Portable mod: tools/ klasörü (en öncelikli)
       1. Uygulama ana klasörü ({app}/ffmpeg.exe)
       2. PATH
       3. Bilinen sabit kurulum yolları (C:/ffmpeg-.../bin/)
@@ -74,6 +75,15 @@ def _find_ff_tool(name):
     import shutil
     import subprocess
     exe = name + (".exe" if os.name == "nt" else "")
+
+    # 0) Portable mod: NEXUS_USER_DIR/../../tools/ klasörü
+    _nexus_root = os.environ.get('NEXUS_USER_DIR', '')
+    if _nexus_root:
+        _portable_root = os.path.abspath(os.path.join(_nexus_root, '..'))
+        for _d in [os.path.join(_portable_root, 'tools'), _portable_root]:
+            _c = os.path.join(_d, exe)
+            if os.path.isfile(_c):
+                return _c
 
     # 1) Uygulama ana klasörü
     app_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))

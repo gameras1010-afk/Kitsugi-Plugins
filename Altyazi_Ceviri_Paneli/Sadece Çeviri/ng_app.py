@@ -5,8 +5,20 @@ import os, sys
 from datetime import datetime
 from nicegui import ui, app
 
-_DIR = os.path.dirname(os.path.abspath(__file__))
-_PARENT_DIR = os.path.dirname(_DIR)   # Python kodları/ — termbase_manager, fandom_glossary vb.
+# ── PyInstaller frozen (EXE) ortam desteği ────────────────────────────────────
+# EXE olarak çalışırken sys.executable'ın dizini, normal çalışırken ng_app.py'nin dizini
+if getattr(sys, 'frozen', False):
+    # PyInstaller EXE — geçici çıkarma dizini
+    _MEIPASS = getattr(sys, '_MEIPASS', os.path.dirname(sys.executable))
+    _DIR = _MEIPASS
+    _PARENT_DIR = _MEIPASS
+    # Kullanıcı verisi için EXE'nin yanındaki klasör
+    _USER_DIR = os.path.dirname(sys.executable)
+    os.environ.setdefault('NEXUS_USER_DIR', _USER_DIR)
+else:
+    _DIR = os.path.dirname(os.path.abspath(__file__))
+    _PARENT_DIR = os.path.dirname(_DIR)   # Python kodları/
+    _USER_DIR = _PARENT_DIR
 
 if _DIR not in sys.path:
     sys.path.insert(0, _DIR)
