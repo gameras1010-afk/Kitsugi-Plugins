@@ -6,8 +6,13 @@ from datetime import datetime
 
 # ─── Dizin tespiti ────────────────────────────────────────────────────────────
 if getattr(sys, 'frozen', False):
+    # EXE çalışırken: kullanıcı verisi EXE'nin yanında
     BASE_DIR   = os.path.dirname(sys.executable)
     PARENT_DIR = BASE_DIR
+    # _MEIPASS = PyInstaller'ın geçici çıkarma dizini (modüller burada)
+    _MEIPASS = getattr(sys, '_MEIPASS', BASE_DIR)
+    if _MEIPASS not in sys.path:
+        sys.path.insert(0, _MEIPASS)
 else:
     BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
     PARENT_DIR = os.path.dirname(BASE_DIR)
