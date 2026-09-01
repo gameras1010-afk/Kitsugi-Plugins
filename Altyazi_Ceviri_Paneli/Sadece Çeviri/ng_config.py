@@ -7,6 +7,7 @@ from datetime import datetime
 # ─── Dizin tespiti ────────────────────────────────────────────────────────────
 # Portable mod: NEXUS_USER_DIR ortam değişkeni varsa onu kullan
 _NEXUS_USER_DIR = os.environ.get('NEXUS_USER_DIR', '')
+_NEXUS_DATA_DIR = os.environ.get('NEXUS_DATA_DIR', '')
 
 if getattr(sys, 'frozen', False):
     # PyInstaller EXE modu
@@ -16,9 +17,12 @@ if getattr(sys, 'frozen', False):
     if _MEIPASS not in sys.path:
         sys.path.insert(0, _MEIPASS)
 elif _NEXUS_USER_DIR:
-    # Portable mod (BAŞLAT.bat ile çalıştırıldı)
+    # Portable mod veya Installer mod (BAŞLAT.bat ortam değişkeni ayarladı)
+    # Installer: NEXUS_USER_DIR = %APPDATA%\NexusAI
+    # Portable : NEXUS_USER_DIR = Nexus_Portable\data
     BASE_DIR   = os.path.dirname(os.path.abspath(__file__))
     PARENT_DIR = _NEXUS_USER_DIR
+    os.makedirs(PARENT_DIR, exist_ok=True)
 else:
     # Normal geliştirme modu
     BASE_DIR   = os.path.dirname(os.path.abspath(__file__))

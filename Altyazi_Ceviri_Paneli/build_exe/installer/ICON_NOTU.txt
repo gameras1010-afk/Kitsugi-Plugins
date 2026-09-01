@@ -1,0 +1,17 @@
+İKON DOSYASI (nexus_icon.ico)
+==============================
+
+Bu klasöre nexus_icon.ico adında bir Windows ikonunu (.ico formatı) koyun.
+
+Boyutlar: 256x256, 128x128, 64x64, 48x48, 32x32, 16x16 (multi-size .ico)
+
+İkon yoksa:
+  1. nexus_setup.iss dosyasında bu satırı yorum satırına alın:
+     SetupIconFile={#APP_ICON}
+  2. Ve [Icons] bölümündeki IconFilename= satırlarını kaldırın.
+
+Ücretsiz ikon yapma araçları:
+  - https://convertio.co/png-ico/
+  - https://www.favicon-generator.org/
+  - IcoFX (Windows, ücretli)
+  - GIMP (ücretsiz) → Dosya → Dışa Aktar → .ico
