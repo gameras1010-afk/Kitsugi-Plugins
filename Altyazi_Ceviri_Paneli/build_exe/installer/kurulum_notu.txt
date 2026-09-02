@@ -1,0 +1,26 @@
+Nexus AI Altyazı Çeviri Paneli — Kurulum Notları
+==================================================
+
+Bu yazılım tamamen ücretsizdir.
+
+NELER KURULUR?
+  • Nexus AI uygulama kodları
+  • Python 3.11 (sistem Python'ına dokunulmaz, sadece bu program için)
+  • Gerekli Python kütüphaneleri (nicegui, pysubs2, requests vb.)
+  • FFmpeg araçları (video altyazı çıkarma için)
+
+NELER KURULMAZ?
+  • Herhangi bir sistem değişikliği yapılmaz
+  • Windows Registry'ye sadece kaldırma kaydı yazılır
+  • Sistem Python'ına dokunulmaz
+
+VERİ KAYDI
+  Ayarlarınız ve API key'leriniz şurada saklanır:
+  %APPDATA%\NexusAI\
+
+KALDIRMA
+  Program Ekle/Kaldır → Nexus AI → Kaldır
+  (Kaldırma işlemi kullanıcı verilerini silmez)
+
+DESTEK
+  https://github.com/gameras1010-afk/Kitsugi-Plugins
