@@ -27,7 +27,9 @@ public class CosmeticInjector extends CefLoadHandlerAdapter {
             if (httpStatusCode != 200) return;
             String url = frame != null ? frame.getURL() : browser.getURL();
             if (!wantsJs(url)) return;
-            browser.executeJavaScript(JS, "wd-adblock-lite", 0);
+            // v0.2: YT Suite (SponsorBlock + RYD + Enhancer portu) + skipper
+            String body = (YtSuite.available() ? YtSuite.payload() + "\n" : "") + JS;
+            browser.executeJavaScript(body, "wd-adblock-lite", 0);
         } catch (Throwable ignored) {
             // Enjeksiyon baarisiz olursa akis aynen devam eder — MC asla crashe etmez.
         }

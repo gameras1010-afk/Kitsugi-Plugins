@@ -57,3 +57,10 @@ wd-adblock-lite/
 2. F7 log'da `attached to MCEF` satırı + kural sayısı > 0.
 3. `piped.video` ve bir wiki sayfası **hiç etkilenmemiş** olmalı (regresyon kontrolü).
 4. MinePad'de de aynı filtre geçerli (aynı CefClient'i paylaşır — bonus).
+
+## v0.2 — YT SUITE (SponsorBlock + Return YouTube Dislike + Enhancer portu)
+- Endpoint/seçiciler DOĞRUDAN kaynak repolardan: `ajayyy/SponsorBlock` (`GET /api/skipSegments/<videoID>?categories=[..]` + `videoID` süzme — kendi kodundaki gibi), `Anarios/return-youtube-dislike` **resmî UserScript**'i (votes API + `like-button-view-model`), `YouTube-Enhancer/extension` (`setPlaybackQualityRange(q,q)`, `setVolume(0-100)`, `ytp-size-button` + `theater` attribue kontrolü).
+- Mekanizma: Chrome eklentisi paketi GEREKMEZ — tek `executeJavaScript` payload'ı. (RYD zaten kendisi UserScript olarak dağıtılıyor; aynı teknik.)
+- Ayar: `config/wd-adblock-lite/yt-suite.txt` → `sponsorblock`, `ryd`, `quality=4k|1440|1080|720|off`, `volume=0-100`, `speed=1.0`, `theater=false`, `sbCategories=sponsor,selfpromo,...`
+- Dosyalar: `src/main/resources/ytsuite.js` + `YtSuite.java` + `YtSuiteCfg.java`; enjeksiyon `CosmeticInjector.onLoadEnd` üzerinden (SPA'da video değişimi 750ms'lik döngüyle takip).
+- Kapsam dışı (bilinçli): RYD oy senkronu, SponsorBlock segment gönderme/oy UI'ı, Enhancer'ın >%100 WebAudio boost'u ve ayar menüleri — hepsi chrome.* API / UI altyapısı ister; ekranda 50 satır chat/oy UI'ı anlamsız.

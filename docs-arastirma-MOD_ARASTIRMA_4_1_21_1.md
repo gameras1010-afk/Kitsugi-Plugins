@@ -80,3 +80,5 @@ Xaero/JourneyMap radarları (bilgi = avantaj), Sophisticated-style envanter QoL'
 
 ---
 *Yöntem: Modrinth API proje/sürüm alanları + loader etiketleri tek tek kontrol edildi (8-9 Eyl 2026); CEF eklenti kısıtı topluluk/belge kaynaklarıyla teyit edildi.*
+### 🔌 v0.2 EKLENTİ-LİMANI (2026-09, kullanıcının 3 eklentisi)
+SponsorBlock + Return YouTube Dislike + Enhancer for YouTube → WD modu artık bu üçünü **eklenti formatı olmadan** taşıyor: kaynak repolarından doğrulanmış endpoint/seçicilerle tek `executeJavaScript` payload (ytsuite.js). RYD zaten resmî UserScript olarak dağıtılıyor — mekanizma birebir aynı. Ayar dosyası: `config/wd-adblock-lite/yt-suite.txt`. Kapsam dışı: oy gönderme, segment submit, >100% WebAudio boost, chrome.* UI altyapıları.

@@ -17,3 +17,9 @@ TEST: youtube.com/watch?v=... aç -> reklam yok ya da <=1sn'de atlanır.
 NOT: Twitch'in stream içine gömülü reklamı mimari olarak kesilemez (README'de detay).
      Mod jar'ını silersen her şey eski haline döner — sıfır kalıntı.
 Paket içeriği: wd-adblock-lite/ (kaynak proje) + MOD_ARASTIRMA_2/3/4 raporları.
+
+=== v0.2 TEST EKLERİ ===
+6b) config/wd-adblock-lite/yt-suite.txt otomatik oluşur. Test:
+    - SponsorBlock: sponsor zamanında "⏭ sponsor atlandı" toast + otomatik atlama
+    - RYD: beğen butonu yanında "👍 N · 👎 M" çipi
+    - Enhancer: kalite otomatik 4K/1080 (varsa), volume=80, theater=true ise sinema modu
