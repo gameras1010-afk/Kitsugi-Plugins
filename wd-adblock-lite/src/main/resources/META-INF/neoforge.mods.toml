@@ -1,0 +1,16 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+issueTrackerURL = ""
+
+mods = [
+    { modId="wd_adblock_lite", displayName="WebDisplays AdBlock Lite", version="0.1.0",
+      description="MCEF icin eklentisiz, istek-seviyesi reklam filtresi (request iptali + stub + cosmetic JS). WebDisplays/MCEF forklamaz; sadece acik handler API'lerini kullanir.",
+      logoFile="", authors="Kitsugi" }
+]
+
+dependencies = [
+    { modId="neoforge",  type="REQUIRED", versionRange="[21.1.60,)", ordering="NONE", side="BOTH" },
+    { modId="minecraft", type="REQUIRED", versionRange="[1.21.1]",   ordering="NONE", side="BOTH" },
+    { modId="mcef",      type="REQUIRED", versionRange="",           ordering="NONE", side="CLIENT" },
+]

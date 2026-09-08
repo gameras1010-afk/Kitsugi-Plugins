@@ -1,0 +1,19 @@
+=== wd-adblock-lite — HIZLI BAŞLANGIÇ (TR) ===
+AMAÇ: WebDisplays/MCEF'te Chrome eklentisi YÜKLEMEDEN reklam kesmek.
+Yöntem: boş CEF request-handler slotuna takılan companion mod (iptal + stub + JS enjeksiyon).
+
+ADIMLAR (kendi makinende):
+1) Gereken: JDK 21, Gradle 8.8+ (veya wrapper'ı kendin üret: "gradle wrapper --gradle-version 8.10")
+2) MCEF neoforge 1.21.1 jar'ını indir (modrinth.com/mod/mcef) -> wd-adblock-lite/libs/mcef-neoforge.jar olarak koy
+   (sadece derleme için gerekli; boş klasörle build patlar)
+3) cd wd-adblock-lite && gradle build
+4) Çıktı: build/libs/wd-adblock-lite-0.1.0.jar
+   -> SADECE her oyuncunun client mods/ klasörüne at (sunucuya GEREK YOK)
+5) WebDisplays + MCEF zaten kurulu olmalı (remaster veya brother-bill fork, 1.21.1 neoforge)
+6) Oyunu aç; ilk oyunca log: "attached to MCEF — N aktif kural"
+   config/wd-adblock-lite/rules.txt otomatik oluşur — satır ekle/çıkar (regex; @=boş-JSON stub)
+TEST: youtube.com/watch?v=... aç -> reklam yok ya da <=1sn'de atlanır.
+      piped.video ve wiki sayfası DEĞİŞMEMELİ (regresyon kontrolü).
+NOT: Twitch'in stream içine gömülü reklamı mimari olarak kesilemez (README'de detay).
+     Mod jar'ını silersen her şey eski haline döner — sıfır kalıntı.
+Paket içeriği: wd-adblock-lite/ (kaynak proje) + MOD_ARASTIRMA_2/3/4 raporları.

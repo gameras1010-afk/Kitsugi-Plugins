@@ -1,0 +1,3 @@
+BURA KOY: MCEF neoforge 1.21.1 jar -> bu klasore "mcef-neoforge.jar" adıyla.
+İndir: https://modrinth.com/mod/mcef (versions: 1.21.1 + NeoForge)
+Sadece DERLEME içindir (compileOnly); oyun içinde jar zaten mods/ içinde olacak.

@@ -1,0 +1,44 @@
+// WEBDISPLAYS ADBLOCK LITE — client-only companion mod for MCEF
+// Build: JDK 21 + Gradle 8.8+ -> ./gradlew build
+plugins {
+    id 'java'
+    id 'net.neoforged.moddev' version '2.0.78'
+}
+
+group = 'com.example.wdablite'
+version = '0.1.0'
+base { archivesName = 'wd-adblock-lite' }
+
+java {
+    toolchain { languageVersion = JavaLanguageVersion.of(21) }
+}
+
+neoForge {
+    version = '21.1.215'            // NeoForge for MC 1.21.1 (LTS)
+    mods {
+        wd_adblock_lite { sourceSet sourceSets.main }
+    }
+    runs {
+        client { client() }
+    }
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    // MCEF derleme-ici: CurseForge/Modrinth'ten indirilen mcef neoforge jar'ını
+    // "libs/mcef-neoforge.jar" olarak koy. Runtime'da zaten mods/ klasöründe olacak.
+    compileOnly fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+jar {
+    manifest {
+        attributes([
+            'Specification-Title'   : 'wd_adblock_lite',
+            'Implementation-Title'  : 'WebDisplays AdBlock Lite',
+            'Implementation-Version': project.version
+        ])
+    }
+}
