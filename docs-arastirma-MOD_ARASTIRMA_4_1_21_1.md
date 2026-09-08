@@ -82,3 +82,8 @@ Xaero/JourneyMap radarları (bilgi = avantaj), Sophisticated-style envanter QoL'
 *Yöntem: Modrinth API proje/sürüm alanları + loader etiketleri tek tek kontrol edildi (8-9 Eyl 2026); CEF eklenti kısıtı topluluk/belge kaynaklarıyla teyit edildi.*
 ### 🔌 v0.2 EKLENTİ-LİMANI (2026-09, kullanıcının 3 eklentisi)
 SponsorBlock + Return YouTube Dislike + Enhancer for YouTube → WD modu artık bu üçünü **eklenti formatı olmadan** taşıyor: kaynak repolarından doğrulanmış endpoint/seçicilerle tek `executeJavaScript` payload (ytsuite.js). RYD zaten resmî UserScript olarak dağıtılıyor — mekanizma birebir aynı. Ayar dosyası: `config/wd-adblock-lite/yt-suite.txt`. Kapsam dışı: oy gönderme, segment submit, >100% WebAudio boost, chrome.* UI altyapıları.
+
+### v0.2.3 kanit zinciri (2026-09-09 canli test)
+- GET /api/skipSegments/dQw4w9WgXcQ -> "Hash prefix does not match format requirements." (400)
+- GET /api/skipSegments?videoID=... -> Not Found (404) [kullanicinin harici "düzeltme" iddiasi BUYUK hataymis]
+- GET /api/skipSegments/5f6b0 (sha256("dQw4w9WgXcQ")[:5]) -> 200 JSON, segmentler + videoID alanlariyla (modun artik birebir uyguladigi bicim)
