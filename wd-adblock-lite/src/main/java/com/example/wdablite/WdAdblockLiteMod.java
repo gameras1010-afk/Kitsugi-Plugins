@@ -45,9 +45,18 @@ public class WdAdblockLiteMod {
 
             client.getHandle().addRequestHandler(new AdBlockRequestHandler());
             client.addLoadHandler(CosmeticInjector.INSTANCE);
+            // v0.2.1: SPA sayfalarinda (google->yt tik) onLoadEnd yeniden ateslenmez;
+            // adres degisimini de izle. Script idempotent, spam kilidi injector'da.
+            client.addDisplayHandler(new org.cef.handler.CefDisplayHandlerAdapter() {
+                @Override
+                public void onAddressChange(org.cef.browser.CefBrowser browser,
+                                            org.cef.browser.CefFrame frame, String url) {
+                    CosmeticInjector.injectNow(browser, url, false);
+                }
+            });
 
             attached = true;
-            LOG.info("[WdAdBlockLite] attached to MCEF — {} aktif kural", Rules.get().size());
+            LOG.info("[WdAdBlockLite] attached to MCEF — {} aktif kural (v0.2.1 SPA-fix)", Rules.get().size());
         } catch (Throwable t) {
             // MCEF init hatasi / API farki: asla MC'yi crash etme, sessizce bekle
             LOG.warn("[WdAdBlockLite] attach bekleniyor/hata: {}", t.toString());

@@ -64,3 +64,6 @@ wd-adblock-lite/
 - Ayar: `config/wd-adblock-lite/yt-suite.txt` → `sponsorblock`, `ryd`, `quality=4k|1440|1080|720|off`, `volume=0-100`, `speed=1.0`, `theater=false`, `sbCategories=sponsor,selfpromo,...`
 - Dosyalar: `src/main/resources/ytsuite.js` + `YtSuite.java` + `YtSuiteCfg.java`; enjeksiyon `CosmeticInjector.onLoadEnd` üzerinden (SPA'da video değişimi 750ms'lik döngüyle takip).
 - Kapsam dışı (bilinçli): RYD oy senkronu, SponsorBlock segment gönderme/oy UI'ı, Enhancer'ın >%100 WebAudio boost'u ve ayar menüleri — hepsi chrome.* API / UI altyapısı ister; ekranda 50 satır chat/oy UI'ı anlamsız.
+
+## v0.2.1 — SPA-navigation fixi
+Artik yalnizca sayfa yuklenisinde degil, ADRES DEGISIMINDE de enjekte edilir (google.com uzerinden YouTubea tiklaninca script atlanma derdi kapandi). Enjeksiyon idempotent (window guard) + 3sn spam kilidi.

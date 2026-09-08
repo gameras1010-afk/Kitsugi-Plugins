@@ -21,17 +21,27 @@ public class CosmeticInjector extends CefLoadHandlerAdapter {
                 || url.contains("twitch.tv"));
     }
 
+    private static final java.util.concurrent.ConcurrentHashMap<CefBrowser, Long> LAST_INJECT =
+            new java.util.concurrent.ConcurrentHashMap<>();
+
     @Override
     public void onLoadEnd(CefBrowser browser, CefFrame frame, int httpStatusCode) {
+        if (httpStatusCode == 200 || httpStatusCode == 304)
+            injectNow(browser, browser.getURL(), true);
+    }
+
+    /** v0.2.1: SPA navigasyonu (google->yt tiklama) icin adres degisiminde de dene. */
+    public static void injectNow(CefBrowser browser, String url, boolean force) {
         try {
-            if (httpStatusCode != 200) return;
-            String url = frame != null ? frame.getURL() : browser.getURL();
-            if (!wantsJs(url)) return;
-            // v0.2: YT Suite (SponsorBlock + RYD + Enhancer portu) + skipper
+            if (browser == null || !wantsJs(url)) return;
+            long now = System.currentTimeMillis();
+            Long prev = LAST_INJECT.get(browser);
+            if (!force && prev != null && now - prev < 3000) return; // spam kilidi
             String body = (YtSuite.available() ? YtSuite.payload() + "\n" : "") + JS;
-            browser.executeJavaScript(body, "wd-adblock-lite", 0);
+            browser.executeJavaScript(body, "wd-adblock-lite", 0); // script idempotent (window guard)
+            LAST_INJECT.put(browser, now);
         } catch (Throwable ignored) {
-            // Enjeksiyon baarisiz olursa akis aynen devam eder — MC asla crashe etmez.
+            // Enjeksiyon basarisiz olursa akis aynen devam eder — MC asla crashe etmez.
         }
     }
 
