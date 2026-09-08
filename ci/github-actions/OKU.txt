@@ -1,0 +1,7 @@
+TASIMA TALIMATI (tek seferlik):
+Arena tokeni "workflows" izni olmadigi icin .github/workflows/ klasorune yazamiyor.
+Cozum: GitHub web arayuzunde bu dosyayi ac -> ustunde iken "..." menu -> "Copy path".
+Sonra repo ana sayfasinda Add file -> "Create new file" -> yol kutusuna
+.github/workflows/build-wd-adblock-lite.yml yaz (kendi yoluna tasiyacak) -> Commit.
+Ardindan: Actions sekmesi -> "Build wd-adblock-lite" -> Run workflow (arena branch).
+Build bitince jar otomatik Release olarak yayinlanacak (wd-adblock-lite-v0.2.0-ci).

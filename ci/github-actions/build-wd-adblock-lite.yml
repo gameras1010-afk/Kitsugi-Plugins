@@ -1,0 +1,72 @@
+name: Build wd-adblock-lite (client mod jar)
+
+on:
+  workflow_dispatch:
+  push:
+    paths:
+      - 'wd-adblock-lite/**'
+      - '.github/workflows/build-wd-adblock-lite.yml'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.10'
+
+      - name: Fetch MCEF (compileOnly dependency)
+        run: |
+          mkdir -p wd-adblock-lite/libs
+          curl -sL "https://api.modrinth.com/v2/project/mcef/version?game_versions=%5B%221.21.1%22%5D&loaders=%5B%22neoforge%22%5D" -o /tmp/mcef.json
+          python3 - <<'PY'
+          import json
+          d = json.load(open('/tmp/mcef.json'))
+          assert d, "Modrinth mcef 1.21.1+neoforge bulunamadi"
+          f = d[0]['files'][0]['url']
+          print("indirilecek:", f)
+          open('/tmp/mcef_url', 'w').write(f)
+          PY
+          curl -sL -o wd-adblock-lite/libs/mcef-neoforge.jar "$(cat /tmp/mcef_url)"
+          ls -la wd-adblock-lite/libs
+
+      - name: Unpack nested jars (java-cef / org.cef) for javac
+        run: |
+          cd wd-adblock-lite/libs
+          mkdir -p extract
+          unzip -o -q mcef-neoforge.jar 'META-INF/*jarjar*/*' 'META-INF/*/*jar*' -d extract || true
+          find extract -name '*.jar' -exec cp {} . \; 2>/dev/null || true
+          rm -rf extract
+          ls -la
+
+      - name: Build
+        run: gradle -p wd-adblock-lite build --no-daemon --stacktrace
+
+      - name: List outputs
+        run: ls -la wd-adblock-lite/build/libs
+
+      - name: Publish release with jar
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: wd-adblock-lite-v0.2.0-ci
+          name: wd-adblock-lite v0.2.0 (CI build — YT Suite + adblock)
+          body: |
+            Otomatik derlenmis client jar. Kurulum: playerlarin `mods/` klasorune at
+            (WebDisplays + MCEF yaninda, sunucuya GEREK YOK).
+          files: wd-adblock-lite/build/libs/*.jar
+
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: wd-adblock-lite-jar
+          path: wd-adblock-lite/build/libs/*.jar
+          if-no-files-found: warn
