@@ -15,6 +15,7 @@ import java.util.Map;
  * sponsorblock=true|false   ryd=true|false
  * quality=4k|1440|1080|720|off
  * volume=80 (0-100, YT oynatici API'si)  speed=1.0  theater=false
+loop=false
  * sbCategories=sponsor,selfpromo,interaction,intro,outro,filler
  */
 public final class YtSuiteCfg {
@@ -29,6 +30,7 @@ public final class YtSuiteCfg {
             volume=80
             speed=1.0
             theater=false
+loop=false
             sbCategories=sponsor,selfpromo,interaction,intro,outro,filler
             """;
 
@@ -41,6 +43,7 @@ public final class YtSuiteCfg {
         js.append("sponsorblock:").append(bool(kv, "sponsorblock", true)).append(",");
         js.append("ryd:").append(bool(kv, "ryd", true)).append(",");
         js.append("theater:").append(bool(kv, "theater", false)).append(",");
+        js.append("loop:").append(bool(kv, "loop", false)).append(",");
         String q = kv.getOrDefault("quality", "4k");
         js.append("quality:").append(q.equalsIgnoreCase("off") || q.isBlank() ? "null" : "\"" + q.trim() + "\"").append(",");
         js.append("volume:").append(num(kv, "volume", 0).intValue()).append(",");

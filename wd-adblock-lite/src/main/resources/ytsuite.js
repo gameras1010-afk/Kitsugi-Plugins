@@ -90,6 +90,9 @@
     if (cfg.speed && cfg.speed !== 1) {
       var v = video(); if (v) { try { v.playbackRate = cfg.speed; } catch (e) {} }
     }
+    if (cfg.loop) {
+      var vl = video(); if (vl) { try { vl.loop = true; } catch (e) {} }
+    }
     if (cfg.theater) {
       try {
         var c = document.querySelector('ytd-watch-grid') || document.querySelector('ytd-watch-flexy');

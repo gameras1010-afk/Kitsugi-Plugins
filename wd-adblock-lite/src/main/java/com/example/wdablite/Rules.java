@@ -29,6 +29,65 @@ public final class Rules {
 
     private Rules() {}
 
+    /** blockhosts.txt: satir basina tam domain (Pi-hole/AdBlocker-Ultimate formati) -> O(1) HashSet. */
+    private static volatile java.util.Set<String> hosts;
+
+    public static boolean isBlockedHost(String url) {
+        java.util.Set<String> h = hosts;
+        if (h == null) {
+            synchronized (Rules.class) {
+                if (hosts == null) hosts = loadHosts();
+            }
+            h = hosts;
+        }
+        if (h.isEmpty()) return false;
+        int i = url.indexOf("//");
+        if (i < 0) return false;
+        int s2 = i + 2, e = url.indexOf('/', s2);
+        String host = (e < 0 ? url.substring(s2) : url.substring(s2, e));
+        int at = host.lastIndexOf('@');
+        if (at >= 0) host = host.substring(at + 1);
+        int col = host.indexOf(':');
+        if (col >= 0) host = host.substring(0, col);
+        host = host.toLowerCase();
+        String cur = host;
+        while (cur != null) {
+            if (h.contains(cur)) return true;   // a.b.c -> b.c -> c (parent domain'ler dahil)
+            cur = stripSub(cur);
+        }
+        return false;
+    }
+    private static String stripSub(String host) {
+        int d = host.indexOf('.');
+        return (d > 0 && d < host.length() - 1) ? host.substring(d + 1) : null;
+    }
+
+    private static java.util.Set<String> loadHosts() {
+        java.util.Set<String> set = new java.util.HashSet<>();
+        try {
+            Path f = FMLPaths.CONFIGDIR.get().resolve("wd-adblock-lite").resolve("blockhosts.txt");
+            if (!Files.exists(f)) {
+                WdAdblockLiteMod.LOG.info("[WdAdBlockLite] blockhosts.txt yok — hosts motoru bos (istersen easylist/hosts listesini buraya at)");
+                return set;
+            }
+            for (String raw : Files.readAllLines(f, StandardCharsets.UTF_8)) {
+                String line = raw.trim();
+                if (line.isEmpty() || line.startsWith("#")) continue;
+                // Pi-hole/hosts formati: "0.0.0.1 domain.com" ya da duz domain
+                if (line.startsWith("0.0.0.0") || line.startsWith("127.0.0.1")) {
+                    String[] parts = line.split("\s+");
+                    if (parts.length > 1) line = parts[parts.length - 1];
+                }
+                if (line.startsWith("localhost")) continue;
+                set.add(line.toLowerCase());
+            }
+            WdAdblockLiteMod.LOG.info("[WdAdBlockLite] blockhosts yuklendi: {} domain", set.size());
+        } catch (Exception e) {
+            WdAdblockLiteMod.LOG.warn("[WdAdblockLite] blockhosts okunamadi", e);
+        }
+        return set;
+    }
+
     public static List<Rule> get() {
         List<Rule> local = cache;
         if (local == null) {

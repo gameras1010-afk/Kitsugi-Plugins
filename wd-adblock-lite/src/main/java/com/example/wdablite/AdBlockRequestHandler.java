@@ -30,6 +30,7 @@ public class AdBlockRequestHandler extends CefRequestHandlerAdapter {
                                   boolean userGesture, boolean isRedirect) {
         String url = request.getURL();
         if (!isFilterable(url)) return false;
+        if (Rules.isBlockedHost(url)) return true; // hosts seti once
         // Tam-sayfa gezinmede yalnizca "iptal" kurallari: stub kurallari sayfaya
         // birakiyoruz ki oynatici kendisi kurtarma yolunu bulsun.
         for (Rules.Rule r : Rules.get()) {
@@ -56,6 +57,7 @@ public class AdBlockRequestHandler extends CefRequestHandlerAdapter {
         public boolean onBeforeResourceLoad(CefBrowser browser, CefFrame frame, CefRequest request) {
             String url = request.getURL();
             if (!isFilterable(url)) return false;
+            if (Rules.isBlockedHost(url)) return true; // O(1) hosts seti (AdBlocker-Ultimate tarzi)
             List<Rules.Rule> rules = Rules.get();
             for (int i = 0; i < rules.size(); i++) {
                 Rules.Rule r = rules.get(i);

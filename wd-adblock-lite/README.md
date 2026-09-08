@@ -67,3 +67,8 @@ wd-adblock-lite/
 
 ## v0.2.1 — SPA-navigation fixi
 Artik yalnizca sayfa yuklenisinde degil, ADRES DEGISIMINDE de enjekte edilir (google.com uzerinden YouTubea tiklaninca script atlanma derdi kapandi). Enjeksiyon idempotent (window guard) + 3sn spam kilidi.
+
+## v0.2.2 — HOSTS-LISTE MOTORU + loop
+- `config/wd-adblock-lite/blockhosts.txt` varsa yuklenir: satir basina duz domain ya Pi-hole formati ("0.0.0.0 alanadi.com"). HashSet O(1) + parent-domain taramasi (a.b.c -> b.c -> c). 100k+ domainlik Ultimate-benzeri listeler buraya dokulur — banner/tracker domainlerini evrensel keser; **YouTube pre-roll'a etki etmez** (ayni-domain tuzaigi, dokumanda var).
+- `yt-suite.txt` -> `loop=true`: video dongusu (Enhancer "Loop" butonunun karsiligi).
+- "Ekran goruntusu" iddiasi chrome.tabs API ister -> motorda YOK, imkansiz; MC'nin kendi F2'si blokun karesini zaten kaydeder.
