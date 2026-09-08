@@ -53,6 +53,14 @@ public class WdAdblockLiteMod {
                                             org.cef.browser.CefFrame frame, String url) {
                     CosmeticInjector.injectNow(browser, url, false);
                 }
+                // Sayfa konsolundan yalniz bizim etiketli satirlari MC loguna tasir
+                @Override
+                public boolean onConsoleMessage(org.cef.browser.CefBrowser browser,
+                        org.cef.CefSettings.LogSeverity level, String message, String source, int line) {
+                    if (message != null && (message.startsWith("[WD-YTS]") || message.startsWith("[WD-ABL]")))
+                        LOG.info(message);
+                    return false;
+                }
             });
 
             attached = true;

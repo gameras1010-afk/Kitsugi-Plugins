@@ -31,22 +31,31 @@
   }
   function nf(n) { try { return new Intl.NumberFormat('tr-TR').format(n); } catch (e) { return '' + n; } }
 
-  /* ---- SponsorBlock (skipSegments prefix-API; videoID tam yazilir, yanit süzülür) ---- */
-  var sbSegs = [], curId = '';
+    var sbSegs = [], curId = '';
+  function sha256hex(str) {
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function (buf) {
+      return Array.prototype.map.call(new Uint8Array(buf), function (b) { return ('0' + b.toString(16)).slice(-2); }).join('');
+    });
+  }
   function sbLoad(id) {
     if (!cfg.sponsorblock) { sbSegs = []; return; }
     var cats = JSON.stringify(cfg.sbCategories || ['sponsor', 'selfpromo', 'interaction', 'intro', 'outro', 'filler']);
-    fetch('https://sponsor.ajay.app/api/skipSegments/' + id + '?categories=' + encodeURIComponent(cats))
-      .then(function (r) { return r.ok ? r.json() : []; })
-      .then(function (j) {
-        var entry = (j || []).filter(function (v) { return v.videoID === id; })[0];
-        sbSegs = entry && entry.segments ? entry.segments : [];
-      }).catch(function () { sbSegs = []; });
+    sha256hex(id).then(function (hex) {
+      var prefix = hex.slice(0, 5);
+      console.log('[WD-YTS] SB istegi: prefix=' + prefix + ' video=' + id);
+      return fetch('https://sponsor.ajay.app/api/skipSegments/' + prefix + '?categories=' + encodeURIComponent(cats))
+        .then(function (r) { return r.ok ? r.json() : []; });
+    }).then(function (j) {
+      var entry = (j || []).filter(function (v) { return v.videoID === id; })[0];
+      sbSegs = entry && entry.segments ? entry.segments : [];
+      console.log('[WD-YTS] SB bolum: ' + sbSegs.length + ' (' + id + ')');
+    }).catch(function (e) { sbSegs = []; console.log('[WD-YTS] SB hata: ' + e); });
   }
   function sbTick() {
     var v = video(); if (!v || !sbSegs.length) return;
     for (var i = 0; i < sbSegs.length; i++) {
       var s = sbSegs[i]; if (!s.segment) continue;
+      if (s.actionType && s.actionType !== 'skip') continue;
       var a = s.segment[0], b = s.segment[1];
       if (v.currentTime >= a && v.currentTime < b - 0.3) {
         v.currentTime = b;
@@ -64,8 +73,9 @@
       .then(function (j) {
         if (!j) return;
         var old = document.getElementById('wd-ryd'); if (old) old.remove();
-        var like = document.querySelector('like-button-view-model button');
+        var like = document.querySelector('like-button-view-model button') || document.querySelector('#segmented-like-button button, ytd-segmented-like-dislike-button-view-model button');
         var host = like ? like.closest('#segmented-like-button, ytd-toggle-button-view-model, like-button-view-model') || (like.parentElement && like.parentElement.parentElement) : null;
+        if (!host) host = document.querySelector('#top-level-buttons-computed');
         if (!host || !host.isConnected) return;
         var b = document.createElement('span');
         b.id = 'wd-ryd';
@@ -102,6 +112,7 @@
   }
 
   /* ---- döngü: video değişimini kolla, periyodik skip-check ---- */
+  console.log('[WD-YTS] suite yuklendi (v0.2.3) cfg=' + JSON.stringify(cfg));
   setInterval(function () {
     try {
       var id = videoId();

@@ -6,7 +6,7 @@ plugins {
 }
 
 group = 'com.example.wdablite'
-version = '0.2.2'
+version = '0.2.3'
 base { archivesName = 'wd-adblock-lite' }
 
 java {

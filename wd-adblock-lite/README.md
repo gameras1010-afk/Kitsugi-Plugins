@@ -72,3 +72,9 @@ Artik yalnizca sayfa yuklenisinde degil, ADRES DEGISIMINDE de enjekte edilir (go
 - `config/wd-adblock-lite/blockhosts.txt` varsa yuklenir: satir basina duz domain ya Pi-hole formati ("0.0.0.0 alanadi.com"). HashSet O(1) + parent-domain taramasi (a.b.c -> b.c -> c). 100k+ domainlik Ultimate-benzeri listeler buraya dokulur — banner/tracker domainlerini evrensel keser; **YouTube pre-roll'a etki etmez** (ayni-domain tuzaigi, dokumanda var).
 - `yt-suite.txt` -> `loop=true`: video dongusu (Enhancer "Loop" butonunun karsiligi).
 - "Ekran goruntusu" iddiasi chrome.tabs API ister -> motorda YOK, imkansiz; MC'nin kendi F2'si blokun karesini zaten kaydeder.
+
+## v0.2.3 — SponsorBlock API DOGRULAMASI (canli sunucu testiyle)
+- SponsorBlock modern API **sha256(videoID) ilk 5 karakter prefix** ister: `GET /api/skipSegments/<prefix>?categories=[..]` (duz videoID -> 400; `?videoID=` query -> 404; ikisi de sunucudan canli test edildi). v0.2.2'de eksik olan hash adimi `crypto.subtle` ile tamamlandi; yanit SB eklentisi gibi `videoID` ile suzulur.
+- `actionType !== "skip"` olan segmentlere (mute) dokunulmaz.
+- RYD secicisine yedek yollar eklendi (`#segmented-like-button`, `#top-level-buttons-computed`).
+- Konsol takibi: scriptin `[WD-YTS]` satirlari artik `latest.log`'a duser — "calisiyor mu" sorusunun kaniti: `SB istegi: prefix=... / SB bolum: N`.
