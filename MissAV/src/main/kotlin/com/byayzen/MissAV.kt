@@ -9,7 +9,7 @@ import com.lagradost.cloudstream3.utils.*
 import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 
 class MissAV : MainAPI() {
-    override var mainUrl = "https://missav.live"
+    override var mainUrl = "https://missav.live/dm265/en"
     override var name = "MissAV"
     override val hasMainPage = true
     override var lang = "jp"
