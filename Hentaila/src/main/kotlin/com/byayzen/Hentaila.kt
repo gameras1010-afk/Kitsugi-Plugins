@@ -10,7 +10,7 @@ import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 
 class Hentaila : MainAPI() {
-    override var mainUrl = "https://hentaila.com"
+    override var mainUrl = "https://hentaila.com/hub"
     override var name = "Hentaila"
     override val hasMainPage = true
     override var lang = "mx"
