@@ -88,7 +88,8 @@ const PROXIES = [
   u => 'https://corsproxy.io/?url=' + encodeURIComponent(u),
 ];
 let cfg = null, transport = 0;           // 0 = doğrudan, 1.. = proxy
-let store = {}, done = {}, stopped = false, consecutiveErr = 0, incoming = 0;
+let store = {}, collected = new Set(), stopped = false, consecutiveErr = 0, flushed = 0;
+let probeDone = false;
 
 const $ = id => document.getElementById(id);
 const nkey = t => (t || '').toLowerCase().replace(/[^a-z0-9]/g, '');
@@ -143,6 +144,14 @@ async function getJSON(url, forceProxy = false) {
       return JSON.parse(txt);
     } catch (e) {
       lastErr = e;
+      // İlk denemede ağ/CORS hatası → doğrudan mod çalışmıyor, proxy'ye geç
+      if (!probeDone && transport === 0 && attempt === 0) {
+        probeDone = true;
+        transport = 1;
+        $('c-transport').textContent = 'proxy (allorigins)';
+        log('  ⟳ Doğrudan Modrinth erişimi yok — proxy moduna geçildi', 'mid');
+        continue;
+      }
       await sleep(1200 * (attempt + 1));
     }
   }
@@ -256,12 +265,13 @@ function renderRow(rec) {
 }
 
 async function flush() {
-  if (!incoming) return;
-  const results = Object.values(store).slice(done.flushed || 0);
-  done.flushed = Object.keys(store).length;
+  const all = Object.values(store);
+  const pending = all.slice(flushed);
+  if (!pending.length) return;
   try {
-    const res = await fetch('/collect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ results }) });
+    const res = await fetch('/collect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ results: pending }) });
     const j = await res.json();
+    flushed = all.length;
     log(`  ↑ sunucuya gönderildi (+${j.received}, toplam ${j.total})`, 'mut');
   } catch (e) {
     log('  ⚠ sunucuya gönderilemedi: ' + e.message, 'no');
@@ -277,7 +287,7 @@ async function run() {
   for (const entry of jars) {
     if (stopped) break;
     i++;
-    if (store[entry.jar]) { nDone++; continue; }
+    if (collected.has(entry.jar)) { nDone++; continue; }
     $('current').textContent = `[${i}/${jars.length}] ${entry.jar}`;
     let rec = null;
     try {
@@ -294,7 +304,7 @@ async function run() {
         consecutiveErr = 0;
       }
     }
-    store[entry.jar] = rec; incoming++;
+    store[entry.jar] = rec;
     if (!rec.slug && !rec.error) nNo++;
     renderRow(rec);
     nDone++;
@@ -303,7 +313,7 @@ async function run() {
     const nm = rec.newest_mc ? `maxMC=${rec.newest_mc.mc}:${rec.newest_mc.version}` : 'maxMC=-';
     const v1 = rec.v1211 ? `1.21.1=${rec.v1211.version}` : '1.21.1=-';
     log(`[${i}/${jars.length}] ${rec.jar} → ${rec.slug || '?'} | ${nm} | ${v1}`);
-    if (incoming >= 8) await flush();
+    if (Object.keys(store).length - flushed >= 6) await flush();
     await sleep(240);
   }
   await flush();
@@ -322,12 +332,11 @@ $('copy').onclick = async () => { try { await navigator.clipboard.writeText($('d
   try {
     const st = await (await fetch('/status')).json();
     for (const [jar, slug] of Object.entries(st.jars || {})) {
-      if (slug) { store[jar] = { jar, slug }; }
+      if (slug) collected.add(jar);
     }
-    if (Object.keys(store).length) log(`↩ ${Object.keys(store).length} kayıt zaten toplanmış — kalanlardan devam`, 'mut');
+    if (collected.size) log(`↩ ${collected.size} kayıt zaten toplanmış — kalanlardan devam`, 'mut');
   } catch (e) { /* ilk çalıştırma */ }
-  done.total = cfg.jars.length;
-  $('c-done').textContent = Object.keys(store).length;
+  $('c-done').textContent = collected.size;
   log(`Liste yüklendi: ${cfg.counts.unique} benzersiz jar (sunucu ${cfg.counts.server} / istemci ${cfg.counts.client})`);
   log('Başlatılıyor...');
   await sleep(800);
