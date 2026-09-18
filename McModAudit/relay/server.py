@@ -122,6 +122,12 @@ class Handler(BaseHTTPRequestHandler):
             self._send(404, json.dumps({"error": "not found"}))
 
     def do_POST(self):  # noqa: N802
+        if self.path.split("?")[0] == "/reset":
+            save_results({})
+            with open(os.path.join(OUT, "relay_log.txt"), "a", encoding="utf-8") as fh:
+                fh.write(f"{time.strftime('%H:%M:%S')} RESET\n")
+            self._send(200, json.dumps({"ok": True, "total": 0}))
+            return
         if self.path.split("?")[0] != "/collect":
             self._send(404, json.dumps({"error": "not found"}))
             return
