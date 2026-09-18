@@ -119,6 +119,30 @@ function jarRoot(jar) {
   return words.length ? words.join(' ') : name;
 }
 
+
+function camelSplit(s) {
+  return s.replace(/([a-z0-9])([A-Z])/g, '$1 $2').replace(/\s+/g, ' ').trim();
+}
+function kebab(s) {
+  return s.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+}
+function queryVariants(name) {
+  const out = [], seen = new Set();
+  const push = v => { const k = v.trim(); if (k && !seen.has(k.toLowerCase())) { seen.add(k.toLowerCase()); out.push(k); } };
+  push(name);
+  push(camelSplit(name));
+  if (/^yungs/i.test(name)) { const rest = camelSplit(name.replace(/^yungs/i, '')); if (rest) push("Yung's " + rest); }
+  return out.slice(0, 3);
+}
+function slugVariants(name) {
+  const out = [], seen = new Set();
+  const push = v => { const k = kebab(v); if (k && !seen.has(k)) { seen.add(k); out.push(k); } };
+  push(camelSplit(name));
+  push(name);
+  if (/^yungs/i.test(name)) push('yungs-' + name.replace(/^yungs/i, ''));
+  return out.slice(0, 4);
+}
+
 function dice(a, b) {
   if (!a || !b) return 0;
   if (a === b) return 1;
@@ -209,7 +233,7 @@ async function searchProject(name) {
 }
 
 function finishFromProject(rec, proj, filesMode) {
-  const versions = proj.versions || proj.game_versions || [];
+  const versions = proj.game_versions || proj.versions || [];
   rec.source = proj.source || 'modrinth';
   rec.slug = proj.slug; rec.title = proj.title;
   rec.url = rec.source === 'modrinth' ? 'https://modrinth.com/mod/' + proj.slug : proj.url;
@@ -240,16 +264,24 @@ async function auditJar(entry) {
   const rec = { jar, name, sides: entry.sides, in67: entry.in67 };
   const ov = cfg.overrides[nkey(name)] || cfg.overrides[nkey(jar)];
 
-  // 1) Önce Modrinth araması
+  // 1) Modrinth araması — isim + camelCase varyantları
   let hit = null, score = 0, top = [];
-  try {
-    const r = await searchProject(name);
-    hit = r.hit; score = r.score; top = r.top;
-  } catch (e) { rec.search_error = String(e.message || e); }
-
+  for (const q of queryVariants(name)) {
+    try {
+      const r = await searchProject(q);
+      if (!top.length && r.top.length) top = r.top;
+      if (r.hit && r.score > score) { hit = r.hit; score = r.score; }
+      if (hit && score >= 0.68) break;
+    } catch (e) { rec.search_error = String(e.message || e); }
+  }
   if (hit && score >= 0.68) {
     rec.match = Math.round(score * 100) / 100;
     finishFromProject(rec, hit);
+    if (!rec.supports || !cfg.targets.some(t => rec.supports[t])) {
+      // arama kaydında sürüm listesi yoksa projeyi tam çek
+      const full = await getJSON(`${MR}/project/${encodeURIComponent(hit.slug)}`);
+      if (full && full.slug) finishFromProject(rec, Object.assign({}, hit, full));
+    }
     return await finishFromModrinth(rec, hit.slug);
   }
 
@@ -278,10 +310,29 @@ async function auditJar(entry) {
     } catch (e) { rec.override_error = String(e.message || e); }
   }
 
+  // 3) Slug tahmini (kebab-case / camelCase ayrımı)
+  for (const cand of slugVariants(name)) {
+    try {
+      const proj = await getJSON(`${MR}/project/${encodeURIComponent(cand)}`);
+      if (proj && proj.slug) {
+        rec.match = 0.85; rec.note = 'slug tahmini: ' + cand;
+        finishFromProject(rec, proj);
+        return await finishFromModrinth(rec, proj.slug);
+      }
+    } catch (e) { /* devam */ }
+  }
+
   rec.match = null;
   rec.candidates = top;
   rec.note = (rec.note || '') + (top.length ? '· en iyi adaylar: ' + top.map(c => c.slug + '(' + c.score + ')').join(', ') : '· arama sonucu yok');
   return rec;
+}
+
+function isConfident(rec) {
+  if (!rec || !rec.slug || rec.error) return false;
+  const t = rec.title || '';
+  if (!t) return false;
+  return dice(nkey(rec.name || ''), nkey(t)) >= 0.6;
 }
 
 function renderRow(rec) {
@@ -369,8 +420,15 @@ $('copy').onclick = async () => { try { await navigator.clipboard.writeText($('d
   cfg = await (await fetch('/mods.json?t=' + Date.now())).json();
   try {
     const st = await (await fetch('/status?t=' + Date.now())).json();
-    Object.entries(st.jars || {}).forEach(([jar, slug]) => { if (slug) collected.add(jar); });
-    if (collected.size) log(`↩ ${collected.size} kayıt zaten toplanmış — kalanlardan devam`, 'mut');
+    let kept = 0, redo = 0;
+    Object.entries(st.jars || {}).forEach(([jar, r]) => {
+      const rec = typeof r === 'string' ? { slug: r } : (r || {});
+      store[jar] = Object.assign({ jar }, rec);
+      if (isConfident(rec)) { collected.add(jar); kept++; } else if (rec.slug || rec.error) { redo++; }
+    });
+    flushed = Object.keys(store).length;
+    if (kept) log(`↩ ${kept} kayıt sağlam — korunuyor`, 'mut');
+    if (redo) log(`⟳ ${redo} kayıt şüpheli/eksik — yeniden taranacak`, 'mid');
   } catch (e) { /* ilk çalıştırma */ }
   $('c-done').textContent = collected.size;
   log(`Liste yüklendi: ${cfg.counts.unique} benzersiz jar (sunucu ${cfg.counts.server} / istemci ${cfg.counts.client})`);

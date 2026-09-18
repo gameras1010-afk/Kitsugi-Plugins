@@ -33,13 +33,17 @@ def build_config():
     src = open(os.path.join(AUDIT_DIR, "audit_runner.py"), encoding="utf-8").read()
     tree = ast.parse(src)
     overrides, targets = {}, []
+    roots = {}
     for node in tree.body:
         if isinstance(node, ast.Assign) and isinstance(node.targets[0], ast.Name):
             name = node.targets[0].id
             if name == "OVERRIDES":
                 overrides = ast.literal_eval(node.value)
+            elif name == "ROOT_OVERRIDES":
+                roots = ast.literal_eval(node.value)
             elif name == "TARGETS":
                 targets = ast.literal_eval(node.value)
+    overrides.update(roots)
     return overrides, targets
 
 
@@ -116,7 +120,9 @@ class Handler(BaseHTTPRequestHandler):
             store = load_results()
             self._send(200, json.dumps({
                 "collected": len(store),
-                "jars": {k: v.get("slug") for k, v in list(store.items())[:2000]},
+                "jars": {k: {"slug": v.get("slug"), "title": v.get("title"),
+                             "match": v.get("match"), "error": v.get("error")}
+                         for k, v in list(store.items())[:2000]},
             }, ensure_ascii=False))
         else:
             self._send(404, json.dumps({"error": "not found"}))
