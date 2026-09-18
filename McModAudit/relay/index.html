@@ -1,0 +1,338 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kitsugi — Mod Güncelleme Taraması (26.3 vs 1.21.1)</title>
+<style>
+  :root{--bg:#0f1115;--card:#171a21;--fg:#e7e9ee;--mut:#9aa3b2;--ok:#3ecf8e;--warn:#ffb020;--bad:#ff5c5c;--acc:#5aa9ff}
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--fg);font:14px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
+  header{padding:20px 24px;border-bottom:1px solid #232734;background:linear-gradient(180deg,#151822,#0f1115)}
+  h1{margin:0 0 6px;font-size:19px}
+  .sub{color:var(--mut);font-size:13px}
+  main{padding:20px 24px 60px;max-width:1180px;margin:0 auto}
+  .card{background:var(--card);border:1px solid #232734;border-radius:12px;padding:16px;margin-bottom:16px}
+  .bar{height:10px;background:#0b0d12;border-radius:6px;overflow:hidden;border:1px solid #232734}
+  .bar > i{display:block;height:100%;width:0;background:linear-gradient(90deg,#3ecf8e,#5aa9ff);transition:width .3s}
+  .row{display:flex;gap:18px;flex-wrap:wrap;align-items:center}
+  .kpi{font-variant-numeric:tabular-nums}
+  .kpi b{font-size:20px}
+  button{background:#2b3346;color:var(--fg);border:1px solid #38415a;border-radius:8px;padding:8px 14px;cursor:pointer;font-size:13px}
+  button:hover{background:#354059}
+  button.primary{background:#2563eb;border-color:#3b82f6}
+  button:disabled{opacity:.45;cursor:not-allowed}
+  #log{height:190px;overflow:auto;background:#0b0d12;border:1px solid #232734;border-radius:8px;padding:10px;font:12px/1.45 ui-monospace,SFMono-Regular,Menlo,monospace;white-space:pre-wrap}
+  table{width:100%;border-collapse:collapse;font-size:12.5px}
+  th,td{padding:6px 8px;border-bottom:1px solid #232734;text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:280px}
+  th{color:var(--mut);font-weight:600;position:sticky;top:0;background:var(--card)}
+  .tbl{max-height:420px;overflow:auto;border:1px solid #232734;border-radius:8px}
+  .tag{display:inline-block;padding:1px 7px;border-radius:20px;font-size:11px;border:1px solid #38415a}
+  .yes{color:var(--ok)}.no{color:var(--bad)}.mid{color:var(--warn)}
+  textarea{width:100%;height:150px;background:#0b0d12;color:var(--fg);border:1px solid #232734;border-radius:8px;padding:10px;font:12px ui-monospace,monospace}
+  a{color:var(--acc)}
+  .mut{color:var(--mut)}
+</style>
+</head>
+<body>
+<header>
+  <h1>Kitsugi — Mod Güncelleme Taraması</h1>
+  <div class="sub">450+ jar kaydı; kaynak: Modrinth API (+ CurseForge/cfwidget yedeği). Tarama <b>senin tarayıcında</b> çalışır ve sonuçlar otomatik olarak rapor motoruna gönderilir.</div>
+</header>
+<main>
+  <div class="card">
+    <div class="row" style="justify-content:space-between">
+      <div class="row">
+        <button id="start" class="primary">Taramayı başlat</button>
+        <button id="stop" disabled>Durdur</button>
+      </div>
+      <div class="row kpi">
+        <span>Tamam: <b id="c-done">0</b>/<b id="c-total">?</b></span>
+        <span class="mid">Eşleşmeyen: <b id="c-nomatch">0</b></span>
+        <span class="no">Hata: <b id="c-err">0</b></span>
+        <span class="mut">Taşıma: <b id="c-transport">doğrudan</b></span>
+      </div>
+    </div>
+    <div class="bar" style="margin-top:14px"><i id="progress"></i></div>
+    <div class="sub" id="current" style="margin-top:8px">Hazır.</div>
+  </div>
+
+  <div class="card">
+    <div class="row" style="justify-content:space-between">
+      <b>Canlı günlük</b><span class="mut">Bu sekmeyi açık tut — tarama bitene kadar (~3-6 dk)</span>
+    </div>
+    <div id="log" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card">
+    <b>Son sonuçlar</b>
+    <div class="tbl" style="margin-top:10px">
+      <table>
+        <thead><tr><th>Mod</th><th>Kaynak</th><th>En yeni MC</th><th>1.21.1 son sürüm</th><th>Durum</th></tr></thead>
+        <tbody id="rows"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="card">
+    <b>Yedek: sonuç JSON'u</b>
+    <div class="sub" style="margin:6px 0 10px">Sunucuya gönderim başarısız olursa bu metni kopyalayıp sohbete yapıştır.</div>
+    <button id="copy">JSON'u panoya kopyala</button>
+    <textarea id="dump" readonly style="margin-top:10px"></textarea>
+  </div>
+</main>
+<script>
+const MR = 'https://api.modrinth.com/v2';
+const PROXIES = [
+  u => 'https://api.allorigins.win/raw?url=' + encodeURIComponent(u),
+  u => 'https://corsproxy.io/?url=' + encodeURIComponent(u),
+];
+let cfg = null, transport = 0;           // 0 = doğrudan, 1.. = proxy
+let store = {}, done = {}, stopped = false, consecutiveErr = 0, incoming = 0;
+
+const $ = id => document.getElementById(id);
+const nkey = t => (t || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+function log(msg, cls) {
+  const el = $('log');
+  const line = document.createElement('div');
+  if (cls) line.className = cls;
+  line.textContent = msg;
+  el.appendChild(line);
+  while (el.childNodes.length > 400) el.removeChild(el.firstChild);
+  el.scrollTop = el.scrollHeight;
+}
+
+function jarRoot(jar) {
+  let b = jar.replace(/\.(jar|zip|bak|disabled)$/i, '').replace(/[\[\]()]/g, ' ');
+  b = b.replace(/[_\-.+]/g, ' ');
+  const toks = b.split(/\s+/).filter(Boolean);
+  const keep = [];
+  for (const t of toks) {
+    if (/^v?\d/.test(t) && keep.length) break;
+    keep.push(t);
+  }
+  return (keep.join(' ').trim()) || b;
+}
+
+function dice(a, b) {
+  if (!a || !b) return 0;
+  if (a === b) return 1;
+  if (a.includes(b) || b.includes(a)) return 0.92;
+  const bg = s => { const m = new Map(); for (let i = 0; i < s.length - 1; i++) { const k = s.slice(i, i + 2); m.set(k, (m.get(k) || 0) + 1); } return m; };
+  const A = bg(a), B = bg(b);
+  let inter = 0, tot = 0;
+  for (const [k, v] of A) { tot += v; if (B.has(k)) inter += Math.min(v, B.get(k)); }
+  for (const [, v] of B) tot += v;
+  return tot ? (2 * inter) / tot : 0;
+}
+
+async function getJSON(url, forceProxy = false) {
+  let lastErr = null;
+  for (let attempt = 0; attempt < 4; attempt++) {
+    try {
+      const target = (forceProxy || transport > 0) ? PROXIES[Math.min(transport > 0 ? transport - 1 : 0, PROXIES.length - 1)](url) : url;
+      const res = await fetch(target, { headers: { 'Accept': 'application/json' } });
+      if (res.status === 429) { log('  ⏳ 429 — 6sn bekleniyor', 'mid'); await sleep(6000); continue; }
+      if (!res.ok) {
+        if (res.status === 404) return null;
+        throw new Error('HTTP ' + res.status);
+      }
+      const txt = await res.text();
+      return JSON.parse(txt);
+    } catch (e) {
+      lastErr = e;
+      await sleep(1200 * (attempt + 1));
+    }
+  }
+  throw lastErr || new Error('bilinmeyen hata');
+}
+
+function pickLatest(list, mc) {
+  const pool = (list || []).filter(v => !mc || (v.game_versions || []).includes(mc));
+  if (!pool.length) return null;
+  return pool.sort((a, b) => (b.date_published || '').localeCompare(a.date_published || ''))[0];
+}
+
+async function mrVersions(slug, mc, limit) {
+  const q = `${MR}/project/${encodeURIComponent(slug)}/version?limit=${limit}` + (mc ? `&game_versions=${encodeURIComponent(JSON.stringify([mc]))}` : '');
+  const data = await getJSON(q);
+  return Array.isArray(data) ? data : [];
+}
+
+function compactVersion(v) {
+  if (!v) return null;
+  return {
+    version: v.version_number, date: (v.date_published || '').slice(0, 10),
+    mcs: v.game_versions || [], loaders: v.loaders || [], type: v.version_type
+  };
+}
+
+async function cfLookup(slug) {
+  const data = await getJSON(`https://api.cfwidget.com/minecraft/mc-mods/${slug}`, true);
+  if (!data || !data.files) return null;
+  const mcRe = /(?:mc)?(1\.\d{2}(?:\.\d+)?|26\.\d+(?:\.\d+)?)/g;
+  const files = data.files.map(f => {
+    const mcs = f.versions && f.versions.length ? f.versions : ((f.name || '').match(mcRe) || []);
+    return { version: f.name || f.version, date: (f.uploaded_at || '').slice(0, 10), mcs: mcs, loaders: f.loaders || [], type: f.type };
+  });
+  return { source: 'curseforge', slug: data.slug || slug, title: data.title || slug, url: `https://www.curseforge.com/minecraft/mc-mods/${data.slug || slug}`, score: 1, files, updated: '', downloads: data.downloads };
+}
+
+async function auditJar(entry) {
+  const jar = entry.jar, name = jarRoot(jar);
+  const ov = cfg.overrides[nkey(name)] || cfg.overrides[nkey(jar)];
+  const rec = { jar, name, sides: entry.sides, in67: entry.in67, targets: {} };
+
+  if (ov && ov.startsWith('cf:')) {
+    const proj = await cfLookup(ov.slice(3)).catch(() => null);
+    if (proj) {
+      Object.assign(rec, { source: proj.source, slug: proj.slug, title: proj.title, url: proj.url, match: 1, downloads: proj.downloads, updated: proj.updated, loaders: [] });
+      const all = new Set(); proj.files.forEach(f => (f.mcs || []).forEach(m => all.add(m)));
+      rec.supports = {}; cfg.targets.forEach(t => rec.supports[t] = all.has(t));
+      rec.newest_mc = null;
+      for (const t of cfg.targets) if (rec.supports[t]) { const f = pickLatest(proj.files, t); if (f) rec.newest_mc = { mc: t, ...compactVersion(f) }; break; }
+      rec.v1211 = compactVersion(pickLatest(proj.files, '1.21.1'));
+      rec.note = 'curseforge eşleşmesi (cfwidget)';
+      return rec;
+    }
+    rec.note = 'cf eşleşmedi, Modrinth aranıyor';
+  }
+
+  let slug = ov, hit = null;
+  if (!slug) {
+    const s = await getJSON(`${MR}/search?query=${encodeURIComponent(name)}&limit=6&facets=${encodeURIComponent('[["project_type:mod"]]')}`);
+    const key = nkey(name);
+    let best = null, bestScore = 0;
+    for (const h of (s && s.hits) || []) {
+      const sc = Math.max(dice(key, nkey(h.title)), dice(key, nkey(h.slug)));
+      if (sc > bestScore) { best = h; bestScore = sc; }
+    }
+    if (!best || bestScore < 0.55) { rec.match = null; return rec; }
+    hit = best; slug = best.slug; rec.match = Math.round(bestScore * 100) / 100;
+  } else {
+    rec.match = 1;
+  }
+
+  if (!hit) {
+    hit = await getJSON(`${MR}/project/${encodeURIComponent(slug)}`);
+    if (!hit) { rec.match = null; return rec; }
+  }
+  const versions = hit.versions || hit.game_versions || [];
+  rec.source = 'modrinth';
+  rec.slug = hit.slug; rec.title = hit.title;
+  rec.url = 'https://modrinth.com/mod/' + hit.slug;
+  rec.downloads = hit.downloads;
+  rec.updated = (hit.date_modified || hit.updated || '').slice(0, 10);
+  rec.loaders = hit.loaders || [];
+  rec.supports = {}; cfg.targets.forEach(t => rec.supports[t] = versions.includes(t));
+  rec.game_versions_tail = versions.slice(-12);
+
+  rec.newest_mc = null;
+  for (const t of cfg.targets) {
+    if (rec.supports[t]) {
+      const f = pickLatest(await mrVersions(slug, t, 12), t);
+      if (f) rec.newest_mc = { mc: t, ...compactVersion(f) };
+      break;
+    }
+  }
+  const v = pickLatest(await mrVersions(slug, '1.21.1', 25), '1.21.1');
+  rec.v1211 = compactVersion(v);
+  return rec;
+}
+
+function renderRow(rec) {
+  const tr = document.createElement('tr');
+  const status = !rec.slug ? '<span class="no">eşleşmedi</span>'
+    : (rec.newest_mc && rec.newest_mc.mc === '26.3' ? '<span class="yes">26.3 var</span>'
+      : (rec.newest_mc ? `<span class="mid">${rec.newest_mc.mc}'e kadar</span>` : '<span class="no">26.x yok</span>'));
+  const newest = rec.newest_mc ? `${rec.newest_mc.mc} · ${rec.newest_mc.version} ${(rec.newest_mc.loaders || []).join('/')}` : '—';
+  const v1211 = rec.v1211 ? `${rec.v1211.version} <span class="mut">(${rec.v1211.date})</span>` : '—';
+  tr.innerHTML = `<td title="${rec.jar}">${rec.name}</td><td>${rec.source || '-'}</td><td>${newest}</td><td>${v1211}</td><td>${status}</td>`;
+  const rows = $('rows');
+  rows.insertBefore(tr, rows.firstChild);
+  while (rows.childNodes.length > 120) rows.removeChild(rows.lastChild);
+}
+
+async function flush() {
+  if (!incoming) return;
+  const results = Object.values(store).slice(done.flushed || 0);
+  done.flushed = Object.keys(store).length;
+  try {
+    const res = await fetch('/collect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ results }) });
+    const j = await res.json();
+    log(`  ↑ sunucuya gönderildi (+${j.received}, toplam ${j.total})`, 'mut');
+  } catch (e) {
+    log('  ⚠ sunucuya gönderilemedi: ' + e.message, 'no');
+  }
+}
+
+async function run() {
+  stopped = false;
+  $('start').disabled = true; $('stop').disabled = false;
+  const jars = cfg.jars;
+  $('c-total').textContent = jars.length;
+  let i = 0, nDone = 0, nErr = 0, nNo = 0;
+  for (const entry of jars) {
+    if (stopped) break;
+    i++;
+    if (store[entry.jar]) { nDone++; continue; }
+    $('current').textContent = `[${i}/${jars.length}] ${entry.jar}`;
+    let rec = null;
+    try {
+      rec = await auditJar(entry);
+      consecutiveErr = 0;
+    } catch (e) {
+      nErr++; consecutiveErr++;
+      rec = { jar: entry.jar, name: jarRoot(entry.jar), sides: entry.sides, in67: entry.in67, error: String(e && e.message || e), match: null };
+      log(`  ✖ hata: ${rec.error}`, 'no');
+      if (consecutiveErr >= 8 && transport === 0) {
+        transport = 1;
+        $('c-transport').textContent = 'proxy (allorigins)';
+        log('  ⟳ Doğrudan erişim başarısız — proxy moduna geçildi', 'mid');
+        consecutiveErr = 0;
+      }
+    }
+    store[entry.jar] = rec; incoming++;
+    if (!rec.slug && !rec.error) nNo++;
+    renderRow(rec);
+    nDone++;
+    $('c-done').textContent = nDone; $('c-err').textContent = nErr; $('c-nomatch').textContent = nNo;
+    $('progress').style.width = (100 * nDone / jars.length).toFixed(1) + '%';
+    const nm = rec.newest_mc ? `maxMC=${rec.newest_mc.mc}:${rec.newest_mc.version}` : 'maxMC=-';
+    const v1 = rec.v1211 ? `1.21.1=${rec.v1211.version}` : '1.21.1=-';
+    log(`[${i}/${jars.length}] ${rec.jar} → ${rec.slug || '?'} | ${nm} | ${v1}`);
+    if (incoming >= 8) await flush();
+    await sleep(240);
+  }
+  await flush();
+  $('start').disabled = false; $('stop').disabled = true;
+  $('current').textContent = stopped ? 'Durduruldu — tekrar başlatabilirsin (kaldığı yerden devam eder).' : 'Tarama tamamlandı ✅';
+  $('dump').value = JSON.stringify({ results: Object.values(store) });
+  log(stopped ? '⏹ durduruldu' : '✅ tamamlandı — sonuçlar sunucuya gönderildi', stopped ? 'mid' : 'yes');
+}
+
+$('stop').onclick = () => { stopped = true; };
+$('start').onclick = () => run();
+$('copy').onclick = async () => { try { await navigator.clipboard.writeText($('dump').value); log('📋 JSON kopyalandı', 'yes'); } catch (e) { $('dump').select(); } };
+
+(async function init() {
+  cfg = await (await fetch('/mods.json')).json();
+  try {
+    const st = await (await fetch('/status')).json();
+    for (const [jar, slug] of Object.entries(st.jars || {})) {
+      if (slug) { store[jar] = { jar, slug }; }
+    }
+    if (Object.keys(store).length) log(`↩ ${Object.keys(store).length} kayıt zaten toplanmış — kalanlardan devam`, 'mut');
+  } catch (e) { /* ilk çalıştırma */ }
+  done.total = cfg.jars.length;
+  $('c-done').textContent = Object.keys(store).length;
+  log(`Liste yüklendi: ${cfg.counts.unique} benzersiz jar (sunucu ${cfg.counts.server} / istemci ${cfg.counts.client})`);
+  log('Başlatılıyor...');
+  await sleep(800);
+  run();
+})();
+</script>
+</body>
+</html>
