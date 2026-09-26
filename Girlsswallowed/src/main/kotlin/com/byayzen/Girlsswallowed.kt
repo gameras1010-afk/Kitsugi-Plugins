@@ -10,7 +10,7 @@ import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 
 class Girlsswallowed : MainAPI() {
-    override var mainUrl              = "https://girlswallowed.com/"
+    override var mainUrl              = "https://girlswallowed.com"
     override var name                 = "Girlswallowed"
     override val hasMainPage          = true
     override var lang                 = "en"
