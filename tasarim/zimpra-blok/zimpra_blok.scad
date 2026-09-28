@@ -1,37 +1,32 @@
 /*
-  Photo-based Project 360-style sanding block, visual prototype V4.
-  Parametric S / M / L sizes. Units: mm.
+  Photo-matched low-profile 360 sanding block — V5 visual prototype.
+  S/M/L sizes, units in millimetres.
 
-  Visible pieces in the assembly:
-    D-shaped black body + inset grey face + dark soft interface + white abrasive face
-    blue two-arm adjustable yoke handle
-    two blue pivot feet with black ribbed adjustment caps
-    central black locking plate
-
-  Geometry is estimated from the supplied photos; it is not a metrology scan.
-  The metal pivot/fastening hardware is intentionally left as real purchased hardware.
+  Form follows the latest top/side photos: D-shaped black sanding head,
+  inset grey top face, two white-edged pivot seats, one slim blue center lever,
+  black center lock plate, black end thumb screw, and layered soft/abrasive underside.
+  Dimensions are chosen for a plausible first print; they are not measured from the photo.
 */
 
-size = "M";             // [S, M, L]
-part = "assembly";       // [assembly, base, face, pad, abrasive, pivot, handle, lock]
+size = "M"; // [S, M, L]
+part = "assembly"; // [assembly, base, face, pad, abrasive, trim, handle, lock, knob, label]
 $fn = 72;
 
 function width_for(s) = s == "S" ? 140 : s == "L" ? 220 : 180;
 w = width_for(size);
 r = w/2;
-span = w*0.48;
-pivot_y = r*0.36;
 base_t = 8;
-face_t = 1.8;
-pad_t = 1.8;
+face_t = 1.6;
+pad_t = 1.6;
 abrasive_t = 0.9;
-foot_t = 4;
-eye_t = 4;
-handle_t = 22;
-M3_hole = 3.4;
-M4_hole = 4.5;
-M5_hole = 5.3;
-pivot_z = base_t + face_t + foot_t + 8;
+trim_t = 2.2;
+handle_t = 5.5;
+lever_y1 = r*0.16;
+lever_y2 = r*0.78;
+lever_mid = (lever_y1+lever_y2)/2;
+M4_insert_bore = 5.0; // heat-set insert outer bore for M4 pivot screws
+M3_insert_bore = 4.2; // heat-set insert outer bore for M3 lock screws
+M3_clearance = 3.4;
 
 module d_outline(width) {
     rr = width/2;
@@ -40,46 +35,39 @@ module d_outline(width) {
           [for (i=[1:96]) [rr*cos(180*i/96),rr*sin(180*i/96)]]));
 }
 
-module rounded_2d(xlen,ylen,rad=2) {
+module rounded_2d(xlen,ylen,rad=3) {
     offset(r=rad) offset(delta=-rad) square([xlen,ylen],center=true);
 }
 
 module base_body(width) {
     rr=width/2;
-    py=rr*0.36;
-    s=width*0.48;
+    y1=rr*0.16;
+    y2=rr*0.78;
+    ym=(y1+y2)/2;
     difference() {
         linear_extrude(height=base_t) d_outline(width);
-        // Four M3 mount holes for the two hinge feet; M3 nuts sit in bottom pockets.
-        for (sx=[-1,1]) for (dx=[-7.5,7.5]) {
-            translate([sx*s/2+dx,py,-0.1]) cylinder(h=base_t+0.2,d=M3_hole);
-            translate([sx*s/2+dx,py,-0.01]) rotate([0,0,30])
-                cylinder(h=2.8,d=6.5,$fn=6);
-        }
-        // Two small holes for the central black locking plate.
-        for (x=[-12,12]) {
-            translate([x,py,-0.1]) cylinder(h=base_t+0.2,d=M3_hole);
-            translate([x,py,-0.01]) rotate([0,0,30])
-                cylinder(h=2.8,d=6.5,$fn=6);
-        }
+        // Blind M5 insert seats for the two end pivots (keeps the sanding underside flat).
+        for (yy=[y1,y2]) translate([0,yy,1.5]) cylinder(h=base_t-1.4,d=M4_insert_bore);
+        // Two M3 attachment points for the central lock plate.
+        for (x=[-16,16]) translate([x,ym,2]) cylinder(h=base_t-1.9,d=M3_insert_bore);
     }
 }
 
 module face_body(width) {
-    py=width/2*0.36;
-    s=width*0.48;
+    rr=width/2;
+    y1=rr*0.16;
+    y2=rr*0.78;
+    ym=(y1+y2)/2;
     difference() {
+        // Thin inset top skin leaves the black base visible as a continuous perimeter.
         linear_extrude(height=face_t) d_outline(width-8);
-        // Clearances leave the blue pivot soles and black centre lock exposed.
-        for (sx=[-1,1])
-            translate([sx*s/2,py,-0.1]) linear_extrude(height=face_t+0.2)
-                rounded_2d(28,30,2);
-        translate([0,py,-0.1]) linear_extrude(height=face_t+0.2)
-            rounded_2d(46,32,3);
+        // Clear the two pivot fasteners and two central-lock screws.
+        for (yy=[y1,y2]) translate([0,yy,-0.1]) cylinder(h=face_t+0.2,d=5.8);
+        for (x=[-16,16]) translate([x,ym,-0.1]) cylinder(h=face_t+0.2,d=3.8);
     }
 }
 
-module soft_pad_body(width) {
+module pad_body(width) {
     linear_extrude(height=pad_t) d_outline(width-4);
 }
 
@@ -87,119 +75,116 @@ module abrasive_body(width) {
     linear_extrude(height=abrasive_t) d_outline(width-7);
 }
 
-module pivot_body(width) {
-    py=width/2*0.36;
-    s=width*0.48;
-    feet=[-s/2,s/2];
+module trim_body(width) {
+    rr=width/2;
+    y1=rr*0.16;
+    y2=rr*0.78;
     difference() {
         union() {
-            for (cx=feet) {
-                // Compact blue sole at each end of the handle yoke.
-                translate([cx,py,base_t]) linear_extrude(height=foot_t)
-                    rounded_2d(25,28,2.5);
-                // Clevis cheeks around the handle's two pivot eyes.
-                for (side=[-1,1])
-                    translate([cx-7,py+side*(handle_t/2+eye_t/2)-eye_t/2,
-                               base_t+foot_t]) cube([14,eye_t,16]);
-            }
+            translate([0,y1]) rounded_2d(28,25,8);
+            translate([0,y2]) rounded_2d(28,25,8);
         }
-        for (cx=feet) for (dx=[-7.5,7.5])
-            translate([cx+dx,py,base_t-0.1]) cylinder(h=foot_t+0.2,d=M3_hole);
-        for (cx=feet)
-            translate([cx,py,pivot_z]) rotate([90,0,0])
-                cylinder(h=34,d=M5_hole,center=true);
+        for (yy=[y1,y2]) translate([0,yy]) circle(d=5.4);
     }
 }
 
 module handle_profile(width) {
-    s=width*0.48;
+    rr=width/2;
+    y1=rr*0.16;
+    y2=rr*0.78;
     difference() {
+        // The photo shows two broad rounded pivot pads joined by one slim straight paddle.
         union() {
-            // Short, gently swept arms down to the two pivot eyes.
-            for (side=[-1,1]) hull() {
-                translate([side*s/2,0]) circle(r=7.5);
-                translate([side*(s/2-11),24]) circle(r=8.5);
-            }
-            // Thick rounded hand grip across the top of the yoke.
+            translate([0,y1]) rounded_2d(23,21,7);
+            translate([0,y2]) rounded_2d(23,21,7);
             hull() {
-                translate([-s/2+11,25]) circle(r=9);
-                translate([ s/2-11,25]) circle(r=9);
+                translate([0,y1+8]) circle(r=6.8);
+                translate([0,y2-8]) circle(r=6.8);
             }
-            // Palm swell in the middle; small raised ribs mimic the moulded grip.
+            // A modest palm swell around the centre, still a flat lever, not a U-handle.
             hull() {
-                translate([-19,25]) circle(r=9);
-                translate([19,25]) circle(r=9);
+                translate([0,y1+(y2-y1)*0.40]) circle(r=7.5);
+                translate([0,y1+(y2-y1)*0.60]) circle(r=7.5);
             }
-            for (k=[-3:3]) translate([k*4.5,33.1]) circle(r=0.9);
         }
-        for (side=[-1,1]) translate([side*s/2,0]) circle(d=M5_hole);
+        // Pivot clearance at both rounded ends.
+        for (yy=[y1,y2]) translate([0,yy]) circle(d=5.4);
     }
 }
 
 module handle_body(width) {
-    // Print flat on the broad side; rotate into its upright position only in assembly.
+    // Flat, printable paddle/lever; the face with the logo points upward.
     linear_extrude(height=handle_t) handle_profile(width);
-}
-
-module ribbed_cap() {
-    difference() {
-        union() {
-            cylinder(h=7,d=18,center=true);
-            for (a=[0:12:348]) rotate([0,0,a])
-                translate([8.7,0,0]) cube([1.4,2.2,7],center=true);
-        }
-        cylinder(h=7.4,d=M5_hole,center=true);
-    }
 }
 
 module lock_plate() {
     difference() {
-        linear_extrude(height=5) rounded_2d(40,24,3);
-        for (x=[-12,12]) translate([x,0,-0.1]) cylinder(h=5.2,d=M3_hole);
+        linear_extrude(height=trim_t) rounded_2d(42,25,3.5);
+        for (x=[-16,16]) translate([x,0,-0.1]) cylinder(h=trim_t+0.2,d=M3_clearance);
     }
 }
 
 module lock_body(width) {
-    s=width*0.48;
-    // Print layout: central lock plate and two ribbed caps rest flat on the build plate.
     lock_plate();
-    for (cx=[-s/2,s/2]) translate([cx,0,3.5]) ribbed_cap();
 }
 
-module assembly_view(width) {
-    py=width/2*0.36;
-    s=width*0.48;
-    zhinge=base_t+face_t+foot_t+8;
-    color([0.12,0.14,0.16]) base_body(width);
-    // Thin dark elastomer/backing layer and light replaceable abrasive sheet underneath.
-    color([0.08,0.09,0.10]) translate([0,0,-pad_t]) soft_pad_body(width);
-    color([0.88,0.87,0.82]) translate([0,0,-pad_t-abrasive_t]) abrasive_body(width);
-    color([0.64,0.67,0.69]) translate([0,0,base_t]) face_body(width);
-    color([0.02,0.28,0.88]) pivot_body(width);
-    color([0.02,0.28,0.88])
-        translate([0,py+handle_t/2,zhinge]) rotate([90,0,0]) handle_body(width);
-    color([0.10,0.11,0.13]) {
-        translate([0,py,base_t]) lock_plate();
-        for (cx=[-s/2,s/2])
-            translate([cx,py+handle_t/2+eye_t+3.5,pivot_z])
-                rotate([90,0,0]) ribbed_cap();
+module thumb_knob() {
+    difference() {
+        union() {
+            cylinder(h=4,d=11,center=false);
+            for (a=[0:15:345]) rotate([0,0,a])
+                translate([5.4,0,2]) cube([1,1.2,4],center=true);
+        }
+        cylinder(h=4.2,d=4.3);
     }
 }
 
+module label_body(width) {
+    linear_extrude(height=0.45)
+        rotate(90) text("360",size=6.4,font="Arial:style=Bold",halign="center",valign="center");
+}
+
+module assembly_view(width) {
+    rr=width/2;
+    y1=rr*0.16;
+    y2=rr*0.78;
+    ym=(y1+y2)/2;
+    top=base_t+face_t;
+    lever_z=top+trim_t;
+    color([0.11,0.13,0.15]) base_body(width);
+    // Thin back cushion and light replaceable abrasive layer below the black shell.
+    color([0.07,0.08,0.09]) translate([0,0,-pad_t]) pad_body(width);
+    color([0.91,0.89,0.82]) translate([0,0,-pad_t-abrasive_t]) abrasive_body(width);
+    color([0.62,0.65,0.67]) translate([0,0,base_t]) face_body(width);
+    color([0.90,0.91,0.90]) translate([0,0,top]) linear_extrude(height=trim_t) trim_body(width);
+    color([0.02,0.28,0.88]) translate([0,0,lever_z]) handle_body(width);
+    color([0.12,0.13,0.14]) translate([0,ym,top]) lock_plate();
+    // One ribbed locking knob on the nose-side end; second end is the pivot seat.
+    color([0.08,0.09,0.10]) translate([0,y2,lever_z+handle_t]) thumb_knob();
+    color([0.04,0.04,0.04]) translate([0,ym,lever_z+handle_t]) label_body(width);
+    // Two small black M3 screw heads fasten the center plate to the base.
+    color([0.03,0.03,0.03]) for (x=[-16,16])
+        translate([x,ym,top+trim_t]) cylinder(h=1.2,d=4.5);
+}
+
 if (part=="base") {
-    color([0.12,0.14,0.16]) base_body(w);
+    color([0.11,0.13,0.15]) base_body(w);
 } else if (part=="face") {
-    color([0.64,0.67,0.69]) face_body(w);
+    color([0.62,0.65,0.67]) face_body(w);
 } else if (part=="pad") {
-    color([0.08,0.09,0.10]) soft_pad_body(w);
+    color([0.07,0.08,0.09]) pad_body(w);
 } else if (part=="abrasive") {
-    color([0.88,0.87,0.82]) abrasive_body(w);
-} else if (part=="pivot") {
-    color([0.02,0.28,0.88]) pivot_body(w);
+    color([0.91,0.89,0.82]) abrasive_body(w);
+} else if (part=="trim") {
+    color([0.90,0.91,0.90]) linear_extrude(height=trim_t) trim_body(w);
 } else if (part=="handle") {
     color([0.02,0.28,0.88]) handle_body(w);
 } else if (part=="lock") {
-    color([0.10,0.11,0.13]) lock_body(w);
+    color([0.12,0.13,0.14]) lock_body(w);
+} else if (part=="knob") {
+    color([0.08,0.09,0.10]) thumb_knob();
+} else if (part=="label") {
+    color([0.97,0.97,0.95]) label_body(w);
 } else {
     assembly_view(w);
 }
