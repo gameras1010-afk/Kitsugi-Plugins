@@ -1,48 +1,31 @@
-# Fotoğrafa göre zımpara bloğu — V5
+# Fotoğrafa göre zımpara bloğu — V6
 
-Bu sürüm, son gönderdiğin **üstten ve yandan net fotoğraflara göre** önceki U saplı tasarımdan tamamen farklı olarak yeniden çizildi. Mavi parça artık yüksek kemer değil: **iki geniş yuvarlak ucu olan, arası daralan düz merkez kol**. Altında iki açık renk pivot yuvası, ortada siyah dikdörtgen kilit plakası ve uçta siyah tırtıklı düğme bulunuyor. Kafa; siyah D biçimli gövde, gri üst yüz, altta koyu yumuşak tabaka ve açık renk zımpara yüzü olarak katmanlandı.
+Bu sürüm, son gönderdiğin resimde belirgin olan yönü düzeltiyor: **mavi kol D tabanın düz kenarına paralel, iki yuvarlak ucu arasındaki dar kol biçiminde yerleşiyor.** Önceki sürümde kol 90° yanlış yöndeydi. Modelde siyah D gövde, gri üst plaka, beyaz uç yatakları, siyah merkez kilit plakası, tek uçta tırtıklı siyah düğme ve altta yumuşak/zımpara katmanları bulunur.
 
-Fotoğraf açıları dış görünüşü belirliyor; gerçek ölçü yok. Bu yüzden üç boyut mantıklı tahminlerle seçildi. Dış silueti ve görünen parçaları fotoğrafa yaklaştırdım; içeride görünmeyen kilit/mafsal mekanizmasının birebir kopyası olduğunu iddia etmiyorum.
+Boyutlar fotoğraflardan tahmin edilmiştir; dış yerleşim ve renkler referansa yaklaştırıldı, görünmeyen mekanik ayrıntılar ise prototip amaçlı sadeleştirilmiştir.
 
-## Üç boy
+## Boylar
 
-| Seçim | D taban genişliği | Yaklaşık derinlik |
+| Seçim | Taban genişliği | Yaklaşık derinlik |
 |---|---:|---:|
 | S | 140 mm | 70 mm |
 | M | 180 mm | 90 mm |
 | L | 220 mm | 110 mm |
 
-## Parça seçimi
+OpenSCAD Customizer'dan `size` S/M/L seç. `part = "assembly"` renkli montaj önizlemesidir.
 
-OpenSCAD'de `size` S/M/L ve `part` alanından `assembly`, `base`, `face`, `pad`, `abrasive`, `trim`, `handle`, `lock`, `knob` veya `label` seç. `assembly` renkli montaj önizlemesidir.
+## Parçalar ve STL
 
-- `base`: siyah D gövde; iki uçta M4 insert yuvası, merkez plakada M3 insert yuvası.
-- `face`: gri, üstteki içe alınmış yüz.
-- `pad`: alt yumuşak/cırt arayüzü (esnek filament veya ticari cırt tercih et).
-- `abrasive`: açık renk ince prototip katmanı; gerçek zımpara için şablon/ölçü parçasıdır.
-- `trim`: iki beyaz/gri uç yuvası.
-- `handle`: iki oval uçlu düz mavi kol.
-- `lock`: siyah merkez plaka.
-- `knob`: tırtıklı siyah uç düğmesi.
-- `label`: beyaz “360” işareti; yazıcıdaki Arial fontu yoksa dışa aktarmadan önce etiket parçasını kapat.
+`part` seçenekleri: `base`, `face`, `pad`, `abrasive`, `trim`, `handle`, `lock`, `knob`, `label`.
 
-## STL oluşturma
+OpenSCAD'de `zimpra_blok.scad` dosyasını aç, istenen `part` değerini seç, **F6 → File → Export → Export as STL** ile parçaları ayrı ayrı dışa aktar. Önce M boyunu dene. Toplu dışa aktarma için Windows PowerShell'de `export_all.ps1`, Mac/Linux'ta `export_all.sh` çalıştır (OpenSCAD komutu PATH'te olmalı). Betik S/M/L için 27 STL üretir.
 
-OpenSCAD'de `zimpra_blok.scad` dosyasını aç. Parçayı seç, **F6 → File → Export → Export as STL** ile ayrı STL oluştur. İlk baskıda yalnızca M boyunu kullan.
+## Baskı notları
 
-Toplu aktarma için OpenSCAD'in `openscad` komutu PATH'te olmalı:
+- Taban, gri panel, alt ped ve zımpara yüzü düz yatırılır. Mavi kol da düz yüzeyi üzerinde basılır.
+- PETG önerilir; esnek alt katman için TPU ya da hazır cırt/ara yüz kullan. Gerçek abrasif zımparayı ayrıca yapıştır.
+- Başlangıç ayarı: 0,20 mm katman; taban 4–5 duvar, kol ve düğme 5 duvar ve %40–50 doluluk.
+- İki uçta M4 insert/civata, orta plakada iki M3 insert/civata varsayılmıştır. Donanım baskı dosyasına dahil değildir.
+- `label` parçasındaki “project 360” yazısının görünmesi sistemde Arial fontunun bulunmasına bağlıdır.
 
-- Windows PowerShell: `export_all.ps1`
-- Mac/Linux: `export_all.sh`
-
-Bunlar üç boy × dokuz parça için 27 STL üretir. Üretim için gerekli olmayan `pad`, `abrasive` ve `label` parçalarını dışa aktarmadan da baskı yapılabilir.
-
-## Baskı ve birleştirme
-
-- İlk prototipte gövde/sap için PETG; esnek ara katman için TPU veya hazır yapışkanlı cırt kullan.
-- Taban, yüz, ped ve etiket düz yatırılır. Mavi kol geniş düz yüzeyi üzerinde basılır.
-- Başlangıç ayarı: 0,20 mm katman; taban 4–5 duvar/%35–45 doluluk; kol ve düğme 5 duvar/%50 doluluk.
-- Donanım: uç pivotlarda M4 civata ve ısı ile gömülen M4 insert; merkez kilit plakası için 2 M3 civata/insert. Donanım STL'ye dahil değildir.
-- Gerçek zımpara kâğıdının alt arayüzünü tabana yapıştırın. Isıl insert, civata geçişi ve pivot hareketini basımdan sonra prova edin.
-
-Bu bir fotoğraf tabanlı ilk prototiptir, endüstriyel sertifikalı ürün değildir. Satış öncesi hareket, kilit, çekme, düşme ve yorulma testleri yapın.
+Bu dosya fotoğraf tabanlı bir prototiptir; gerçek mafsal hareketi, kilit ve dayanım test edilmeden seri satışa hazır kabul edilmemelidir.
