@@ -1,45 +1,33 @@
-# Project 360 tarzı zımpara bloğu — V3 görsel prototip
+# Zımpara bloğu — V4 fotoğraf tabanlı prototip
 
-Bu sürüm, gönderdiğin son fotoğraflardaki biçime göre yeniden kuruldu: **D biçimli siyah taban, içte gri yüz paneli, ortada siyah kilit bloğu, iki mavi mafsal ayağı ve alçak U/yoke biçimli mavi tutamak**. Tırtıklı pivot kapakları da görseldeki ayar parçalarını temsil ediyor. Önceki ince düz kol/ayak düzeni bu sürümde kullanılmıyor.
+Bu sürüm, gönderdiğin yakın planlar ve gövde fotoğraflarındaki ana parçaları aynı montajda toplamaya çalışır: **D biçimli siyah alt gövde, gri üst yüz, altta koyu yumuşak ara katman ve açık renk zımpara yüzü; üstte iki mafsallı mavi U sapı, siyah tırtıklı ayar kapakları ve ortada siyah kilit bloğu.** Önceki basit düz kol tasarımı kaldırıldı.
 
-Ölçüler, isteğin üzerine S/M/L olarak mantıksal biçimde seçildi; fotoğraftan alınmış kesin ölçüler değildir. Bu nedenle dosyayı **ölçüsü yaklaşık görsel prototip** olarak değerlendir. Tutamak ve kilit mekanizmasının gerçek hareket aralığı, iç detayları ve donanım toleransları fotoğraflardan tam çıkarılamıyor.
+İstediğin gibi ölçüleri şimdilik mantıklı varsayımlarla üç boy yaptım. Görselden üretildiği için bu CAD, orijinal ürünün ölçülmüş/tıpatıp teknik kopyası değildir; dış form ve parçaların yerleşimine odaklı prototiptir. Dişler ve mafsal iç detayı fotoğrafta görünmediğinden standart metal civata/somun için boşluk bırakıldı.
 
-## Üç boy
+## Boylar
 
-| Boy | D taban genişliği | Yaklaşık derinlik | Kullanım |
-|---|---:|---:|---|
-| S | 140 mm | 70 mm | küçük yüzey/kompakt |
-| M | 180 mm | 90 mm | ilk deneme için önerilen |
-| L | 220 mm | 110 mm | geniş yüzey; tabla ölçüsünü kontrol et |
+| Seçenek | Taban genişliği | Yaklaşık derinlik |
+|---|---:|---:|
+| S | 140 mm | 70 mm |
+| M | 180 mm | 90 mm |
+| L | 220 mm | 110 mm |
 
-## Dosyadaki model parçaları
+`size` ile S/M/L; `part` ile assembly, base, face, pad, abrasive, pivot, handle veya lock seçilir. `assembly` renkli montaj önizlemesidir.
 
-- `base`: siyah D taban; M3 somun yuvaları içerir.
-- `face`: tabanın üstündeki gri, içe alınmış yüz paneli; ayrı renkte basılabilir.
-- `pivot`: iki mavi mafsal ayağı (tek dosyada, iki ayrı parça olarak yerleşir).
-- `handle`: mavi, alçak U/yoke tutamak; düz yatırılarak basılır.
-- `lock`: siyah orta kilit bloğu ve iki tırtıklı pivot kapağı.
-- `assembly`: tüm parçaların renkli montaj önizlemesi.
+## 3D yazdırılabilir dosyalar
 
-OpenSCAD Customizer'dan `size` değerini S/M/L, `part` değerini yukarıdaki parçalardan biri yap. Montajı görmek için `part = "assembly"` seç.
+OpenSCAD'de `zimpra_blok.scad` dosyasını aç. Parçaları tek tek almak için `part` seçimini yap, **F6 → File → Export → Export as STL** kullan. Örnek olarak önce S/M/L içinden **M** boyutunu test et. Toplu dışa aktarma:
 
-## STL oluşturma
+- Windows: PowerShell'de `export_all.ps1` (OpenSCAD komutu PATH'te olmalı)
+- Mac/Linux: `export_all.sh`
 
-OpenSCAD'de `zimpra_blok.scad` dosyasını aç. Her parçayı ayrı STL olarak almak için `part` seçimini değiştir, **F6** ile render et ve **File → Export → Export as STL** seç. Toplu dışa aktarma için:
+Betikler 3 boy × 7 parça = 21 STL üretir. `pad` ve `abrasive` katmanları görsel/ölçü prototipidir; gerçek kullanımda yumuşak ara yüz ve gerçek zımpara kâğıdı tercih edilir.
 
-- Windows: OpenSCAD yüklü ve `openscad` PATH'te olacak şekilde PowerShell'den `export_all.ps1` çalıştır.
-- Mac/Linux: `export_all.sh` çalıştır.
+## Baskı başlangıç ayarı
 
-Bu işlem S/M/L boylarının her biri için beşer dosya (toplam 15 STL) üretir. İlk montaj denemesinde yalnızca **M** boyunu dışa aktar.
+- Taban, yüz paneli ve ara katman düz yatırılarak; tutamak geniş yan yüzü tablaya gelecek şekilde basılır.
+- Taban için PETG, tutamak ve mafsallar için PETG/ASA önerilir. PLA/PLA+ sadece ilk ergonomi denemesi için.
+- Başlangıç: 0,20 mm katman; tabanda 4–5 duvar ve %35–45 doluluk; mafsal/tutamakta 5 duvar ve yaklaşık %50 doluluk.
+- Donanım: taban mafsal ayakları için 4 adet M3 civata/somun; sap mafsalları için 2 adet M5 civata, pul ve kilitli somun. Donanım STL'ye dahil değildir. Delik geçişlerini basımdan sonra kontrol edin.
 
-## Baskı ve donanım önerileri
-
-- Taban ve mafsallar için **PETG**; tutamak için PETG veya ASA. PLA'yı yalnızca ilk ebat/ergonomi denemesine ayır.
-- Taban altı düz şekilde; yüz paneli düz şekilde; mafsal ayakları tabanları üzerinde; tutamak geniş profil yüzeyi tabla üzerinde basılır.
-- Başlangıç: 0,20 mm katman, tabanda 4–5 duvar/%35–45 doluluk; tutamak ve mafsallarda 5 duvar/%50 doluluk.
-- Önerilen metal donanım: mafsal için 2 adet M4 civata (yaklaşık 30 mm) ve kilitli somun; ayakları tabana bağlamak için 4 adet M3 civata ve somun. Metal donanım STL'ye dahil değildir. Civata deliklerini yazıcı toleransına göre kontrol et.
-- Alt zımpara yüzüne yapışkanlı cırt veya uygun zımpara ara yüzü yapıştırılabilir; yumuşak/abrasif katman sarf malzemesidir, baskı modeline dahil değildir.
-
-## Önemli
-
-Bu dosya fotoğraflara göre hazırlanmış görsel/işlevsel bir ilk konsepttir; orijinal ürünün ölçülendirilmiş kopyası veya dayanım sertifikalı bir tasarım değildir. Baskı, hareket, kilit ve zımpara tutuşu gerçek malzemeyle test edilmeden satışta kullanma. Kırılma ve mafsal sıkışması riskini kontrol et.
+**Satış öncesi:** önce prototip basıp yüzeye oturuş, mafsal hareketi, kilit, çekme ve düşme dayanımını test et. Tasarım sertifikalı değildir; fotoğraftan ölçülmeyen iç mekanik ayrıntıların işlevi test gerektirir.

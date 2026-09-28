@@ -6,8 +6,8 @@ command -v openscad >/dev/null 2>&1 || {
   exit 1
 }
 for size in S M L; do
-  for part in base face pivot handle lock; do
+  for part in base face pad abrasive pivot handle lock; do
     openscad -o "${part}_${size}.stl" -D "size=\"${size}\"" -D "part=\"${part}\"" zimpra_blok.scad
   done
 done
-echo "15 STL olusturuldu. Once slicerda olculeri ve montaji kontrol edin."
+echo "21 STL olusturuldu. Once slicerda olculeri ve montaji kontrol edin."
