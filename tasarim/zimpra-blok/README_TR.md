@@ -1,31 +1,34 @@
-# Fotoğrafa göre zımpara bloğu — V6
+# Zımpara bloğu — V7 el boşluklu prototip
 
-Bu sürüm, son gönderdiğin resimde belirgin olan yönü düzeltiyor: **mavi kol D tabanın düz kenarına paralel, iki yuvarlak ucu arasındaki dar kol biçiminde yerleşiyor.** Önceki sürümde kol 90° yanlış yöndeydi. Modelde siyah D gövde, gri üst plaka, beyaz uç yatakları, siyah merkez kilit plakası, tek uçta tırtıklı siyah düğme ve altta yumuşak/zımpara katmanları bulunur.
+Son fotoğrafa göre modelin **yüksekliği ve tutuşu** yeniden düzenlendi. Mavi sap artık tabanın üzerinde yatan düz kol değil: D tabanın düz kenarına paralel uzanan, uçlardan mafsallı, üstte kalın bir kavrama köprüsü. Köprünün altında yaklaşık **35 mm dikey el/parmak boşluğu** ve M boyunda yaklaşık 50 mm yatay el/parmak açıklığı bırakıldı. Gövde siyah D biçimli; üst yüz gri; mafsal altlıkları açık renk; sap mavi; orta kilit ve ayar düğmeleri siyah; alt yüz katmanlı.
 
-Boyutlar fotoğraflardan tahmin edilmiştir; dış yerleşim ve renkler referansa yaklaştırıldı, görünmeyen mekanik ayrıntılar ise prototip amaçlı sadeleştirilmiştir.
+Üç boy, fotoğrafta ölçek olmadığı için mantıklı başlangıç ölçüleridir; orijinal ölçünün garantisi değildir.
 
-## Boylar
+| Boy | Gövde genişliği | Yaklaşık derinlik | Nominal sap altı boşluğu |
+|---|---:|---:|---:|
+| S | 140 mm | 70 mm | 35 mm |
+| M | 180 mm | 90 mm | 35 mm |
+| L | 220 mm | 110 mm | 35 mm |
 
-| Seçim | Taban genişliği | Yaklaşık derinlik |
-|---|---:|---:|
-| S | 140 mm | 70 mm |
-| M | 180 mm | 90 mm |
-| L | 220 mm | 110 mm |
+## OpenSCAD / STL
 
-OpenSCAD Customizer'dan `size` S/M/L seç. `part = "assembly"` renkli montaj önizlemesidir.
+`zimpra_blok.scad` dosyasını açıp Customizer'dan `size` ve `part` seç. `part = "assembly"` tüm parçaların renkli montajını gösterir. Parçaları tek tek dışa aktarmak için **F6 → File → Export → Export as STL** kullan.
 
-## Parçalar ve STL
+Parça seçenekleri: `base`, `face`, `pad`, `abrasive`, `trim`, `pivot`, `handle`, `lock`, `knob`, `label`.
 
-`part` seçenekleri: `base`, `face`, `pad`, `abrasive`, `trim`, `handle`, `lock`, `knob`, `label`.
+Toplu dışa aktarım için OpenSCAD'in `openscad` komutu PATH'te olmalı:
 
-OpenSCAD'de `zimpra_blok.scad` dosyasını aç, istenen `part` değerini seç, **F6 → File → Export → Export as STL** ile parçaları ayrı ayrı dışa aktar. Önce M boyunu dene. Toplu dışa aktarma için Windows PowerShell'de `export_all.ps1`, Mac/Linux'ta `export_all.sh` çalıştır (OpenSCAD komutu PATH'te olmalı). Betik S/M/L için 27 STL üretir.
+- Windows PowerShell: `export_all.ps1`
+- Mac/Linux: `export_all.sh`
 
-## Baskı notları
+Betikler 3 boy × 10 parça = 30 STL çıkarır. İlk kez basarken M boyunu ve yalnızca base/face/pivot/handle/lock/knob parçalarını dene. `pad` için TPU veya hazır cırt; `abrasive` yerine gerçek zımpara kâğıdı; `label` için çok renkli baskı/filament değişimi kullan.
 
-- Taban, gri panel, alt ped ve zımpara yüzü düz yatırılır. Mavi kol da düz yüzeyi üzerinde basılır.
-- PETG önerilir; esnek alt katman için TPU ya da hazır cırt/ara yüz kullan. Gerçek abrasif zımparayı ayrıca yapıştır.
-- Başlangıç ayarı: 0,20 mm katman; taban 4–5 duvar, kol ve düğme 5 duvar ve %40–50 doluluk.
-- İki uçta M4 insert/civata, orta plakada iki M3 insert/civata varsayılmıştır. Donanım baskı dosyasına dahil değildir.
-- `label` parçasındaki “project 360” yazısının görünmesi sistemde Arial fontunun bulunmasına bağlıdır.
+## Konstrüksiyon ve baskı başlangıç ayarı
 
-Bu dosya fotoğraf tabanlı bir prototiptir; gerçek mafsal hareketi, kilit ve dayanım test edilmeden seri satışa hazır kabul edilmemelidir.
+- Ana gövde için PETG; el tutamağı için PETG veya ASA. PLA/PLA+ sadece boyut/ergonomi prototipi.
+- Mavi sap geniş profil yüzeyi üzerine yatırılarak basılır; mafsal delikleri basımdan sonra temizlenir.
+- Başlangıç: 0,20 mm katman; tabanda 4–5 duvar, pivot/sapta 5–6 duvar ve %45–55 doluluk.
+- Donanım varsayımı: mafsal eksenleri için 2 adet M5 civata ve kilitli somun; pivot tabanlarını sabitlemek için 4 adet M3 civata/insert; merkez kilit için 2 adet M3.
+- Alt yumuşak ara yüz ve zımpara sarf malzemesini yapıştırmadan önce metal bağlantıları kur.
+
+Model, fotoğraflardan dış görünüş ve el boşluğu hedefiyle hazırlanmış ilk prototiptir. Fotoğrafta görünmeyen gerçek kilit/mafsal iç yapısı sadeleştirilmiştir; basım, hareket ve çekme testleri yapılmadan seri satışa hazır kabul edilmemelidir.
