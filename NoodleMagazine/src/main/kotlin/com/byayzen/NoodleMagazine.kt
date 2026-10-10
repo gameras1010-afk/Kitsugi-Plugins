@@ -10,7 +10,7 @@ import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 
 class NoodleMagazine : MainAPI() {
-    override var mainUrl = "https://noodlemagazine.com"
+    override var mainUrl = "https://noodlemagazine.com/home"
     override var name = "NoodleMagazine"
     override val hasMainPage = true
     override var lang = "en"

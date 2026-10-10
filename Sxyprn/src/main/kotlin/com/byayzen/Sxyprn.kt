@@ -14,7 +14,7 @@ import kotlinx.serialization.json.jsonObject
 
 
 class Sxyprn : MainAPI() {
-    override var mainUrl = "https://sxyprn.com/"
+    override var mainUrl = "https://sxyprn.com"
     override var name = "Sxyprn"
     override val hasMainPage = true
     override var lang = "en"
