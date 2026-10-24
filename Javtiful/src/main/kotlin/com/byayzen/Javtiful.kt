@@ -12,7 +12,7 @@ import okhttp3.Request
 import org.jsoup.nodes.Element
 
 class Javtiful : MainAPI() {
-    override var mainUrl = "https://javtiful.com"
+    override var mainUrl = "https://javtiful.com/main"
     override var name = "Javtiful"
     override val hasMainPage = true
     override var lang = "en"
