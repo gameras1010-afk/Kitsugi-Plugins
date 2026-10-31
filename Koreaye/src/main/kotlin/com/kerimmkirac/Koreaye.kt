@@ -10,7 +10,7 @@ import com.lagradost.cloudstream3.LoadResponse.Companion.addActors
 import com.lagradost.cloudstream3.LoadResponse.Companion.addTrailer
 
 class Koreaye : MainAPI() {
-    override var mainUrl = "https://koreaye.com"
+    override var mainUrl = "https://koreaye.com/zar"
     override var name = "Koreaye"
     override val hasMainPage = true
     override var lang = "tr"
